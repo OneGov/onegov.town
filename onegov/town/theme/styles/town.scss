@@ -199,8 +199,12 @@ form {
     form collection rendering
 */
 .form-definitions {
-    li + li {
-        margin-top: 1em;
+    margin-left: 0;
+
+    li {
+        clear: both;
+        list-style-type: none;
+        padding: .5rem 0;
     }
 
     .form-definition-title {
@@ -213,25 +217,32 @@ form {
     }
 }
 
+.form-definition-counter {
+    background-color: $topbar-bg-color;
+    float: left;
+    margin-right: 1rem;
+    min-width: 90px;
+    padding: .5rem;
+
+    .count {
+        font-size: 2em;
+        text-align: center;
+    }
+
+    .count-label {
+        color: $bottom-links-color;
+        font-size: .8rem;
+        text-align: center;
+    }
+
+    &.has-submissions:hover {
+        background-color: transparentize($primary-color, .8);
+    }
+}
+
 .form-definition-info {
-    @include label(
-        $bg: $secondary-color,
-        $padding: 2px 4px,
-        $radius: 2px,
-        $text-size: rem-calc(12)
-    );
-
-    &.has-submissions {
-        background-color: $success-color;
-
-        * {
-            color: #fff;
-        }
-    }
-
-    &.builtin-form {
-        background-color: $info-color;
-    }
+    color: $bottom-links-color;
+    font-size: .8rem;
 }
 
 /*
