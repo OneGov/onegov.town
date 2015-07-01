@@ -47,6 +47,28 @@ def test_view_login(town_app):
     assert client.get('/logout', expect_errors=True).status_code == 403
 
 
+def test_view_files(town_app):
+
+    client = Client(town_app)
+
+    assert client.get('/dateien', expect_errors=True).status_code == 403
+
+    login_page = client.get('/login')
+    login_page.form.set('email', 'admin@example.org')
+    login_page.form.set('password', 'hunter2')
+    login_page.form.submit()
+
+    files_page = client.get('/dateien')
+
+    assert "Noch keine Dateien hochgeladen" in files_page
+
+    files_page.form['file'] = Upload('Test.txt', b'File content.')
+    files_page = files_page.form.submit().follow()
+
+    assert "Noch keine Dateien hochgeladen" not in files_page
+    assert 'Test.txt' in files_page
+
+
 def test_view_images(town_app):
 
     client = Client(town_app)
@@ -62,7 +84,7 @@ def test_view_images(town_app):
 
     assert "Noch keine Bilder hochgeladen" in images_page
 
-    images_page.form['file'] = Upload('Test.txt', utils.create_image().read())
+    images_page.form['file'] = Upload('Test.txt', b'File content')
     assert images_page.form.submit(expect_errors=True).status_code == 415
 
     images_page.form['file'] = Upload('Test.jpg', utils.create_image().read())
