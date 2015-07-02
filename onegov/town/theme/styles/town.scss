@@ -57,6 +57,10 @@ body {
     min-height: 100%;
 }
 
+.top-bar.expanded {
+    box-shadow: none;
+}
+
 footer,
 .push {
     animation-duration: 3s;
@@ -361,11 +365,8 @@ input[type=color] {
     homepage tiles
 */
 
-.homepage-tiles > .row {
-  margin-bottom: 1em;
-}
-
 .homepage-tile {
+    margin-bottom: 1.375em;
     line-height: 1rem;
 
     h2 {
@@ -384,8 +385,9 @@ input[type=color] {
     .tile-sub-link:after {
         content: ' | ';
         display: inline-block;
-        margin-left: .5ex;
-        margin-right: .5ex;
+        margin-left: .6ex;
+        margin-right: .6ex;
+        color: transparentize($primary-color, .8);
     }
 
     .tile-sub-link:last-child:after {
