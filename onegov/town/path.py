@@ -1,5 +1,7 @@
 """ Contains the paths to the different models served by onegov.town. """
 
+import re
+
 from onegov.town.app import TownApp
 from onegov.town.models import (
     Editor,
@@ -7,6 +9,7 @@ from onegov.town.models import (
     FileCollection,
     Image,
     ImageCollection,
+    Map,
     News,
     Thumbnail,
     Topic,
@@ -27,6 +30,16 @@ from onegov.people import Person, PersonCollection
 @TownApp.path(model=Town, path='/')
 def get_town(app):
     return app.town
+
+
+# --- used to whitelist the iframe
+map_expr = re.compile(r'/karte/[0-9\.]+/[0-9\.]+/[0-9]+')
+
+
+@TownApp.path(model=Map, path='/karte/{lat}/{lon}/{zoom}')
+def get_map(app, lat, lon, zoom):
+    return Map(lat, lon, zoom)
+# ---
 
 
 @TownApp.path(model=Topic, path='/themen', absorb=True)
