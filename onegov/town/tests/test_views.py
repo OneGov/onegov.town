@@ -830,6 +830,7 @@ def test_tickets(town_app):
     assert 'In Bearbeitung' in ticket_page
     assert 'FRM-' in ticket_page
 
+    ticket_url = ticket_page.request.path
     ticket_page = ticket_page.click('Ticket abschliessen').follow()
 
     assert client.get('/').pyquery('.ticket-count div').text()\
@@ -848,4 +849,10 @@ def test_tickets(town_app):
 
     assert 'Abgeschlossen' in ticket_page
 
-    assert '1 Abgeschlossene Tickets' in client.get('/tickets?state=closed')
+    tickets_page = client.get('/tickets?state=closed')
+    assert '1 Abgeschlossene Tickets' in tickets_page
+
+    ticket_page = client.get(ticket_url)
+    ticket_page = ticket_page.click('Ticket wieder öffnen').follow()
+
+    assert '1 Offene Tickets' in client.get('/tickets')
