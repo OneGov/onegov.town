@@ -4,6 +4,18 @@ Changelog
 Unreleased
 ~~~~~~~~~~
 
+- Adds the datetimepicker plugin.
+  [msom]
+
+0.2.6 (2015-07-16)
+~~~~~~~~~~~~~~~~~~~
+
+- Fixes encoding issue in Apple Mail.
+  [href]
+
+0.2.5 (2015-07-16)
+~~~~~~~~~~~~~~~~~~~
+
 - Shows a ticket count at the top of every page for logged in users.
   [href]
 
