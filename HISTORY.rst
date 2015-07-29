@@ -10,6 +10,9 @@ Unreleased
 - Adds the datetimepicker plugin.
   [msom]
 
+- Add retrieve password functionality.
+  [msom]
+
 0.2.6 (2015-07-16)
 ~~~~~~~~~~~~~~~~~~~
 
