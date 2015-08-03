@@ -2,6 +2,12 @@
 
 import PIL
 
+from collections import OrderedDict
+from dateutil.relativedelta import relativedelta
+from datetime import datetime, timedelta
+from datetime import date
+from itertools import groupby
+from onegov.town import _
 from onegov.town.models import File
 from onegov.town.models import FileCollection
 
@@ -38,10 +44,56 @@ class ImageCollection(FileCollection):
         """
 
         images = self.file_storage.ilistdirinfo(files_only=True)
-        images = sorted(images, key=lambda i: i[1]['created_time'])
+        images = sorted(images, key=lambda i: i[1]['modified_time'])
 
         for filename, info in images:
             yield Image(filename, info)
+
+    def grouped_files(self, today=None):
+        """ Returns the :class:`~onegov.town.model.Image` instances in this
+        collection grouped by natural language dates.
+        """
+        if today is None:
+            today = date.today()
+        this_month = datetime(today.year, today.month, 1)
+        ranges = [
+            [_('This month'), this_month],
+            [_('Last month'), this_month - relativedelta(months=1)],
+            [_('This year'), datetime(today.year, 1, 1)],
+            [_('Last year'), datetime(today.year - 1, 1, 1)],
+            [_('Older'), datetime(today.year - 2, 1, 1)],
+        ]
+        ranges = sorted(ranges, reverse=True, key=lambda x: x[1])
+        images = sorted(
+            self.files, reverse=True, key=lambda x: x.info['modified_time']
+        )
+
+        # iterate over all images and append the indexes to the ranges
+        last_index = 0
+        range_index = 0
+        for index, image in enumerate(images):
+            timestamp = image.info['modified_time']
+            if timestamp < ranges[range_index][1]:
+                ranges[range_index].append(last_index)
+                ranges[range_index].append(index)
+                last_index = index
+
+                # skip to next possible range
+                range_index = len(ranges)
+                for next_range in ranges:
+                    if timestamp < next_range[1]:
+                        range_index = ranges.index(next_range) + 1
+                if range_index >= len(ranges):
+                    range_index = len(ranges) - 1
+                    break
+        ranges[range_index].append(last_index)
+        ranges[range_index].append(len(images))
+
+        groups = []
+        for range in ranges:
+            if len(range) == 4 and range[2] != range[3]:
+                groups.append([range[0], images[range[2]:range[3]]])
+        return groups
 
     @property
     def thumbnails(self):
@@ -50,7 +102,7 @@ class ImageCollection(FileCollection):
 
         """
         images = self.thumbnail_storage.ilistdirinfo(files_only=True)
-        images = sorted(images, key=lambda i: i[1]['created_time'])
+        images = sorted(images, key=lambda i: i[1]['modified_time'])
 
         for filename, info in images:
             yield Thumbnail(filename, info)
