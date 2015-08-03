@@ -4,6 +4,15 @@ Changelog
 Unreleased
 ~~~~~~~~~~
 
+- Group images by dates.
+  [msom]
+
+0.3.0 (2015-08-03)
+~~~~~~~~~~~~~~~~~~~
+
+- Correctly sort the the pages even if the title has changed.
+  [href]
+
 - Limits the news list on the homepage to two entries.
   [href]
 
@@ -11,9 +20,6 @@ Unreleased
   [msom]
 
 - Add retrieve password functionality.
-  [msom]
-
-- Group images by dates.
   [msom]
 
 0.2.6 (2015-07-16)
