@@ -1,0 +1,34 @@
+<div metal:use-macro="layout.base" i18n:domain="onegov.town">
+    <tal:block metal:fill-slot="title">
+        ${title}
+    </tal:block>
+    <tal:block metal:fill-slot="content">
+
+        <tal:block metal:use-macro="layout.macros.page_content"
+             tal:define="lead resource.meta.get('lead');text resource.content.get('text'); people resource.people; contact resource.contact_html" />
+
+        <tal:block condition="resource.type == 'daypass'">
+            <div class="calendar"
+                data-feed="${feed}" 
+                data-header-left="title"
+                data-header-right="today prev,next"
+                data-selectable="${request.is_logged_in and 'true' or 'false'}"
+                data-select-url="${request.link(resource, name='neue-einteilung')}"
+                data-default-view="month"
+            />
+        </tal:block>
+        <tal:block condition="resource.type == 'room'">
+            <div class="calendar" 
+                data-feed="${feed}" 
+                data-header-left="month,agendaWeek,agendaDay" 
+                data-header-center="title"
+                data-header-right="today prev,next"
+                data-min-time="07:00:00"
+                data-max-time="22:00:00"
+                data-selectable="${request.is_logged_in and 'true' or 'false'}"
+                data-select-url="${request.link(resource, name='neue-einteilung')}"
+                data-default-view="agendaWeek"
+            />
+        </tal:block>
+    </tal:block>
+</div>

@@ -1,3 +1,7 @@
+import sedate
+
+from datetime import datetime, time
+from isodate import parse_date, parse_datetime
 from lxml import etree
 from lxml.html import fragments_fromstring
 
@@ -30,3 +34,31 @@ def mark_images(html):
                 paragraph.attrib['class'] = 'has-img'
 
     return ''.join(etree.tostring(e).decode('utf-8') for e in fragments)
+
+
+def parse_fullcalendar_request(request, timezone):
+    """ Parses start and end from the given fullcalendar request. It is
+    expected that no timezone is passed (the default).
+
+    See `<http://fullcalendar.io/docs/timezone/timezone/>`_
+
+    :returns: A tuple of timezone-aware datetime objects or (None, None).
+
+    """
+    start = request.params.get('start')
+    end = request.params.get('end')
+
+    if start and end:
+        if 'T' in start:
+            start = parse_datetime(start)
+            end = parse_datetime(end)
+        else:
+            start = datetime.combine(parse_date(start), time(0, 0))
+            end = datetime.combine(parse_date(end), time(23, 59, 59, 999999))
+
+        start = sedate.replace_timezone(start, timezone)
+        end = sedate.replace_timezone(end, timezone)
+
+        return start, end
+    else:
+        return None, None

@@ -201,7 +201,7 @@ form {
         Password quality meter
     */
     meter {
-        -webkit-appearance: none; 
+        -webkit-appearance: none;
         background: $input-border-color !important;
         border: 0;
         height: 10px;
@@ -491,6 +491,14 @@ input[type=color] {
 
     .new-person:before {
         content: '\f007';
+    }
+
+    .new-room:before {
+        content: '\f015';
+    }
+
+    .new-daypass:before {
+        content: '\f145';
     }
 
     .edit-link:before {
@@ -1062,5 +1070,73 @@ tr.ticket:hover {
 
     a {
         color: $white;
+    }
+}
+
+
+/*
+    Fullcalendar Integration
+*/
+
+.calendar {
+
+    button:focus {
+        // XXX fullcalendar focuses the buttons when they are clicked,
+        // resulting in the chrome accessibility outline.. now this is
+        // helpful in allmost all the cases (and shoult not be disabled)
+        // however, the calendar is not accessible as it is, so we might
+        // as well remove this otherwise very jaring looking outline
+        // -> the fullcalendar needs an accessible alternative, it can't
+        // really be made accessible because it's a huge blob of html
+        // tables designed to show a calendar...
+        outline: none;
+    }
+
+    table {
+        background-color: transparent;
+        margin-bottom: 0;
+
+        tr {
+            background-color: transparent;
+        }
+
+        .fc-today {
+            background: $yellow-pastel;
+        }
+
+        .fc-day-header,
+        .fc-day-number {
+            font-size: .9em;
+        }
+
+        .fc-event {
+            border-radius: 0;
+            margin: 0;
+        }
+
+        // fix borders missing with zurb foundation
+        tbody div.fc-content-skeleton td {
+            border-color: #ddd;
+        }
+    }
+
+    .fc button,
+    .fc-button {
+        @include button(
+            $padding: $button-tny,
+            $bg: $primary-color
+        );
+        background-image: none;
+        box-shadow: none;
+        font-size: .9rem;
+        height: 2.25rem;
+        text-shadow: none;
+
+        &.fc-state-active,
+        &.fc-state-disabled {
+            background: $secondary-color;
+            color: $jet;
+            opacity: 1;
+        }
     }
 }

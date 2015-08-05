@@ -13,6 +13,7 @@ from cached_property import cached_property
 from contextlib import contextmanager
 from onegov.core import Framework
 from onegov.core import utils
+from onegov.libres import LibresIntegration
 from onegov.ticket import TicketCollection
 from onegov.town import log
 from onegov.town.initial_content import add_builtin_forms
@@ -21,7 +22,7 @@ from onegov.town.theme import TownTheme
 from webassets import Bundle
 
 
-class TownApp(Framework):
+class TownApp(Framework, LibresIntegration):
     """ The town application. Include this in your onegov.yml to serve it
     with onegov-server.
 
@@ -187,6 +188,22 @@ class TownApp(Framework):
             output='bundles/common.bundle.css',
         )
 
+        fullcalendar = Bundle(
+            'js/moment.js',
+            'js/moment.de.js',
+            'js/fullcalendar.js',
+            'js/fullcalendar.de.js',
+            'js/fullcalendar_custom.js',
+            filters='jsmin',
+            output='bundles/fullcalendar.bundle.js'
+        )
+
+        fullcalendar_css = Bundle(
+            'css/fullcalendar.css',
+            filters='cssmin',
+            output='bundles/fullcalendar.bundle.css'
+        )
+
         check_password = Bundle(
             'js/zxcvbn.js',
             'js/check_password.js',
@@ -202,7 +219,9 @@ class TownApp(Framework):
             'redactor_theme': redactor_theme,
             'editor': editor,
             'code_editor': code_editor,
-            'check_password': check_password
+            'check_password': check_password,
+            'fullcalendar': fullcalendar,
+            'fullcalendar_css': fullcalendar_css
         }
 
 

@@ -3,8 +3,10 @@ import onegov.core
 import onegov.town
 import textwrap
 
+from datetime import datetime
 from lxml.html import document_fromstring
 from onegov.form import FormCollection
+from onegov.libres import ResourceCollection
 from onegov.testing import utils
 from onegov.ticket import TicketCollection
 from webtest import TestApp as Client
@@ -931,3 +933,68 @@ def test_tickets(town_app):
 
     assert 'FRM-' in message
     assert '/status' in message
+
+
+def test_resource_slots(town_app):
+
+    resources = ResourceCollection(town_app.libres_context)
+    resource = resources.add("Foo", 'Europe/Zurich')
+
+    scheduler = resource.get_scheduler(town_app.libres_context)
+    scheduler.allocate(
+        dates=[
+            (datetime(2015, 8, 4), datetime(2015, 8, 4)),
+            (datetime(2015, 8, 5), datetime(2015, 8, 5))
+        ],
+        whole_day=True
+    )
+
+    client = Client(town_app)
+
+    url = '/reservation/foo/slots'
+    assert client.get(url).json == []
+
+    url = '/reservation/foo/slots?start=2015-08-04&end=2015-08-05'
+
+    assert client.get(url).json == [
+        {
+            'start': '2015-08-04T00:00:00+02:00',
+            'end': '2015-08-05T00:00:00+02:00',
+            'allDay': True
+        },
+        {
+            'start': '2015-08-05T00:00:00+02:00',
+            'end': '2015-08-06T00:00:00+02:00',
+            'allDay': True
+        }
+    ]
+
+
+def test_resources(town_app):
+    client = Client(town_app)
+
+    login_page = client.get('/login')
+    login_page.form.set('email', 'admin@example.org')
+    login_page.form.set('password', 'hunter2')
+    login_page.form.submit()
+
+    resources = client.get('/reservationen')
+    assert 'GA Tageskarte' in resources
+
+    resource = resources.click('GA Tageskarte')
+    assert 'calendar' in resource
+
+    new = resources.click('Raum')
+    new.form['title'] = 'Meeting Room'
+    resource = new.form.submit().follow()
+
+    assert 'calendar' in resource
+    assert 'Meeting Room' in resource
+
+    edit = resource.click('Bearbeiten')
+    edit.form['title'] = 'Besprechungsraum'
+    edit.form.submit()
+
+    assert 'Besprechungsraum' in client.get('/reservationen')
+
+    assert client.delete('/reservation/meeting-room').status_code == 200

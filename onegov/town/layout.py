@@ -2,6 +2,7 @@ from cached_property import cached_property
 from onegov.core.layout import ChameleonLayout
 from onegov.core.static import StaticFile
 from onegov.form import FormCollection, FormSubmissionFile, render_field
+from onegov.libres import ResourceCollection
 from onegov.page import Page, PageCollection
 from onegov.people import PersonCollection
 from onegov.ticket import TicketCollection
@@ -159,6 +160,11 @@ class Layout(ChameleonLayout):
             self.request.link(self.town, 'login'),
             self.request.transform(self.request.path)
         )
+
+    def include_editor(self):
+        self.request.include('redactor')
+        self.request.include('redactor_theme')
+        self.request.include('editor')
 
     def thumbnail_url(self, url):
         """ Takes the given url and returns the thumbnail url for it, if it
@@ -327,10 +333,7 @@ class EditorLayout(AdjacencyListLayout):
     def __init__(self, model, request, site_title):
         super(EditorLayout, self).__init__(model, request)
         self.site_title = site_title
-
-        self.request.include('redactor')
-        self.request.include('redactor_theme')
-        self.request.include('editor')
+        self.include_editor()
 
     @cached_property
     def breadcrumbs(self):
@@ -344,11 +347,7 @@ class FormEditorLayout(DefaultLayout):
 
     def __init__(self, model, request):
         super(FormEditorLayout, self).__init__(model, request)
-
-        self.request.include('redactor')
-        self.request.include('redactor_theme')
-        self.request.include('editor')
-        self.request.include('code_editor')
+        self.include_editor()
 
 
 class FormSubmissionLayout(DefaultLayout):
@@ -570,3 +569,92 @@ class TicketLayout(DefaultLayout):
                 ))
 
             return links
+
+
+class ResourcesLayout(DefaultLayout):
+
+    @cached_property
+    def breadcrumbs(self):
+        return [
+            Link(_("Homepage"), self.homepage_url),
+            Link(_("Reservations"), self.request.link(self.model))
+        ]
+
+    @cached_property
+    def editbar_links(self):
+        if self.request.is_logged_in:
+            return [
+                LinkGroup(
+                    title=_("Add"),
+                    links=[
+                        Link(
+                            text=_("Room"),
+                            url=self.request.link(
+                                self.model,
+                                name='neuer-raum'
+                            ),
+                            classes=('new-room', )
+                        ),
+                        Link(
+                            text=_("Daypass"),
+                            url=self.request.link(
+                                self.model,
+                                name='neue-tageskarte'
+                            ),
+                            classes=('new-daypass', )
+                        )
+                    ]
+                ),
+            ]
+
+
+class ResourceLayout(DefaultLayout):
+
+    def __init__(self, model, request):
+        super(ResourceLayout, self).__init__(model, request)
+
+        self.request.include('fullcalendar')
+        self.request.include('fullcalendar_css')
+
+    @cached_property
+    def collection(self):
+        return ResourceCollection(self.request.app.libres_context)
+
+    @cached_property
+    def breadcrumbs(self):
+        return [
+            Link(_("Homepage"), self.homepage_url),
+            Link(_("Reservations"), self.request.link(self.collection)),
+            Link(_(self.model.title), self.request.link(self.model))
+        ]
+
+    @cached_property
+    def editbar_links(self):
+        if self.request.is_logged_in:
+            if self.model.deletable(self.request.app.libres_context):
+                delete_link = DeleteLink(
+                    text=_("Delete"),
+                    url=self.request.link(self.model),
+                    confirm=_("Do you really want to delete this resource?"),
+                    yes_button_text=_("Delete resource"),
+                    redirect_after=self.request.link(self.collection)
+                )
+
+            else:
+                delete_link = DeleteLink(
+                    text=_("Delete"),
+                    url=self.request.link(self.model),
+                    confirm=_("This resource can't be deleted."),
+                    extra_information=_(
+                        "There are existing reservations associated "
+                        "with this resource"
+                    )
+                )
+            return [
+                Link(
+                    text=_("Edit"),
+                    url=self.request.link(self.model, 'bearbeiten'),
+                    classes=('edit-link', )
+                ),
+                delete_link
+            ]
