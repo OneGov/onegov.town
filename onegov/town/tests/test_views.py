@@ -1066,3 +1066,44 @@ def test_copy_pages_to_news(town_app):
     page = edit.form.submit().follow()
 
     assert '/aktuelles/bildung-gesellschaft' in page.request.url
+
+
+def test_sitecollection(town_app):
+    client = Client(town_app)
+
+    assert client.get('/sitecollection', expect_errors=True).status_code == 403
+
+    login_page = client.get('/login')
+    login_page.form.set('email', 'admin@example.org')
+    login_page.form.set('password', 'hunter2')
+    login_page.form.submit()
+
+    collection = client.get('/sitecollection').json
+
+    assert collection[0]['group'] == 'Themen'
+    assert collection[0]['links'] == [
+        {
+            'title': 'Bildung & Gesellschaft',
+            'url': 'http://localhost/themen/bildung-gesellschaft'
+        },
+        {
+            'title': 'Gewerbe & Tourismus',
+            'url': 'http://localhost/themen/gewerbe-tourismus'
+        },
+        {
+            'title': 'Kultur & Freizeit',
+            'url': 'http://localhost/themen/kultur-freizeit'
+        },
+        {
+            'title': 'Leben & Wohnen',
+            'url': 'http://localhost/themen/leben-wohnen'
+        },
+        {
+            'title': 'Politik & Verwaltung',
+            'url': 'http://localhost/themen/politik-verwaltung'
+        }
+    ]
+
+    assert collection[1]['group'] == 'Aktuelles'
+    assert collection[2]['group'] == 'Formulare'
+    assert collection[3]['group'] == 'Reservationen'

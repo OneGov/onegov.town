@@ -54,7 +54,7 @@ def test_clipboard(town_app):
     assert clipboard.url is None
 
 
-def test_sitelinks(town_app):
+def test_sitecollection(town_app):
 
     sitecollection = SiteCollection(town_app.session())
     objects = sitecollection.get()
