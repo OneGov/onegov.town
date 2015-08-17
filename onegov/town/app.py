@@ -212,6 +212,13 @@ class TownApp(Framework, LibresIntegration):
             output='bundles/check_password.bundle.js'
         )
 
+        events = Bundle(
+            'js/url.js',
+            'js/events.js',
+            filters='jsmin',
+            output='bundles/events.bundle.js'
+        )
+
         return {
             'common': common,
             'common_css': common_css,
@@ -222,7 +229,8 @@ class TownApp(Framework, LibresIntegration):
             'code_editor': code_editor,
             'check_password': check_password,
             'fullcalendar': fullcalendar,
-            'fullcalendar_css': fullcalendar_css
+            'fullcalendar_css': fullcalendar_css,
+            'events': events,
         }
 
 
