@@ -518,10 +518,6 @@ input[type=color] {
     .delete-link:before {
         content: '\f014';
     }
-
-    .list-link:before {
-        content: '\f0ca';
-    }
 }
 
 /*
@@ -1233,9 +1229,8 @@ tr.ticket:hover {
 /*
     Events
 */
-$event-edit-icon: '\f044';
-
 .events-table {
+    // todo: this is only a temporary view
     width: 100%;
 
     tr.event:hover {
@@ -1246,9 +1241,33 @@ $event-edit-icon: '\f044';
         font-weight: bold;
 
         ::before {
-            content: $event-edit-icon;
+            content: '\f044';
             font-family: 'FontAwesome';
             font-weight: normal;
         }
+    }
+}
+
+$event-action-icon: '\f1db';
+$event-action-icon-hover: '\f192';
+.event-action {
+    @include button(
+        $padding: $button-tny,
+        $bg: $success-color
+    );
+    float: right;
+    font-size: 1em;
+    margin: 0;
+
+    &::before {
+        content: $event-action-icon;
+        font-family: 'FontAwesome';
+        margin-right: 1ex;
+    }
+
+    &:hover::before {
+        content: $event-action-icon-hover;
+        font-family: 'FontAwesome';
+        margin-right: 1ex;
     }
 }
