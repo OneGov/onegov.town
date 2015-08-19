@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2015-08-19 16:03+0200\n"
+"POT-Creation-Date: 2015-08-19 17:39+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Fabian Reinhard <fabian.reinhard@seantis.ch>\n"
 "Language-Team: \n"
@@ -265,6 +265,9 @@ msgid "Please select a type of recurrence if the event is recurring."
 msgstr ""
 "Bitte eine Art von Wiederholung angeben, falls ein Enddatum für "
 "Wiederholungen ausgewählt ist."
+
+msgid "The end time must be later than the start time."
+msgstr "Das Ende der Veranstaltung muss nach dem Start liegen."
 
 msgid "The end date must be later than the start date."
 msgstr "Das Enddatum muss nach dem Startdatum liegen."
@@ -754,6 +757,12 @@ msgstr "Veröffentlich"
 msgid "Withdrawn"
 msgstr "Zurückgezogen"
 
+msgid "Add an event"
+msgstr "Veranstaltung hinzufügen"
+
+msgid "Submit an event"
+msgstr "Veranstaltung melden"
+
 #, python-format
 msgid "Monthly on the day ${day} of the month until ${end}"
 msgstr "Montatlich am ${day}. bis zum ${end}."
@@ -770,6 +779,12 @@ msgstr "Jeden ${days} bis zum ${end}."
 
 msgid "Withdrawn events"
 msgstr "Zurückgezogene Veranstaltungen"
+
+msgid "Event added"
+msgstr "Veranstaltung erstellt"
+
+msgid "Event submitted"
+msgstr "Veranstaltung gemeldet"
 
 msgid "Access Denied"
 msgstr "Zugriff verweigert"
@@ -899,6 +914,9 @@ msgstr "Ihr Anliegen wurde abgeschlossen"
 
 msgid "Closed Tickets"
 msgstr "Abgeschlossene Tickets"
+
+#~ msgid "New event"
+#~ msgstr "Neue Veranstaltung"
 
 #~ msgid "A link to the page was added to the clipboard"
 #~ msgstr "Ein Verweis auf die Seite wurde in die Zwischenablage gespeichert"
