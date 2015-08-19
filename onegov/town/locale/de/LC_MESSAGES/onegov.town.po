@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2015-08-19 16:28+0200\n"
+"POT-Creation-Date: 2015-08-19 16:58+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Fabian Reinhard <fabian.reinhard@seantis.ch>\n"
 "Language-Team: \n"
@@ -192,15 +192,21 @@ msgid "Whole day"
 msgstr "Ganztägig"
 
 #, python-format
-msgid "${percent}% available"
-msgstr "${percent}% verfügbar"
-
-#, python-format
-msgid "${num}/${max} available"
-msgstr "${num}/${max} verfügbar"
+msgid "${percent}% Available"
+msgstr "${percent}% Verfügbar"
 
 msgid "Reserve"
 msgstr "Reservieren"
+
+#, python-format
+msgid "${num}/${max} Available"
+msgstr "${num}/${max} Verfügbar"
+
+msgid "Available"
+msgstr "Verfügbar"
+
+msgid "Unavailable"
+msgstr "Besetzt"
 
 msgid "Do you really want to delete this allocation?"
 msgstr "Möchten Sie diese Einteilung wirklich löschen?"
@@ -726,12 +732,12 @@ msgstr "Neue Einteilung"
 msgid "Edit allocation"
 msgstr "Einteilung bearbeiten"
 
-msgid "Your changes were saved"
-msgstr "Ihre Änderungen wurden gespeichert"
-
 #, python-format
 msgid "Successfully added ${n} allocations"
 msgstr "${n} Einteilungen wurden hinzugefügt"
+
+msgid "Your changes were saved"
+msgstr "Ihre Änderungen wurden gespeichert"
 
 msgid "A link was added to the clipboard"
 msgstr "Ein Verweis wurde in die Zwischenablage kopiert"
