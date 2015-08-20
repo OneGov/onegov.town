@@ -572,7 +572,7 @@ msgid "Recurrence"
 msgstr "Wiederholungen"
 
 msgid "All dates"
-msgstr "Alle Daten"
+msgstr "Alle Termine"
 
 msgid "State:"
 msgstr "Status:"
@@ -710,7 +710,7 @@ msgid "Your ticket has been reopened"
 msgstr "Ihr Ticket wurde wieder geöffnet"
 
 msgid "All occurrences of this event"
-msgstr "Alle Daten dieser Veranstaltung"
+msgstr "Alle Termine dieser Veranstaltung"
 
 msgid "No events found."
 msgstr "Keine Veranstaltungen gefunden."
