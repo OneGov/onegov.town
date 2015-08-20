@@ -2,6 +2,7 @@
 import onegov.core
 import onegov.town
 import textwrap
+import transaction
 
 from datetime import datetime
 from lxml.html import document_fromstring
@@ -494,8 +495,9 @@ def test_submit_form(town_app):
         E-Mail * = @@@
     """), type='custom')
 
-    client = Client(town_app)
+    transaction.commit()
 
+    client = Client(town_app)
     form_page = client.get('/formulare').click('Profile')
     assert 'Your Details' in form_page
     assert 'First name' in form_page
@@ -538,6 +540,7 @@ def test_pending_submission_error_file_upload(town_app):
         Name * = ___
         Datei * = *.txt|*.csv
     """), type='custom')
+    transaction.commit()
 
     client = Client(town_app)
     form_page = client.get('/formulare').click('Statistics')
@@ -554,6 +557,7 @@ def test_pending_submission_successful_file_upload(town_app):
         Name * = ___
         Datei * = *.txt|*.csv
     """), type='custom')
+    transaction.commit()
 
     client = Client(town_app)
     form_page = client.get('/formulare').click('Statistics')
@@ -657,6 +661,7 @@ def test_show_uploaded_file(town_app):
     collection = FormCollection(town_app.session())
     collection.definitions.add(
         'Text', definition="File * = *.txt\nE-Mail * = @@@", type='custom')
+    transaction.commit()
 
     client = Client(town_app)
 
@@ -949,6 +954,8 @@ def test_resource_slots(town_app):
         whole_day=True
     )
 
+    transaction.commit()
+
     client = Client(town_app)
 
     url = '/reservation/foo/slots'
@@ -956,16 +963,17 @@ def test_resource_slots(town_app):
 
     url = '/reservation/foo/slots?start=2015-08-04&end=2015-08-05'
 
-    assert client.get(url).json == [
-        {
-            'start': '2015-08-04T00:00:00+02:00',
-            'end': '2015-08-05T00:00:00+02:00'
-        },
-        {
-            'start': '2015-08-05T00:00:00+02:00',
-            'end': '2015-08-06T00:00:00+02:00'
-        }
-    ]
+    result = client.get(url).json
+
+    assert result[0]['start'] == '2015-08-04T00:00:00+02:00'
+    assert result[0]['end'] == '2015-08-05T00:00:00+02:00'
+    assert result[0]['className'] == 'event-available'
+    assert result[0]['title'] == u"Ganztägig\nVerfügbar"
+
+    assert result[1]['start'] == '2015-08-05T00:00:00+02:00'
+    assert result[1]['end'] == '2015-08-06T00:00:00+02:00'
+    assert result[1]['className'] == 'event-available'
+    assert result[1]['title'] == u"Ganztägig\nVerfügbar"
 
 
 def test_resources(town_app):

@@ -202,6 +202,21 @@ form {
     }
 
     /*
+        One line checkboxes
+    */
+
+    .oneline-checkboxes {
+        li {
+            display: inline-block;
+        }
+
+        label {
+            margin-left: 0;
+            margin-right: .8rem;
+        }
+    }
+
+    /*
         Password quality meter
     */
     meter {
@@ -449,9 +464,10 @@ input[type=color] {
 }
 
 /*
-    edit bar
+    edit bar (and popup links)
 */
-.edit-bar {
+.edit-bar,
+.popup {
     background-color: $primary-color;
     margin-bottom: 2px;
     margin-top: -6px;
@@ -501,6 +517,10 @@ input[type=color] {
 
     .new-daypass:before {
         content: '\f145';
+    }
+
+    .new-reservation:before {
+        content: '\f271';
     }
 
     .copy-link:before {
@@ -1092,16 +1112,22 @@ tr.ticket:hover {
 
 .calendar {
 
+    margin-bottom: 1.5rem;
+
     button:focus {
         // XXX fullcalendar focuses the buttons when they are clicked,
         // resulting in the chrome accessibility outline.. now this is
-        // helpful in allmost all the cases (and shoult not be disabled)
+        // helpful in allmost all the cases (and should not be disabled)
         // however, the calendar is not accessible as it is, so we might
         // as well remove this otherwise very jaring looking outline
         // -> the fullcalendar needs an accessible alternative, it can't
         // really be made accessible because it's a huge blob of html
         // tables designed to show a calendar...
         outline: none;
+    }
+
+    .fc-toolbar {
+        margin-bottom: 0;
     }
 
     table {
@@ -1122,14 +1148,50 @@ tr.ticket:hover {
         }
 
         .fc-event {
-            border-radius: 0;
-            margin: 0;
+            border: 0;
+            border-radius: 2px;
+            margin: 0 0 2px;
+            padding: 2px 4px;
+        }
+
+        .fc-bg {
+            background: none;
+        }
+
+        .event-unavailable {
+            background-color: $red;
+        }
+
+        .event-partly-available {
+            background-color: $orange;
+        }
+
+        .event-available {
+            background-color: $green;
         }
 
         // fix borders missing with zurb foundation
         tbody div.fc-content-skeleton td {
             border-color: #ddd;
         }
+    }
+
+    .fc-event {
+        .fc-time {
+            display: none;
+        }
+    }
+
+    .fc-event.event-unavailable.has-popup {
+        border-right: 5px solid $red-dark;
+    }
+
+    .fc-event.event-partly-available.has-popup {
+        border-right: 5px solid $orange-dark;
+    }
+
+    .fc-event.event-available.has-popup {
+        border-right: 5px solid $green-dark;
     }
 
     .fc button,
@@ -1269,5 +1331,80 @@ $event-action-icon-hover: '\f192';
         content: $event-action-icon-hover;
         font-family: 'FontAwesome';
         margin-right: 1ex;
+    }
+}
+
+/*
+    Fullcalendar Screen Flicker Prevention
+*/
+
+@media #{$small-only} {
+    .calendar {
+        min-height: $small-breakpoint * .5;
+    }
+}
+
+@media #{$medium-only} {
+    .calendar {
+        min-height: $medium-breakpoint * .5;
+    }
+}
+
+@media #{$large-up} {
+    .calendar {
+        min-height: $large-breakpoint * .5;
+    }
+}
+
+/*
+    Popup Menu
+*/
+.popup {
+    background-color: #fff;
+    border: 1px solid $gainsboro;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, .3);
+    padding: 2px 6px;
+    position: relative;
+
+    a {
+        display: block;
+        font-size: .8rem;
+
+        &:hover {
+            text-decoration: underline;
+        }
+
+        &:hover::before {
+            display: inline-block;
+            text-decoration: none;
+        }
+    }
+
+    // the arrow of the popup (which is currently shown right of the element)
+    // if other arrows are needed add classes for each direction
+    &:after,
+    &:before {
+        border: solid transparent;
+        content: ' ';
+        height: 0;
+        pointer-events: none;
+        position: absolute;
+        right: 100%;
+        top: 50%;
+        width: 0;
+    }
+
+    &:after {
+        border-color: rgba(213, 213, 213, 0);
+        border-right-color: #fff;
+        border-width: 7px;
+        margin-top: -7px;
+    }
+
+    &:before {
+        border-color: rgba(245, 24, 172, 0);
+        border-right-color: $gainsboro;
+        border-width: 8px;
+        margin-top: -8px;
     }
 }

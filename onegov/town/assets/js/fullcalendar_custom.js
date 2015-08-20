@@ -11,6 +11,48 @@ var new_select_handler = function(url) {
     };
 };
 
+var edit_handler = function(event, delta, revertFunc, jsEvent, ui, view) {
+    location.href = event.editurl + '?start=' + event.start.toISOString() + '&end=' + event.end.toISOString();
+};
+
+
+var spawn_popup = function(event, element) {
+
+    $(element).addClass('has-popup');
+
+    var popup_content = $('<div class="popup" />')
+        .append($(event.actions.join('')));
+
+    popup_content.popup({
+        'autoopen': true,
+        'blur': true,
+        'horizontal': 'right',
+        'offsetleft': -10,
+        'tooltipanchor': element,
+        'transition': 'all 0.3s',
+        'type': 'tooltip',
+        'onopen': function() {
+            // hookup the confirmation dialog
+            var confirm_links = $(this).find('a.confirm');
+            Intercooler.processNodes(confirm_links);
+            confirm_links.confirmation();
+            $(confirm_links).on('success.ic', function() {
+                $('.calendar').fullCalendar('refetchEvents');
+            });
+        },
+        'onclose': function() {
+            $(element).removeClass('has-popup');
+        },
+        'detach': true
+    });
+};
+
+var event_after_render = function(event, element, view) {
+    $(element).click(function() {
+        spawn_popup(event, element);
+    });
+};
+
 var setup_calendar = function(calendar) {
     calendar.fullCalendar({
         events: calendar.data('feed'),
@@ -24,7 +66,11 @@ var setup_calendar = function(calendar) {
         maxTime: calendar.data('max-time'),
         selectable: calendar.data('selectable'),
         select: new_select_handler(calendar.data('select-url')),
-        defaultView: calendar.data('default-view')
+        defaultView: calendar.data('default-view'),
+        eventAfterRender: event_after_render,
+        editable: calendar.data('editable'),
+        eventDrop: edit_handler,
+        eventResize: edit_handler
     });
 };
 

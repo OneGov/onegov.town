@@ -16,7 +16,7 @@ class TownTheme(BaseTheme):
 
     # don't touch this number, it's incremented using bumpversion, so every
     # release will automatically trigger a rebuild of the theme
-    version = '0.3.6'
+    version = '0.3.8'
 
     @property
     def default_options(self):
@@ -27,6 +27,7 @@ class TownTheme(BaseTheme):
             ('blue', '#2575ed'),
             ('red', '#de2c3b'),
             ('yellow', '#ffc800'),
+            ('orange', '#ffb100'),
             ('green', '#2c9f42'),
             ('white', '#fff'),
             ('gray-dark', '#b3b6b7'),
@@ -34,6 +35,7 @@ class TownTheme(BaseTheme):
             ('blue-dark', '#1a52a5'),
             ('red-dark', '#b2232f'),
             ('yellow-dark', '#cca000'),
+            ('orange-dark', '#d59200'),
             ('green-dark', '#237f35'),
             ('gray-light', '#f0f1f2'),
             ('black-light', '#363738'),
@@ -46,6 +48,7 @@ class TownTheme(BaseTheme):
             ('blue-pastel', '#d3e3fb'),
             ('red-pastel', '#f8d5d8'),
             ('yellow-pastel', '#fff4cc'),
+            ('green-pastel', '#d4ecd8'),
 
             # zurb overrides
             ('alert-color', '$red'),

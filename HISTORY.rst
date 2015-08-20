@@ -4,6 +4,24 @@ Changelog
 Unreleased
 ~~~~~~~~~~
 
+- A person's academic title is now a person's salutation.
+  [href]
+
+- Removes Gravatar support.
+  [href]
+
+0.3.8 (2015-08-14)
+~~~~~~~~~~~~~~~~~~~
+
+- Emails are now sent only if the db transaction is successful.
+  [href]
+
+0.3.7 (2015-08-12)
+~~~~~~~~~~~~~~~~~~~
+
+- Fixes some email sending issues.
+  [href]
+
 0.3.6 (2015-08-12)
 ~~~~~~~~~~~~~~~~~~~
 
