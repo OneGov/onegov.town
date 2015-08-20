@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2015-08-19 17:39+0200\n"
+"POT-Creation-Date: 2015-08-20 09:39+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Fabian Reinhard <fabian.reinhard@seantis.ch>\n"
 "Language-Team: \n"
@@ -234,6 +234,9 @@ msgstr "Ort"
 msgid "A description of the location of this event."
 msgstr "Beschreibung des Ortes der Veranstaltung"
 
+msgid "Tags"
+msgstr "Schlagworte"
+
 msgid "From"
 msgstr "Von"
 
@@ -246,17 +249,8 @@ msgstr "Datum"
 msgid "Repeats itself every"
 msgstr "Wiederholt sich jeden"
 
-msgid "Repeats itself every month"
-msgstr "Wiederholt sich jeden Monat"
-
 msgid "Until"
 msgstr "Bis zum"
-
-msgid "Tags"
-msgstr "Schlagworte"
-
-msgid "Please select only one type of recurrence."
-msgstr "Es kann nur eine Art von Wiederholung ausgewählt werden."
 
 msgid "Please set and end date if the event is recurring."
 msgstr "Bitte ein Enddatum angeben, falls eine Wiederholungen ausgewählt ist."
@@ -764,18 +758,14 @@ msgid "Submit an event"
 msgstr "Veranstaltung melden"
 
 #, python-format
-msgid "Monthly on the day ${day} of the month until ${end}"
-msgstr "Montatlich am ${day}. bis zum ${end}."
+msgid "Every ${days} until ${end}"
+msgstr "Jeden ${days} bis zum ${end}."
 
 msgid "List"
 msgstr "Auflisten"
 
 msgid "Published events"
 msgstr "Veröffentlichte Veranstaltungen"
-
-#, python-format
-msgid "Every ${days} until ${end}"
-msgstr "Jeden ${days} bis zum ${end}."
 
 msgid "Withdrawn events"
 msgstr "Zurückgezogene Veranstaltungen"
@@ -914,9 +904,3 @@ msgstr "Ihr Anliegen wurde abgeschlossen"
 
 msgid "Closed Tickets"
 msgstr "Abgeschlossene Tickets"
-
-#~ msgid "New event"
-#~ msgstr "Neue Veranstaltung"
-
-#~ msgid "A link to the page was added to the clipboard"
-#~ msgstr "Ein Verweis auf die Seite wurde in die Zwischenablage gespeichert"
