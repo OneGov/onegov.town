@@ -572,7 +572,7 @@ msgid "Recurrence"
 msgstr "Wiederholungen"
 
 msgid "All dates"
-msgstr "Alle Daten"
+msgstr "Alle Termine"
 
 msgid "State:"
 msgstr "Status:"
@@ -710,7 +710,7 @@ msgid "Your ticket has been reopened"
 msgstr "Ihr Ticket wurde wieder geöffnet"
 
 msgid "All occurrences of this event"
-msgstr "Alle Daten dieser Veranstaltung"
+msgstr "Alle Termine dieser Veranstaltung"
 
 msgid "No events found."
 msgstr "Keine Veranstaltungen gefunden."
@@ -829,25 +829,25 @@ msgid "A link was added to the clipboard"
 msgstr "Ein Verweis wurde in die Zwischenablage kopiert"
 
 msgid "Monday"
-msgstr ""
+msgstr "Montag"
 
 msgid "Tuesday"
-msgstr ""
+msgstr "Dienstag"
 
 msgid "Wednesday"
-msgstr ""
+msgstr "Mittwoch"
 
 msgid "Thursday"
-msgstr ""
+msgstr "Donnerstag"
 
 msgid "Friday"
-msgstr ""
+msgstr "Freitag"
 
 msgid "Saturday"
-msgstr ""
+msgstr "Samstag"
 
 msgid "Sunday"
-msgstr ""
+msgstr "Sonntag"
 
 msgid "Submitted events"
 msgstr "Gemeldete Veranstaltungen"
