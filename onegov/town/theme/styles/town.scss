@@ -1218,6 +1218,11 @@ tr.ticket:hover {
 /*
     Event occurrences
 */
+
+.occurrence {
+    padding-bottom: 1rem;
+}
+
 .occurrence-tag {
     @include label(
         $bg: $secondary-color,
@@ -1237,7 +1242,7 @@ tr.ticket:hover {
 
 .occurrences-day-date {
     background-color: $white-smoke;
-    min-height: 118px;
+    min-height: 135px;
     width: 100%;
 
     div {
@@ -1248,7 +1253,7 @@ tr.ticket:hover {
 
     span:first-child {
         display: block;
-        font-size: 1.4em;
+        font-size: 3em;
         font-weight: bold;
     }
 }
@@ -1282,6 +1287,10 @@ tr.ticket:hover {
 .occurrence-tags,
 .occurrence-description {
     margin-bottom: 2em;
+}
+
+.occurrence-date {
+    font-size: $small-font-size;
 }
 
 .js .occurrences-filter-date-submit {
