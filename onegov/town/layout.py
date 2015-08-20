@@ -684,8 +684,10 @@ class ResourceLayout(DefaultLayout):
 
 class OccurrenceBaseLayout(DefaultLayout):
 
-    month_abbr_format = '%b'
-    event_format = '%A, %d. %B %Y, %H:%M'
+    weekday_format = 'dddd'
+    month_format = 'MMMM'
+    smonth_format = 'MMM'
+    event_format = 'dddd, d. MMMM YYYY, HH:mm'
 
     def format_date(self, date, format):
         """ Takes a datetime and formats it.
@@ -694,16 +696,14 @@ class OccurrenceBaseLayout(DefaultLayout):
         display the date in the timezone given by the event, not a fixed one.
 
         """
-        assert format in {
-            'date', 'time', 'datetime', 'relative', 'month_abbr', 'event'
-        }
+        if format in ('date', 'time', 'datetime'):
+            return date.strftime(getattr(self, format + '_format'))
 
-        if format == 'relative':
-            return arrow.get(date).humanize(locale=self.request.locale)
-
-        # todo: event and month_abbr need translation
-
-        return date.strftime(getattr(self, format + '_format'))
+        if format in ('weekday', 'month', 'smonth', 'event'):
+            return arrow.get(date).format(
+                getattr(self, format + '_format'),
+                locale=self.request.locale
+            )
 
 
 class OccurrencesLayout(OccurrenceBaseLayout):
