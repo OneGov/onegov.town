@@ -8,7 +8,6 @@ from onegov.libres import LibresIntegration, ResourceCollection
 from onegov.form import FormCollection
 from onegov.page import PageCollection
 from onegov.town.models import Town
-from wtforms.fields.html5 import EmailField
 
 
 def add_initial_content(libres_registry, session_manager, town_name,
@@ -99,11 +98,9 @@ def add_builtin_forms(session, definitions=None):
                 type='builtin'
             )
 
-        assert form.form_class().match_fields(
-            include_classes=(EmailField, ),
-            required=True,
-            limit=1
-        ), "Each form must have at least one required email field"
+        assert form.form_class().has_required_email_field, (
+            "Each form must have at least one required email field"
+        )
 
 
 def builtin_form_definitions(path=None):
