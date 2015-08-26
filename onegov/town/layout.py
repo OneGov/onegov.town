@@ -687,7 +687,7 @@ class OccurrenceBaseLayout(DefaultLayout):
     weekday_format = 'dddd'
     month_format = 'MMMM'
     smonth_format = 'MMM'
-    event_format = 'dddd, d. MMMM YYYY, HH:mm'
+    event_format = 'dddd, D. MMMM YYYY, HH:mm'
 
     def format_date(self, date, format):
         """ Takes a datetime and formats it.
