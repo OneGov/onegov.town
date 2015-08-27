@@ -1,11 +1,12 @@
 from cached_property import cached_property
 
 from onegov.core.templates import render_macro
+from onegov.event import EventCollection
 from onegov.form import FormSubmissionCollection
 from onegov.ticket import Ticket, Handler, handlers
 from onegov.town import _
-from onegov.town.elements import Link
-from onegov.town.layout import DefaultLayout
+from onegov.town.elements import DeleteLink, Link
+from onegov.town.layout import DefaultLayout, EventLayout
 from purl import URL
 
 
@@ -60,3 +61,81 @@ class FormSubmissionHandler(Handler):
                 classes=('edit-link', )
             )
         ]
+
+
+class EventSubmissionTicket(Ticket):
+    __mapper_args__ = {'polymorphic_identity': 'EVN'}
+
+
+@handlers.registered_handler('EVN')
+class EventSubmissionHandler(Handler):
+
+    @cached_property
+    def collection(self):
+        return EventCollection(self.session)
+
+    @cached_property
+    def event(self):
+        return self.collection.by_id(self.id)
+
+    @cached_property
+    def email(self):
+        return ''
+
+    @property
+    def title(self):
+        return self.event.title if self.event else ''
+
+    @cached_property
+    def group(self):
+        return "Veranstaltung"
+
+    def get_summary(self, request):
+        if not self.event:
+            return _("The event has been deleted.")
+
+        layout = EventLayout(self.event, request)
+        return render_macro(layout.macros['display_event'], request, {
+            'event': self.event,
+            'layout': layout
+        })
+
+    def get_links(self, request):
+        if not self.event:
+            return []
+
+        links = []
+        if self.event.state == 'submitted' or self.event.state == 'withdrawn':
+            link = URL(request.link(self.event, 'publish'))
+            link = link.query_param('return-to', request.link(self.ticket))
+            links.append(Link(
+                text=_("Publish event"),
+                url=link.as_string(),
+                classes=('event-publish', ),
+            ))
+        elif self.event.state == 'published':
+            link = URL(request.link(self.event, 'withdraw'))
+            link = link.query_param('return-to', request.link(self.ticket))
+            links.append(Link(
+                text=_("Withdraw event"),
+                url=link.as_string(),
+                classes=('event-withdraw', ),
+            ))
+
+        link = URL(request.link(self.event, 'bearbeiten'))
+        link = link.query_param('return-to', request.url)
+        links.append(Link(
+            text=_('Edit event'),
+            url=link.as_string(),
+            classes=('edit-link', )
+        ))
+
+        links.append(DeleteLink(
+            text=_("Delete event"),
+            url=request.link(self.event),
+            confirm=_("Do you really want to delete this event?"),
+            yes_button_text=_("Delete event"),
+            redirect_after=request.link(self.ticket)
+        ))
+
+        return links

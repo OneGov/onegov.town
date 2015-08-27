@@ -327,3 +327,37 @@
         </tal:block>
     </ul>
 </metal:pagination>
+
+<metal:display_event define-macro="display_event" i18n:domain="onegov.town">
+    <dl>
+        <tal:block tal:condition="request.is_logged_in">
+            <dt i18n:translate="">State</dt>
+            <dd i18n:translate="" tal:condition="event.state == 'initiated'">Initiated</dd>
+            <dd i18n:translate="" tal:condition="event.state == 'submitted'">Submitted</dd>
+            <dd i18n:translate="" tal:condition="event.state == 'published'">Published</dd>
+            <dd i18n:translate="" tal:condition="event.state == 'withdrawn'">Withdrawn</dd>
+        </tal:block>
+        <dt i18n:translate="">Title</dt>
+        <dd>${event.title}</dd>
+        <dt i18n:translate="">Description</dt>
+        <dd tal:content="structure event.description.replace('\n', '<br>')" />
+        <dt i18n:translate="">Location</dt>
+        <dd>${event.location}</dd>
+        <dt i18n:translate="">Tags</dt>
+        <dd>
+            <ul>
+                <li tal:repeat="tag event.tags">${tag}</li>
+            </ul>
+        </dd>
+        <dt i18n:translate="">Date and time</dt>
+        <dd>${layout.format_date(event.localized_start, 'datetime')}-${layout.format_date(event.localized_end, 'time')} (${event.timezone})</dd>
+        <dt i18n:translate="">Recurrence</dt>
+        <dd>${layout.format_recurrence(event.recurrence)}</dd>
+        <dt i18n:translate="">All dates</dt>
+        <dd tal:define="occurrences event.occurrence_dates(localize=True)">
+            <ul>
+                <li tal:repeat="occurrence occurrences">${layout.format_date(occurrence, 'date')}</li>
+            </ul>
+        </dd>
+    </dl>
+</metal:display_event>

@@ -1,6 +1,7 @@
 import arrow
 
 from cached_property import cached_property
+from dateutil import rrule
 from onegov.core.layout import ChameleonLayout
 from onegov.core.static import StaticFile
 from onegov.event import OccurrenceCollection, EventCollection
@@ -17,6 +18,7 @@ from onegov.town.models import (
     SiteCollection,
     Thumbnail
 )
+
 from sqlalchemy import desc
 
 
@@ -733,7 +735,6 @@ class OccurrenceLayout(OccurrenceBaseLayout):
     @cached_property
     def editbar_links(self):
         if self.request.is_logged_in:
-            # todo: Add a delete button?
             return [
                 Link(
                     text=_("Edit"),
@@ -744,6 +745,28 @@ class OccurrenceLayout(OccurrenceBaseLayout):
 
 
 class EventLayout(DefaultLayout):
+
+    def format_recurrence(self, recurrence):
+        """ Returns a human readable version of an RRULE used by us. """
+
+        WEEKDAYS = (_("Mo"), _("Tu"), _("We"), _("Th"), _("Fr"), _("Sa"),
+                    _("Su"))
+
+        if recurrence:
+            rule = rrule.rrulestr(recurrence)
+            if rule._freq == rrule.WEEKLY:
+                return _(
+                    u"Every ${days} until ${end}",
+                    mapping={
+                        'days': ', '.join((
+                            self.request.translate(WEEKDAYS[day])
+                            for day in rule._byweekday
+                        )),
+                        'end': rule._until.date().strftime('%d.%m.%Y')
+                    }
+                )
+
+        return ''
 
     @cached_property
     def breadcrumbs(self):
