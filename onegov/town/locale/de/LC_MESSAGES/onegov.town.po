@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2015-08-27 15:01+0200\n"
+"POT-Creation-Date: 2015-08-28 10:45+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Fabian Reinhard <fabian.reinhard@seantis.ch>\n"
 "Language-Team: \n"
@@ -55,6 +55,9 @@ msgstr "Tickets"
 
 msgid "Reservations"
 msgstr "Reservationen"
+
+msgid "Edit allocation"
+msgstr "Einteilung bearbeiten"
 
 msgid "Events"
 msgstr "Veranstaltungen"
@@ -133,6 +136,12 @@ msgstr "Veranstaltung löschen"
 
 msgid "Accept ticket"
 msgstr "Ticket annehmen"
+
+msgid "Do you really want to delete this allocation?"
+msgstr "Möchten Sie diese Einteilung wirklich löschen?"
+
+msgid "Delete allocation"
+msgstr "Einteilung löschen"
 
 msgid "Publish event"
 msgstr "Veranstaltung veröffentlichen"
@@ -250,12 +259,6 @@ msgstr "Verfügbar"
 
 msgid "Unavailable"
 msgstr "Besetzt"
-
-msgid "Do you really want to delete this allocation?"
-msgstr "Möchten Sie diese Einteilung wirklich löschen?"
-
-msgid "Delete allocation"
-msgstr "Einteilung löschen"
 
 msgid ""
 "This allocation can't be deleted because there are existing reservations "
@@ -388,6 +391,9 @@ msgstr "Wiederholt sich jeden"
 msgid "... until"
 msgstr "... bis zum"
 
+msgid "E-Mail"
+msgstr "E-Mail"
+
 msgid "Please set and end date if the event is recurring."
 msgstr "Bitte ein Enddatum angeben, falls eine Wiederholungen ausgewählt ist."
 
@@ -438,9 +444,6 @@ msgstr "Vorname"
 msgid "Last name"
 msgstr "Nachname"
 
-msgid "E-Mail"
-msgstr "E-Mail"
-
 msgid "Phone"
 msgstr "Telefon"
 
@@ -456,11 +459,17 @@ msgstr "Link zum Bild"
 msgid "Address"
 msgstr "Adresse"
 
+msgid "Quota"
+msgstr "Anzahl"
+
 msgid "New Password"
 msgstr "Neues Passwort"
 
 msgid "Describes what this reservation resource is about"
 msgstr "Beschreibt um was es bei dieser Reservations-Ressource geht"
+
+msgid "Details"
+msgstr "Details"
 
 msgid "Name"
 msgstr "Name"
@@ -525,11 +534,23 @@ msgstr "Letztes Jahr"
 msgid "Older"
 msgstr "Älter"
 
+msgid "Event"
+msgstr "Veranstaltung"
+
 msgid "The event has been deleted."
 msgstr "Die Veranstaltung wurde gelöscht."
 
 msgid "Edit submission"
 msgstr "Eingabe bearbeiten"
+
+msgid "Details about the reservation"
+msgstr "Details zu Ihrer Reservation"
+
+msgid "Accept reservation"
+msgstr "Reservation annehmen"
+
+msgid "Edit details"
+msgstr "Details bearbeiten"
 
 msgid "Link"
 msgstr "Verknüpfung"
@@ -738,6 +759,9 @@ msgstr "Veröffentlich"
 msgid "Withdrawn"
 msgstr "Zurückgezogen"
 
+msgid "Submitter"
+msgstr "Übermittler"
+
 msgid "Date and time"
 msgstr "Datum und Zeit"
 
@@ -757,6 +781,9 @@ msgid "If you don't want to change your password, you can ignore this email."
 msgstr ""
 "Sie können dieses E-Mail ignorieren, falls Sie Ihr Passwort nicht ändern "
 "möchten."
+
+msgid "Your reservation has been accepted:"
+msgstr "Ihre Reservation wurde angenommen:"
 
 msgid "Your ticket has been closed"
 msgstr "Ihr Ticket wurde geschlossen"
@@ -892,9 +919,6 @@ msgstr "Annehmen"
 msgid "New allocation"
 msgstr "Neue Einteilung"
 
-msgid "Edit allocation"
-msgstr "Einteilung bearbeiten"
-
 #, python-format
 msgid "Successfully added ${n} allocations"
 msgstr "${n} Einteilungen wurden hinzugefügt"
@@ -904,6 +928,9 @@ msgstr "Ihre Änderungen wurden gespeichert"
 
 msgid "A link was added to the clipboard"
 msgstr "Ein Verweis wurde in die Zwischenablage kopiert"
+
+msgid "Submit an event"
+msgstr "Veranstaltung melden"
 
 msgid "Initiated events"
 msgstr ""
@@ -916,23 +943,20 @@ msgstr "Sie haben die Veranstatlung ${title} veröffentlicht"
 msgid "You have withdrawn the event ${title}"
 msgstr "Sie haben die Veranstatlung ${title} zurückgezogen"
 
-msgid "Add an event"
-msgstr "Veranstaltung hinzufügen"
-
-msgid "Submit an event"
-msgstr "Veranstaltung melden"
-
 msgid "List"
 msgstr "Auflisten"
 
 msgid "Submitted events"
 msgstr "Gemeldete Veranstaltungen"
 
+msgid "Thank you for your submission!"
+msgstr "Vielen Dank für Ihre Eingabe!"
+
 msgid "Published events"
 msgstr "Veröffentlichte Veranstaltungen"
 
-msgid "Event added"
-msgstr "Veranstaltung erstellt"
+msgid "A ticket has been opened"
+msgstr "Ein neues Ticket wurde für Sie eröffnet"
 
 msgid "Withdrawn events"
 msgstr "Zurückgezogene Veranstaltungen"
@@ -945,12 +969,6 @@ msgstr "Neues Formular"
 
 msgid "Added a new form"
 msgstr "Ein neues Formular wurd hinzugefügt"
-
-msgid "Thank you for your submission!"
-msgstr "Vielen Dank für Ihre Eingabe!"
-
-msgid "A ticket has been opened"
-msgstr "Ein neues Ticket wurde für Sie eröffnet"
 
 msgid "Services"
 msgstr "Dienstleistungen"
@@ -1007,6 +1025,31 @@ msgstr "Eine neue Person wurde hinzugefügt"
 
 msgid "New"
 msgstr "Neu"
+
+#, python-format
+msgid "New reservation for ${title}"
+msgstr "Neue Reservation für ${title}"
+
+msgid "Continue"
+msgstr "Weiter"
+
+msgid "Thank you for your reservation!"
+msgstr "Vielen Dank für Ihre Reservation!"
+
+msgid "The reservation was accepted"
+msgstr "Die Reservation wurde angenommen"
+
+msgid "The reservation has already been accepted"
+msgstr "Die Reservation wurde bereits angenommen"
+
+msgid "The reservation could not be completed"
+msgstr "Ihre Reservation konnte nicht abgeschlossen werden"
+
+msgid "Your reservation was accepted"
+msgstr "Ihre Reservation wurde angenommen"
+
+msgid "Error"
+msgstr "Fehler"
 
 #, python-format
 msgid ""
@@ -1071,45 +1114,3 @@ msgstr "Ihr Anliegen wurde abgeschlossen"
 
 msgid "Closed Tickets"
 msgstr "Abgeschlossene Tickets"
-
-#~ msgid "Quota"
-#~ msgstr "Anzahl"
-
-#~ msgid "Details"
-#~ msgstr "Details"
-
-#~ msgid "Details about the reservation"
-#~ msgstr "Details zu Ihrer Reservation"
-
-#~ msgid "Accept reservation"
-#~ msgstr "Reservation annehmen"
-
-#~ msgid "Edit details"
-#~ msgstr "Details bearbeiten"
-
-#~ msgid "Your reservation has been accepted:"
-#~ msgstr "Ihre Reservation wurde angenommen:"
-
-#~ msgid "New reservation for ${title}"
-#~ msgstr "Neue Reservation für ${title}"
-
-#~ msgid "Continue"
-#~ msgstr "Weiter"
-
-#~ msgid "Thank you for your reservation!"
-#~ msgstr "Vielen Dank für Ihre Reservation!"
-
-#~ msgid "The reservation was accepted"
-#~ msgstr "Die Reservation wurde angenommen"
-
-#~ msgid "The reservation has already been accepted"
-#~ msgstr "Die Reservation wurde bereits angenommen"
-
-#~ msgid "The reservation could not be completed"
-#~ msgstr "Ihre Reservation konnte nicht abgeschlossen werden"
-
-#~ msgid "Your reservation was accepted"
-#~ msgstr "Ihre Reservation wurde angenommen"
-
-#~ msgid "Error"
-#~ msgstr "Fehler"
