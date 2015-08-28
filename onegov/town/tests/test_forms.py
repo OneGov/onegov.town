@@ -1,8 +1,14 @@
 import pytest
 
-from datetime import date, datetime
+from datetime import date, datetime, time
 from dateutil.rrule import MO, WE
-from onegov.town.forms import DaypassAllocationForm, RoomAllocationForm
+from libres.db.models import Allocation
+from onegov.town.forms import (
+    DaypassAllocationForm,
+    ReservationForm,
+    RoomAllocationForm
+)
+from onegov.town.forms.allocation import AllocationFormHelpers
 
 
 @pytest.mark.parametrize('form_class', [
@@ -130,3 +136,101 @@ def test_room_except_for():
         (datetime(2015, 8, 4, 12), datetime(2015, 8, 4, 16)),
         (datetime(2015, 8, 6, 12), datetime(2015, 8, 6, 16)),
     ]
+
+
+def test_generate_dates():
+    helper = AllocationFormHelpers()
+
+    assert helper.generate_dates(date(2015, 1, 1), date(2015, 1, 1)) == [
+        (datetime(2015, 1, 1), datetime(2015, 1, 1))
+    ]
+
+    assert helper.generate_dates(date(2015, 1, 1), date(2015, 1, 2)) == [
+        (datetime(2015, 1, 1), datetime(2015, 1, 1)),
+        (datetime(2015, 1, 2), datetime(2015, 1, 2)),
+    ]
+
+    assert helper.generate_dates(
+        date(2015, 1, 4), date(2015, 1, 10), weekdays=[0, 1, 2]) == [
+            (datetime(2015, 1, 5), datetime(2015, 1, 5)),
+            (datetime(2015, 1, 6), datetime(2015, 1, 6)),
+            (datetime(2015, 1, 7), datetime(2015, 1, 7)),
+    ]
+
+
+def test_generate_datetimes():
+    helper = AllocationFormHelpers()
+
+    assert helper.generate_dates(
+        date(2015, 1, 1), date(2015, 1, 1), time(12, 0), time(16, 0)) == [
+            (datetime(2015, 1, 1, 12), datetime(2015, 1, 1, 16))
+    ]
+
+    assert helper.generate_dates(
+        date(2015, 1, 1), date(2015, 1, 2), time(12, 0), time(16, 0)) == [
+            (datetime(2015, 1, 1, 12), datetime(2015, 1, 1, 16)),
+            (datetime(2015, 1, 2, 12), datetime(2015, 1, 2, 16))
+    ]
+
+    assert helper.generate_dates(
+        date(2015, 1, 4), date(2015, 1, 10),
+        time(12, 0), time(16, 0), weekdays=[0, 1, 2]) == [
+            (datetime(2015, 1, 5, 12), datetime(2015, 1, 5, 16)),
+            (datetime(2015, 1, 6, 12), datetime(2015, 1, 6, 16)),
+            (datetime(2015, 1, 7, 12), datetime(2015, 1, 7, 16))
+    ]
+
+    assert helper.generate_dates(
+        date(2015, 1, 1), date(2015, 1, 2), time(12, 0), time(0, 0)) == [
+            (datetime(2015, 1, 1, 12), datetime(2015, 1, 2)),
+            (datetime(2015, 1, 2, 12), datetime(2015, 1, 3))
+    ]
+
+
+def test_reservation_form_partly_available():
+    allocation = Allocation()
+
+    allocation.timezone = 'Europe/Zurich'
+    allocation.start = datetime(2015, 1, 1, 10)
+    allocation.end = datetime(2015, 1, 1, 16)
+
+    allocation.partly_available = True
+    form = ReservationForm.for_allocation(allocation)()
+    assert hasattr(form, 'start')
+    assert hasattr(form, 'end')
+    assert form.start.default == '10:00'
+    assert form.end.default == '16:00'
+
+    allocation.partly_available = False
+    form = ReservationForm.for_allocation(allocation)()
+    assert not hasattr(form, 'start')
+    assert not hasattr(form, 'end')
+
+
+def test_reservation_form_quota():
+    allocation = Allocation()
+
+    allocation.quota = 1
+    allocation.quota_limit = 1
+    form = ReservationForm.for_allocation(allocation)()
+    assert not hasattr(form, 'quota')
+
+    allocation.quota = 2
+    allocation.quota_limit = 1
+    form = ReservationForm.for_allocation(allocation)()
+    assert not hasattr(form, 'quota')
+
+    allocation.quota = 1
+    allocation.quota_limit = 2
+    form = ReservationForm.for_allocation(allocation)()
+    assert not hasattr(form, 'quota')
+
+    allocation.quota = 2
+    allocation.quota_limit = 2
+    form = ReservationForm.for_allocation(allocation)()
+    assert hasattr(form, 'quota')
+
+    allocation.quota = 2
+    allocation.quota_limit = 0
+    form = ReservationForm.for_allocation(allocation)()
+    assert hasattr(form, 'quota')

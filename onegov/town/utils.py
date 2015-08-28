@@ -9,6 +9,14 @@ from onegov.town import _
 from onegov.town.elements import DeleteLink, Link
 
 
+def as_time(text):
+    """ Takes the given text and turns it into a time. """
+    if text == '24:00':
+        text = '00:00'
+
+    return time(*(int(s) for s in text.split(':'))) if text else None
+
+
 def mark_images(html):
     """ Takes the given html and marks every paragraph with an 'has-img'
     class, if the paragraph contains an img element.
@@ -87,7 +95,7 @@ class AllocationEventInfo(object):
 
     @property
     def event_identification(self):
-        return '{:%d.%m.%Y}: {}'.format(
+        return u'{:%d.%m.%Y}: {}'.format(
             self.allocation.display_start(),
             self.event_time
         )
@@ -120,8 +128,8 @@ class AllocationEventInfo(object):
             else:
                 available = self.translate(
                     _("${num}/${max} Available", mapping={
-                        'num': quota,
-                        'max': quota_left
+                        'num': quota_left,
+                        'max': quota
                     })
                 )
 
@@ -138,7 +146,11 @@ class AllocationEventInfo(object):
 
     @property
     def event_actions(self):
-        yield Link(_("Reserve"), '#', classes=('new-reservation', ))
+        yield Link(
+            _("Reserve"),
+            self.request.link(self.allocation, name='reservieren'),
+            classes=('new-reservation', )
+        )
 
         if self.request.is_logged_in:
             yield Link(
@@ -171,6 +183,7 @@ class AllocationEventInfo(object):
 
     def as_dict(self):
         return {
+            'id': self.allocation.id,
             'start': self.event_start,
             'end': self.event_end,
             'title': self.event_title,

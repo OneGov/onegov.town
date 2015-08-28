@@ -84,7 +84,12 @@
                 <metal:fields use-macro="layout.macros['fields']" tal:define="fields fieldset.fields.values()" />
             </tal:block>
         </tal:block>
-        <input type="submit" value="Submit" class="button" i18n:attributes="value">
+        <tal:block condition="not: button_text|nothing">
+            <input type="submit" value="Submit" class="button" i18n:attributes="value">
+        </tal:block>
+        <tal:block condition="button_text|nothing">
+            <input type="submit" value="${button_text}" class="button">
+        </tal:block>
     </form>
 </metal:search>
 
@@ -327,6 +332,31 @@
         </tal:block>
     </ul>
 </metal:pagination>
+
+<metal:reservations define-macro="reservations" i18n:domain="onegov.town">
+    <div tal:condition="reservations" class="reservations">
+        <div tal:repeat="reservation reservations">
+            <tal:block define="start reservation.display_start(); end reservation.display_end()">
+                <div class="field-display">
+                    <div class="field-display-label" i18n:translate>Date</div>
+                    <div class="field-display-data">
+                        ${layout.format_date(start, 'date')}
+                        <!-- simple whole day check: -->
+                        <tal:block condition="start.time() != end.time()">
+                            ${layout.format_date(start, 'time')} -
+                            ${layout.format_date(end, 'time')}
+                        </tal:block>
+                    </div>
+                </div>
+
+                <div class="field-display">
+                    <div class="field-display-label" i18n:translate>Quota</div>
+                    <div class="field-display-data">${reservation.quota}</div>
+                </div>
+            </tal:block>
+        </div>
+    </div>
+</metal:reservations>
 
 <metal:display_event define-macro="display_event" i18n:domain="onegov.town">
     <dl>

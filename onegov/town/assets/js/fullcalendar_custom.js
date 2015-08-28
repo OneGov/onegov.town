@@ -7,7 +7,7 @@ var new_select_handler = function(url) {
         } else {
             params = '?start=' + start.toISOString() + '&end=' + end.toISOString() + '&whole_day=no';
         }
-        location.href = url + params;
+        location.href = url.split('?')[0] + params;
     };
 };
 
@@ -32,12 +32,19 @@ var spawn_popup = function(event, element) {
         'transition': 'all 0.3s',
         'type': 'tooltip',
         'onopen': function() {
+            var popup = $(this);
+
             // hookup the confirmation dialog
-            var confirm_links = $(this).find('a.confirm');
+            var confirm_links = popup.find('a.confirm');
             Intercooler.processNodes(confirm_links);
             confirm_links.confirmation();
             $(confirm_links).on('success.ic', function() {
                 $('.calendar').fullCalendar('refetchEvents');
+            });
+
+            // any link clicked will close the popup
+            popup.find('a').click(function() {
+                popup.popup('hide');
             });
         },
         'onclose': function() {
@@ -48,6 +55,11 @@ var spawn_popup = function(event, element) {
 };
 
 var event_after_render = function(event, element, view) {
+
+    if (_.contains(view.calendar.options.highlights, event.id)) {
+        $(element).addClass('highlight');
+    }
+
     $(element).click(function() {
         spawn_popup(event, element);
     });
@@ -70,8 +82,13 @@ var setup_calendar = function(calendar) {
         eventAfterRender: event_after_render,
         editable: calendar.data('editable'),
         eventDrop: edit_handler,
-        eventResize: edit_handler
+        eventResize: edit_handler,
+        highlights: calendar.data('highlights')
     });
+
+    if (calendar.data('goto-date')) {
+        calendar.fullCalendar('gotoDate', calendar.data('goto-date'));
+    }
 };
 
 $(document).ready(function() {

@@ -3,6 +3,7 @@ import onegov.core
 import onegov.town
 import textwrap
 import transaction
+import re
 
 from datetime import datetime
 from lxml.html import document_fromstring
@@ -12,6 +13,13 @@ from onegov.testing import utils
 from onegov.ticket import TicketCollection
 from webtest import TestApp as Client
 from webtest import Upload
+
+
+def extract_href(link):
+    """ Takes a link (<a href...>) and returns the href address. """
+    result = re.search(r'(?:href|ic-delete-from)="([^"]+)', link)
+
+    return result and result.group(1) or None
 
 
 def test_view_permissions():
@@ -953,17 +961,30 @@ def test_resource_slots(town_app):
         ],
         whole_day=True
     )
+    scheduler.allocate(
+        dates=[
+            (datetime(2015, 8, 6, 12, 0), datetime(2015, 8, 6, 16, 0)),
+        ],
+        whole_day=False
+    )
+    scheduler.approve_reservations(
+        scheduler.reserve(
+            'info@example.org',
+            (datetime(2015, 8, 6, 12, 0), datetime(2015, 8, 6, 16, 0)),
+        )
+    )
 
     transaction.commit()
 
     client = Client(town_app)
 
-    url = '/reservation/foo/slots'
+    url = '/ressource/foo/slots'
     assert client.get(url).json == []
 
-    url = '/reservation/foo/slots?start=2015-08-04&end=2015-08-05'
-
+    url = '/ressource/foo/slots?start=2015-08-04&end=2015-08-05'
     result = client.get(url).json
+
+    assert len(result) == 2
 
     assert result[0]['start'] == '2015-08-04T00:00:00+02:00'
     assert result[0]['end'] == '2015-08-05T00:00:00+02:00'
@@ -975,6 +996,13 @@ def test_resource_slots(town_app):
     assert result[1]['className'] == 'event-available'
     assert result[1]['title'] == u"Ganztägig\nVerfügbar"
 
+    url = '/ressource/foo/slots?start=2015-08-06&end=2015-08-06'
+    result = client.get(url).json
+
+    assert len(result) == 1
+    assert result[0]['className'] == 'event-unavailable'
+    assert result[0]['title'] == u"12:00 - 16:00\nBesetzt"
+
 
 def test_resources(town_app):
     client = Client(town_app)
@@ -984,7 +1012,7 @@ def test_resources(town_app):
     login_page.form.set('password', 'hunter2')
     login_page.form.submit()
 
-    resources = client.get('/reservationen')
+    resources = client.get('/ressourcen')
     assert 'SBB-Tageskarte' in resources
 
     resource = resources.click('SBB-Tageskarte')
@@ -1001,9 +1029,9 @@ def test_resources(town_app):
     edit.form['title'] = 'Besprechungsraum'
     edit.form.submit()
 
-    assert 'Besprechungsraum' in client.get('/reservationen')
+    assert 'Besprechungsraum' in client.get('/ressourcen')
 
-    assert client.delete('/reservation/meeting-room').status_code == 200
+    assert client.delete('/ressource/meeting-room').status_code == 200
 
 
 def test_clipboard(town_app):
@@ -1093,3 +1121,166 @@ def test_sitecollection(town_app):
         'url': 'http://localhost/themen/bildung-gesellschaft',
         'group': 'Themen'
     }
+
+
+def test_allocations(town_app):
+    client = Client(town_app)
+
+    login_page = client.get('/login')
+    login_page.form.set('email', 'admin@example.org')
+    login_page.form.set('password', 'hunter2')
+    login_page.form.submit()
+
+    # create a new daypass allocation
+    new = client.get((
+        '/ressource/sbb-tageskarte/neue-einteilung'
+        '?start=2015-08-04&end=2015-08-05'
+    ))
+
+    new.form['daypasses'] = 1
+    new.form['daypasses_limit'] = 1
+    new.form.submit()
+
+    # view the daypasses
+    slots = client.get((
+        '/ressource/sbb-tageskarte/slots'
+        '?start=2015-08-04&end=2015-08-05'
+    ))
+
+    assert len(slots.json) == 2
+    assert slots.json[0]['title'] == u"Ganztägig\nVerfügbar"
+
+    # change the daypasses
+    edit = client.get(extract_href(slots.json[0]['actions'][1]))
+    edit.form['daypasses'] = 2
+    edit.form.submit()
+
+    slots = client.get((
+        '/ressource/sbb-tageskarte/slots'
+        '?start=2015-08-04&end=2015-08-04'
+    ))
+
+    assert len(slots.json) == 1
+    assert slots.json[0]['title'] == u"Ganztägig\n2/2 Verfügbar"
+
+    # try to create a new allocation over an existing one
+    new = client.get((
+        '/ressource/sbb-tageskarte/neue-einteilung'
+        '?start=2015-08-04&end=2015-08-04'
+    ))
+
+    new.form['daypasses'] = 1
+    new.form['daypasses_limit'] = 1
+    new = new.form.submit()
+
+    assert u"Es besteht bereits eine Einteilung im gewünschten Zeitraum" in new
+
+    # move the existing allocations
+    slots = client.get((
+        '/ressource/sbb-tageskarte/slots'
+        '?start=2015-08-04&end=2015-08-05'
+    ))
+
+    edit = client.get(extract_href(slots.json[0]['actions'][1]))
+    edit.form['date'] = '2015-08-06'
+    edit.form.submit()
+
+    edit = client.get(extract_href(slots.json[1]['actions'][1]))
+    edit.form['date'] = '2015-08-07'
+    edit.form.submit()
+
+    # get the new slots
+    slots = client.get((
+        '/ressource/sbb-tageskarte/slots'
+        '?start=2015-08-06&end=2015-08-07'
+    ))
+
+    assert len(slots.json) == 2
+
+    # delete an allocation
+    client.delete(extract_href(slots.json[0]['actions'][2]))
+
+    # get the new slots
+    slots = client.get((
+        '/ressource/sbb-tageskarte/slots'
+        '?start=2015-08-06&end=2015-08-07'
+    ))
+
+    assert len(slots.json) == 1
+
+    # delete an allocation
+    client.delete(extract_href(slots.json[0]['actions'][2]))
+
+    # get the new slots
+    slots = client.get((
+        '/ressource/sbb-tageskarte/slots'
+        '?start=2015-08-06&end=2015-08-07'
+    ))
+
+    assert len(slots.json) == 0
+
+
+def test_allocation_times(town_app):
+    client = Client(town_app)
+
+    login_page = client.get('/login')
+    login_page.form.set('email', 'admin@example.org')
+    login_page.form.set('password', 'hunter2')
+    login_page.form.submit()
+
+    new = client.get('/ressourcen').click('Raum')
+    new.form['title'] = 'Meeting Room'
+    new.form.submit()
+
+    # 12:00 - 24:00
+    new = client.get('/ressource/meeting-room/neue-einteilung')
+    new.form['start'] = '2015-08-20'
+    new.form['end'] = '2015-08-20'
+    new.form['start_time'] = '12:00'
+    new.form['end_time'] = '24:00'
+    new.form['as_whole_day'] = 'no'
+    new.form.submit()
+
+    slots = client.get(
+        '/ressource/meeting-room/slots?start=2015-08-20&end=2015-08-20'
+    )
+
+    assert len(slots.json) == 1
+    assert slots.json[0]['start'] == '2015-08-20T12:00:00+02:00'
+    assert slots.json[0]['end'] == '2015-08-21T00:00:00+02:00'
+
+    # 00:00 - 02:00
+    new = client.get('/ressource/meeting-room/neue-einteilung')
+    new.form['start'] = '2015-08-22'
+    new.form['end'] = '2015-08-22'
+    new.form['start_time'] = '00:00'
+    new.form['end_time'] = '02:00'
+    new.form['as_whole_day'] = 'no'
+    new.form.submit()
+
+    slots = client.get(
+        '/ressource/meeting-room/slots?start=2015-08-22&end=2015-08-22'
+    )
+
+    assert len(slots.json) == 1
+    assert slots.json[0]['start'] == '2015-08-22T00:00:00+02:00'
+    assert slots.json[0]['end'] == '2015-08-22T02:00:00+02:00'
+
+    # 12:00 - 24:00 over two days
+    new = client.get('/ressource/meeting-room/neue-einteilung')
+    new.form['start'] = '2015-08-24'
+    new.form['end'] = '2015-08-25'
+    new.form['start_time'] = '12:00'
+    new.form['end_time'] = '24:00'
+    new.form['as_whole_day'] = 'no'
+    new.form.submit()
+
+    slots = client.get(
+        '/ressource/meeting-room/slots?start=2015-08-24&end=2015-08-25'
+    )
+
+    assert len(slots.json) == 2
+    assert slots.json[0]['start'] == '2015-08-24T12:00:00+02:00'
+    assert slots.json[0]['end'] == '2015-08-25T00:00:00+02:00'
+    assert slots.json[1]['start'] == '2015-08-25T12:00:00+02:00'
+    assert slots.json[1]['end'] == '2015-08-26T00:00:00+02:00'

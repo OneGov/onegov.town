@@ -2,13 +2,16 @@ import more.transaction
 import more.webassets
 import onegov.core
 import onegov.town
-import os.path
 import pytest
+import tempfile
 import transaction
+import shutil
 
 from morepath import setup
 from onegov.core.crypto import hash_password
-from onegov.town.initial_content import add_initial_content
+from onegov.town.initial_content import (
+    add_initial_content, builtin_form_definitions
+)
 from onegov.town.models import Town
 from onegov.user import User
 from uuid import uuid4
@@ -20,8 +23,21 @@ def town_password():
     return hash_password('hunter2')
 
 
-@pytest.yield_fixture(scope="function")
-def town_app(postgres_dsn, temporary_directory, town_password, smtpserver):
+@pytest.yield_fixture(scope='session')
+def filestorage():
+    directory = tempfile.mkdtemp()
+    yield directory
+    shutil.rmtree(directory)
+
+
+@pytest.yield_fixture(scope='session')
+def form_definitions():
+    yield list(builtin_form_definitions())
+
+
+@pytest.yield_fixture(scope='function')
+def town_app(postgres_dsn, filestorage, town_password, smtpserver,
+             form_definitions):
 
     config = setup()
     config.scan(more.transaction)
@@ -36,14 +52,19 @@ def town_app(postgres_dsn, temporary_directory, town_password, smtpserver):
         dsn=postgres_dsn,
         filestorage='fs.osfs.OSFS',
         filestorage_options={
-            'root_path': os.path.join(temporary_directory, 'file-storage'),
+            'root_path': filestorage,
             'create': True
         },
         identity_secure=False,
         disable_memcached=True
     )
     app.set_application_id(app.namespace + '/' + 'test')
-    add_initial_content(app.libres_registry, app.session_manager, 'Govikon')
+    add_initial_content(
+        app.libres_registry,
+        app.session_manager,
+        'Govikon',
+        form_definitions
+    )
 
     session = app.session()
 

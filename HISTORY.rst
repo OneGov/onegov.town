@@ -4,6 +4,37 @@ Changelog
 Unreleased
 ~~~~~~~~~~
 
+- The edit links for the model shown on the ticket view are now only visible
+  if the ticket is in 'pending' state. To change something on the model, the
+  ticket needs to be accepted/reopened.
+  [href]
+
+- All forms now retain the posted value if a validation error occurs.
+  [href]
+
+- Adds the ability to define the reservation form on the resource.
+  [href]
+
+0.3.10 (2015-08-25)
+~~~~~~~~~~~~~~~~~~~
+
+- Replaces the broken 'jsmin' filter with the not so broken 'rjsmin' filter.
+  [href]
+
+- Depends on latest onegov.core - with this release the upgrade tables should
+  be set up correctly when creating new schemas.
+  [href]
+
+0.3.9 (2015-08-20)
+~~~~~~~~~~~~~~~~~~~
+
+- Reservation allocations can now be created/modified and deleted.
+  [href]
+
+- Adds the ability to confirm the confirmation dialog using enter. To cancel
+  press escape.
+  [href]
+
 - A person's academic title is now a person's salutation.
   [href]
 

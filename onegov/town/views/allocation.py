@@ -6,7 +6,7 @@ from onegov.core.security import Public, Private
 from onegov.libres import Resource, ResourceCollection
 from onegov.town import TownApp, _, utils
 from onegov.town.elements import Link
-from onegov.town.layout import ResourceLayout
+from onegov.town.layout import ResourceLayout, AllocationEditFormLayout
 from onegov.town.forms import (
     DaypassAllocationForm,
     DaypassAllocationEditForm,
@@ -17,27 +17,33 @@ from onegov.town.forms import (
 
 @TownApp.json(model=Resource, name='slots', permission=Public)
 def view_allocations_json(self, request):
+    """ Returns the allocations in a fullcalendar compatible events feed.
+
+    See `<http://fullcalendar.io/docs/event_data/events_json_feed/>`_ for
+    more information.
+
+    """
 
     start, end = utils.parse_fullcalendar_request(request, self.timezone)
 
-    if start and end:
-        scheduler = self.get_scheduler(request.app.libres_context)
-
-        query = scheduler.allocations_in_range(start, end)
-        query = query.order_by(Allocation._start)
-
-        allocations = []
-
-        for allocation in query.all():
-            info = utils.AllocationEventInfo(allocation, request)
-            allocations.append(info.as_dict())
-
-        return allocations
-    else:
+    if not (start and end):
         return []
+
+    scheduler = self.get_scheduler(request.app.libres_context)
+
+    query = scheduler.allocations_in_range(start, end)
+    query = query.order_by(Allocation._start)
+
+    return [
+        utils.AllocationEventInfo(a, request).as_dict() for a in query.all()
+    ]
 
 
 def get_new_allocation_form_class(resource, request):
+    """ Returns the form class for new allocations (different resources have
+    different allocation forms).
+
+    """
 
     if resource.type == 'daypass':
         return DaypassAllocationForm
@@ -49,6 +55,10 @@ def get_new_allocation_form_class(resource, request):
 
 
 def get_edit_allocation_form_class(allocation, request):
+    """ Returns the form class for existing allocations (different resources
+    have different allocation forms).
+
+    """
 
     resource = ResourceCollection(
         request.app.libres_context).by_id(allocation.resource)
@@ -65,6 +75,7 @@ def get_edit_allocation_form_class(allocation, request):
 @TownApp.form(model=Resource, template='form.pt', name='neue-einteilung',
               permission=Private, form=get_new_allocation_form_class)
 def handle_new_allocation(self, request, form):
+    """ Handles new allocations for differing form classes. """
 
     if form.submitted(request):
         scheduler = self.get_scheduler(request.app.libres_context)
@@ -84,31 +95,33 @@ def handle_new_allocation(self, request, form):
                 'n': len(allocations)
             }))
 
+            self.highlight_allocations(allocations)
             return morepath.redirect(request.link(self))
+    elif not request.POST:
+        start, end = utils.parse_fullcalendar_request(request, self.timezone)
+        whole_day = request.params.get('whole_day') == 'yes'
+
+        if start and end:
+            if whole_day:
+                form.start.data = start
+                form.end.data = end
+
+                if hasattr(form, 'as_whole_day'):
+                    form.as_whole_day.data = 'yes'
+            else:
+                form.start.data = start
+                form.end.data = end
+
+                if hasattr(form, 'as_whole_day'):
+                    form.as_whole_day.data = 'no'
+
+                if hasattr(form, 'start_time'):
+                    form.start_time.data = start.strftime('%H:%M')
+                    form.end_time.data = end.strftime('%H:%M')
 
     layout = ResourceLayout(self, request)
     layout.breadcrumbs.append(Link(_("New allocation"), '#'))
-
-    start, end = utils.parse_fullcalendar_request(request, self.timezone)
-    whole_day = request.params.get('whole_day') == 'yes'
-
-    if start and end:
-        if whole_day:
-            form.start.data = start
-            form.end.data = end
-
-            if hasattr(form, 'as_whole_day'):
-                form.as_whole_day.data = 'yes'
-        else:
-            form.start.data = start
-            form.end.data = end
-
-            if hasattr(form, 'as_whole_day'):
-                form.as_whole_day.data = 'no'
-
-            if hasattr(form, 'start_time'):
-                form.start_time.data = start.strftime('%H:%M')
-                form.end_time.data = end.strftime('%H:%M')
+    layout.editbar_links = None
 
     return {
         'layout': layout,
@@ -120,6 +133,7 @@ def handle_new_allocation(self, request, form):
 @TownApp.form(model=Allocation, template='form.pt', name='bearbeiten',
               permission=Private, form=get_edit_allocation_form_class)
 def handle_edit_allocation(self, request, form):
+    """ Handles edit allocation for differing form classes. """
 
     resources = ResourceCollection(request.app.libres_context)
     resource = resources.by_id(self.resource)
@@ -141,20 +155,17 @@ def handle_edit_allocation(self, request, form):
             utils.show_libres_error(e, request)
         else:
             request.success(_("Your changes were saved"))
+            resource.highlight_allocations([self])
             return morepath.redirect(request.link(resource))
+    elif not request.POST:
+        form.apply_model(self)
 
-    layout = ResourceLayout(resource, request)
-    layout.breadcrumbs.append(Link(_("Edit allocation"), '#'))
-
-    form.apply_model(self)
-
-    start, end = utils.parse_fullcalendar_request(request, self.timezone)
-
-    if start and end:
-        form.apply_dates(start, end)
+        start, end = utils.parse_fullcalendar_request(request, self.timezone)
+        if start and end:
+            form.apply_dates(start, end)
 
     return {
-        'layout': layout,
+        'layout': AllocationEditFormLayout(self, request),
         'title': _("Edit allocation"),
         'form': form
     }
@@ -162,6 +173,10 @@ def handle_edit_allocation(self, request, form):
 
 @TownApp.view(model=Allocation, request_method='DELETE', permission=Private)
 def handle_delete_allocation(self, request):
+    """ Deletes the given resource (throwing an error if there are existing
+    reservations associated with it).
+
+    """
     request.assert_valid_csrf_token()
 
     resources = ResourceCollection(request.app.libres_context)
