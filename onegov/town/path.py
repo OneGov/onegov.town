@@ -171,7 +171,7 @@ def get_reservation(app, resource, id):
         query = query.filter(Reservation.id == id)
 
         return query.first()
-    
+
 
 @TownApp.path(model=Clipboard, path='/clipboard/copy/{token}')
 def get_clipboard(request, token):
