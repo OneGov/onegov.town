@@ -17,8 +17,6 @@ from uuid import uuid4
 from webob import exc
 
 
-
-
 def get_reservation_form_class(allocation, request):
     return ReservationForm.for_allocation(allocation)
 
@@ -57,6 +55,10 @@ def handle_reserve_allocation(self, request, form):
         except LibresError as e:
             utils.show_libres_error(e, request)
         else:
+            # while we re at it, remove all expired sessions
+            resource.remove_expired_reservation_sessions(
+                request.app.libres_context)
+
             # though it's possible for a token to have multiple reservations,
             # it is not something that can happen here -> therefore one!
             reservation = scheduler.reservations_by_token(token).one()
@@ -164,7 +166,7 @@ def finalize_reservation(self, request):
 
         with forms.session.no_autoflush:
             ticket = TicketCollection(request.app.session()).open_ticket(
-                handler_code='RSV', handler_id=self.token
+                handler_code='RSV', handler_id=self.token.hex
             )
 
         send_html_mail(
@@ -215,3 +217,41 @@ def accept_reservation(self, request):
         request.warning(_("The reservation has already been accepted"))
 
     return morepath.redirect(request.params['return-to'])
+
+
+@TownApp.view(model=Reservation, name='absagen', permission=Private)
+def reject_reservation(self, request):
+    collection = ResourceCollection(request.app.libres_context)
+    resource = collection.by_id(self.resource)
+    scheduler = resource.get_scheduler(request.app.libres_context)
+    reservations = scheduler.reservations_by_token(self.token.hex)
+    forms = FormCollection(request.app.session())
+    submission = forms.submissions.by_id(self.token.hex)
+
+    send_html_mail(
+        request=request,
+        template='mail_reservation_rejected.pt',
+        subject=_("Your reservation was rejected"),
+        receivers=(self.email, ),
+        content={
+            'model': self,
+            'resource': resource,
+            'reservations': reservations
+        }
+    )
+
+    # create a snapshot of the ticket to keep the useful information
+    tickets = TicketCollection(request.app.session())
+    ticket = tickets.by_handler_id(self.token.hex)
+    ticket.create_snapshot(request)
+
+    scheduler.remove_reservation(self.token.hex)
+
+    if submission:
+        forms.submissions.delete(submission)
+
+    request.success(_("The reservation was rejected"))
+
+    # return none on intercooler js requests
+    if not request.headers.get('X-IC-Request'):
+        return morepath.redirect(request.params['return-to'])

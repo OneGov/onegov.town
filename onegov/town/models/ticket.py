@@ -39,6 +39,10 @@ class FormSubmissionHandler(Handler):
         return self.submission.form_class(data=self.submission.data)
 
     @property
+    def deleted(self):
+        return self.submission is None
+
+    @property
     def email(self):
         return self.submission.email
 
@@ -97,6 +101,10 @@ class ReservationHandler(Handler):
         return FormSubmissionCollection(self.session).by_id(self.id)
 
     @property
+    def deleted(self):
+        return False if self.reservations else True
+
+    @property
     def email(self):
         # the e-mail is the same over all reservations
         return self.reservations[0].email
@@ -152,6 +160,9 @@ class ReservationHandler(Handler):
 
     def get_links(self, request):
 
+        if self.deleted:
+            return []
+
         links = []
 
         data = self.reservations[0].data or {}
@@ -162,11 +173,27 @@ class ReservationHandler(Handler):
 
             links.append(
                 Link(
-                    text=_('Accept reservation'),
+                    text=_("Accept reservation"),
                     url=link.as_string(),
                     classes=('accept-link', )
                 )
             )
+
+        link = URL(request.link(self.reservations[0], 'absagen'))
+        link = link.query_param('return-to', request.url)
+        links.append(
+            DeleteLink(
+                text=_("Reject reservation"),
+                url=link.as_string(),
+                confirm=_("Do you really want to reject this reservation?"),
+                extra_information=_(
+                    "Rejecting this reservation can't be undone."
+                ),
+                yes_button_text=_("Reject reservation"),
+                request_method='GET',
+                redirect_after=request.url
+            )
+        )
 
         if self.submission:
             link = URL(request.link(self.submission))

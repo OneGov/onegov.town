@@ -4,6 +4,18 @@ Changelog
 Unreleased
 ~~~~~~~~~~
 
+0.4.0 (2015-08-28)
+~~~~~~~~~~~~~~~~~~~
+
+- The allocation availability calculation is now faster and accurate.
+  [href]
+
+- Expired reservation sessions are now automatically removed.
+  [href]
+
+- Adds the ability to create reservations and to accept/reject them.
+  [href]
+
 - The edit links for the model shown on the ticket view are now only visible
   if the ticket is in 'pending' state. To change something on the model, the
   ticket needs to be accepted/reopened.
