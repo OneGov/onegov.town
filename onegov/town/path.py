@@ -2,6 +2,12 @@
 
 from datetime import date
 from libres.db.models import Allocation, Reservation
+from onegov.event import (
+    Event,
+    EventCollection,
+    Occurrence,
+    OccurrenceCollection
+)
 from onegov.form import (
     FormDefinition,
     FormCollection,
@@ -12,6 +18,7 @@ from onegov.form import (
 from onegov.libres import ResourceCollection
 from onegov.libres.models import Resource
 from onegov.town.app import TownApp
+from onegov.town.converters import extended_date_converter
 from onegov.town.models import (
     Clipboard,
     Editor,
@@ -186,3 +193,25 @@ def get_clipboard(request, token):
 @TownApp.path(model=SiteCollection, path='/sitecollection')
 def get_sitecollection(app):
     return SiteCollection(app.session())
+
+
+@TownApp.path(model=OccurrenceCollection, path='/veranstaltungen',
+              converters=dict(start=extended_date_converter,
+                              end=extended_date_converter, tags=[]))
+def get_occurrences(app, page=0, start=None, end=None, tags=None):
+    return OccurrenceCollection(app.session(), page, start, end, tags)
+
+
+@TownApp.path(model=Occurrence, path='/veranstaltung/{name}')
+def get_occurrence(app, name):
+    return OccurrenceCollection(app.session()).by_name(name)
+
+
+@TownApp.path(model=EventCollection, path='/events')
+def get_events(app, page=0, state='published'):
+    return EventCollection(app.session(), page, state)
+
+
+@TownApp.path(model=Event, path='/event/{name}')
+def get_event(app, name):
+    return EventCollection(app.session()).by_name(name)

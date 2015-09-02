@@ -1,6 +1,10 @@
+import arrow
+
 from cached_property import cached_property
+from dateutil import rrule
 from onegov.core.layout import ChameleonLayout
 from onegov.core.static import StaticFile
+from onegov.event import OccurrenceCollection, EventCollection
 from onegov.form import FormCollection, FormSubmissionFile, render_field
 from onegov.libres import ResourceCollection
 from onegov.page import Page, PageCollection
@@ -168,6 +172,12 @@ class Layout(ChameleonLayout):
         return '{}?to={}'.format(
             self.request.link(self.town, 'login'),
             self.request.transform(self.request.path)
+        )
+
+    @cached_property
+    def events_url(self):
+        return self.request.link(
+            OccurrenceCollection(self.request.app.session())
         )
 
     def include_editor(self):
@@ -722,3 +732,130 @@ class AllocationEditFormLayout(DefaultLayout):
                     ),
                     redirect_after=self.request.link(self.collection)
                 )
+
+
+class EventBaseLayout(DefaultLayout):
+
+    weekday_format = 'dddd'
+    month_format = 'MMMM'
+    event_format = 'dddd, D. MMMM YYYY, HH:mm'
+
+    def format_date(self, date, format):
+        """ Takes a datetime and formats it.
+
+        This overrides :meth:`onegov.core.Layout.format_date` since we want to
+        display the date in the timezone given by the event, not a fixed one.
+
+        """
+        if format in ('date', 'time', 'datetime'):
+            return date.strftime(getattr(self, format + '_format'))
+
+        if format in ('weekday', 'month', 'smonth', 'event'):
+            return arrow.get(date).format(
+                getattr(self, format + '_format'),
+                locale=self.request.locale
+            )
+
+    def format_recurrence(self, recurrence):
+        """ Returns a human readable version of an RRULE used by us. """
+
+        WEEKDAYS = (_("Mo"), _("Tu"), _("We"), _("Th"), _("Fr"), _("Sa"),
+                    _("Su"))
+
+        if recurrence:
+            rule = rrule.rrulestr(recurrence)
+            if rule._freq == rrule.WEEKLY:
+                return _(
+                    u"Every ${days} until ${end}",
+                    mapping={
+                        'days': ', '.join((
+                            self.request.translate(WEEKDAYS[day])
+                            for day in rule._byweekday
+                        )),
+                        'end': rule._until.date().strftime('%d.%m.%Y')
+                    }
+                )
+
+        return ''
+
+
+class OccurrencesLayout(EventBaseLayout):
+
+    @cached_property
+    def breadcrumbs(self):
+        return [
+            Link(_("Homepage"), self.homepage_url),
+            Link(_("Events"), self.request.link(self.model))
+        ]
+
+
+class OccurrenceLayout(EventBaseLayout):
+
+    @cached_property
+    def collection(self):
+        return OccurrenceCollection(self.request.app.session())
+
+    @cached_property
+    def breadcrumbs(self):
+        return [
+            Link(_("Homepage"), self.homepage_url),
+            Link(_("Events"), self.request.link(self.collection)),
+            Link(self.model.title, '#')
+        ]
+
+    @cached_property
+    def editbar_links(self):
+        if self.request.is_logged_in:
+            return [
+                Link(
+                    text=_("Edit"),
+                    url=self.request.link(self.model.event),
+                    classes=('edit-link', )
+                )
+            ]
+
+
+class EventLayout(EventBaseLayout):
+
+    @cached_property
+    def breadcrumbs(self):
+        return [
+            Link(_("Homepage"), self.homepage_url),
+            Link(_("Events"), self.events_url),
+            Link(self.model.title, self.request.link(self.model)),
+        ]
+
+    @cached_property
+    def editbar_links(self):
+        if self.request.is_logged_in:
+            links = [
+                Link(
+                    text=_("Edit event"),
+                    url=self.request.link(self.model, 'bearbeiten'),
+                    classes=('edit-link', )
+                ),
+                DeleteLink(
+                    text=_("Delete"),
+                    url=self.request.link(self.model),
+                    confirm=_("Do you really want to delete this event?"),
+                    yes_button_text=_("Delete event"),
+                    redirect_after=self.events_url
+                )
+            ]
+
+            state = self.model.state
+            if state == 'submitted' or state == 'withdrawn':
+                links.append(Link(
+                    text=_("Publish event"),
+                    url=self.request.link(self.model, 'publish'),
+                    classes=('event-action', 'event-publish'),
+                ))
+
+            elif state == 'published':
+                links.append(Link(
+                    text=_("Withdraw event"),
+                    url=self.request.link(self.model, 'withdraw'),
+                    classes=('event-action', 'event-withdraw'),
+                ))
+
+            return links

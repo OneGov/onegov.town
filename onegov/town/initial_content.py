@@ -3,11 +3,15 @@
 import codecs
 import os
 
+from datetime import datetime, timedelta
 from onegov.core.utils import module_path
-from onegov.libres import LibresIntegration, ResourceCollection
+from onegov.event import EventCollection
 from onegov.form import FormCollection
+from onegov.libres import LibresIntegration, ResourceCollection
 from onegov.page import PageCollection
 from onegov.town.models import Town
+from sedate import as_datetime
+from wtforms.fields.html5 import EmailField
 
 
 def add_initial_content(libres_registry, session_manager, town_name,
@@ -33,6 +37,7 @@ def add_initial_content(libres_registry, session_manager, town_name,
     add_root_pages(session)
     add_builtin_forms(session, form_definitions)
     add_resources(libres_context)
+    add_events(session)
 
     session.flush()
 
@@ -137,3 +142,64 @@ def add_resources(libres_context):
         type='daypass',
         name='sbb-tageskarte'
     )
+
+
+def add_events(session):
+    start = as_datetime(datetime.today().date())
+    while start.weekday() != 6:
+        start = start + timedelta(days=1)
+
+    events = EventCollection(session)
+    event = events.add(
+        title=u"150 Jahre Govikon",
+        start=start + timedelta(hours=11, minutes=0),
+        end=start + timedelta(hours=22, minutes=0),
+        timezone="Europe/Zurich",
+        tags=["Party"],
+        location=u"Sportanlage",
+        content={"description": u"Lorem ipsum."},
+        meta={"submitter_email": u"info@example.org"},
+    )
+    event.submit()
+    event.publish()
+    event = events.add(
+        title=u"Gemeindeversammlung",
+        start=start + timedelta(days=2, hours=20, minutes=0),
+        end=start + timedelta(days=2, hours=22, minutes=30),
+        timezone="Europe/Zurich",
+        tags=["Politics"],
+        location=u"Gemeindesaal",
+        content={"description": u"Lorem ipsum."},
+        meta={"submitter_email": u"info@example.org"},
+    )
+    event.submit()
+    event.publish()
+    event = events.add(
+        title=u"MuKi Turnen",
+        start=start + timedelta(days=2, hours=10, minutes=0),
+        end=start + timedelta(days=2, hours=11, minutes=0),
+        recurrence=(
+            "RRULE:FREQ=WEEKLY;WKST=MO;BYDAY=TU,TH;UNTIL={0}".format(
+                (start + timedelta(days=31)).strftime('%Y%m%dT%H%M%SZ')
+            )
+        ),
+        timezone="Europe/Zurich",
+        tags=["Sports"],
+        location=u"Turnhalle",
+        content={"description": u"Lorem ipsum."},
+        meta={"submitter_email": u"info@example.org"},
+    )
+    event.submit()
+    event.publish()
+    event = events.add(
+        title=u"Grümpelturnier",
+        start=start + timedelta(days=7, hours=10, minutes=0),
+        end=start + timedelta(days=7, hours=18, minutes=0),
+        timezone="Europe/Zurich",
+        tags=["Sports"],
+        location=u"Sportanlage",
+        content={"description": u"Lorem ipsum."},
+        meta={"submitter_email": u"info@example.org"},
+    )
+    event.submit()
+    event.publish()

@@ -1,0 +1,107 @@
+<div metal:use-macro="layout.base" i18n:domain="onegov.town">
+    <tal:block metal:fill-slot="title">
+        ${title}
+    </tal:block>
+    <tal:block metal:fill-slot="content">
+        <div class="row">
+
+            <div class="large-8 medium-8 columns">
+                <div class="row">
+                    <div class="large-12 columns" tal:define="global lastdaydate 0">
+                        <em class="page-lead">${lead}</em>
+                        <tal:block repeat="occurrence occurrences">
+                            <div class="row">
+                                <div class="occurrence">
+                                    <div class="large-3 columns">
+                                        <tal:block tal:condition="layout.format_date(occurrence.localized_start, 'date') == lastdaydate">
+                                            <div class="show-for-large-up occurrences-day-date"></div>
+                                        </tal:block>
+                                        <tal:block tal:condition="layout.format_date(occurrence.localized_start, 'date') != lastdaydate">
+                                            <div class="occurrences-day-date active">
+                                                <div>${layout.format_date(occurrence.localized_start, 'weekday')}</div>
+                                                <div class="day">${occurrence.localized_start.day}</div>
+                                                <div>${layout.format_date(occurrence.localized_start, 'month')}</div>
+                                            </div>
+                                        </tal:block>
+                                    </div>
+                                    <div class="large-9 medium-12 small-12 columns">
+                                        <div class="occurrence-date">${layout.format_date(occurrence.localized_start, 'date')}</div>
+                                        <h3><a href="${request.link(occurrence)}">${occurrence.title}</a></h3>
+                                        <div>${occurrence.location}</div>
+                                        <div>${layout.format_date(occurrence.localized_start, 'time')}-${layout.format_date(occurrence.localized_end, 'time')}</div>
+                                        <div><span tal:repeat="tag occurrence.tags" class="occurrence-tag" i18n:translate="">${tag}</span></div>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </div>
+                            <tal:block tal:define="global lastdaydate python: layout.format_date(occurrence.localized_start, 'date')" />
+                        </tal:block>
+                        <div tal:condition="not occurrences" i18n:translate="">No events found.</div>
+                    </div>
+                </div>
+
+                <div class="pagination-centered">
+                    <div metal:use-macro="layout.macros['pagination']" tal:define="collection layout.model; current_page layout.model;" />
+                </div>
+
+            </div>
+
+            <div class="large-4 medium-4 columns">
+
+                <div class="occurrences-filter-result">
+                    <span>${number_of_occurrences}</span>
+                    <span i18n:translate="">Events</span>
+                </div>
+
+                <div class="occurrences-filter-tags">
+                    <tal:block tal:repeat="tag tags">
+                        <span class="occurrence-tag ${tag.active and 'active' or ''}">
+                            <tal:block replace="structure tag(request)"></tal:block>
+                        </span>
+                    </tal:block>
+                </div>
+
+                <div class="occurrences-filter-date">
+                    <form action="" method="GET">
+                        <tal:block tal:repeat="tag active_tags">
+                            <input type="hidden" name="tags" value="${tag}">
+                        </tal:block>
+                        <div class="row">
+                            <div class="large-6 columns">
+                                <div class="row collapse">
+                                    <label i18n:translate="">From</label>
+                                    <input name="start" type="date" value="${start}" placeholder="${date_placeholder}">
+                                </div>
+                            </div>
+                            <div class="large-6 columns">
+                                <div class="row collapse">
+                                    <label i18n:translate="">To</label>
+                                    <input name="end" type="date" value="${end}" placeholder="${date_placeholder}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row occurrences-filter-date-submit">
+                            <div class="large-6 columns">
+                                <div class="row collapse">
+                                    <input type="submit" value="Filter by date" class="button" i18n:attributes="value">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="occurrences-add-box">
+                    <dl>
+                        <dt>
+                            <a href="${add_link}">
+                                <i class="fa fa-chevron-right"></i> <span i18n:translate="">Submit your event</span>
+                            </a>
+                        </dt>
+                        <dd i18n:translate="">Submit your own event</dd>
+                    </dl>
+                </div>
+          </div>
+
+        </div>
+    </tal:block>
+</div>

@@ -1,0 +1,27 @@
+<div metal:use-macro="layout.base" i18n:domain="onegov.town">
+    <tal:block metal:fill-slot="title">
+        ${title}
+    </tal:block>
+    <tal:block metal:fill-slot="content">
+        <div class="panel callout" tal:condition="completable">
+            <p i18n:translate="">
+                Your event submission is ready to be sent to the town.
+                Please review your data and press "Complete" to finalize the process.
+                If there's anything you'd like to change, click on "Edit" to return
+                to the filled-out event.
+            </p>
+        </div>
+
+        <tal:block metal:use-macro="layout.macros['display_event']" tal:define="event event"/>
+
+        <div class="row fieldset-display-submit" tal:condition="completable">
+            <div class="small-12 columns">
+                <form action="" method="POST">
+                    <input type="hidden" name="complete">
+                    <input type="submit" value="Complete" class="button" i18n:attributes="value">
+                </form>
+                <a href="${edit_url}" class="button secondary" i18n:translate="">Edit</a>
+            </div>
+        </div>
+    </tal:block>
+</div>

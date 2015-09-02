@@ -3,6 +3,7 @@
 """ The onegov town homepage. """
 
 from collections import namedtuple
+from onegov.event import OccurrenceCollection
 from onegov.core.security import Public
 from onegov.form import FormCollection
 from onegov.libres import ResourceCollection
@@ -11,7 +12,7 @@ from onegov.people import PersonCollection
 from onegov.town import _
 from onegov.town.app import TownApp
 from onegov.town.elements import Link, LinkGroup
-from onegov.town.layout import DefaultLayout
+from onegov.town.layout import DefaultLayout, EventBaseLayout
 from onegov.town.models import Town
 
 
@@ -76,29 +77,18 @@ def view_town(self, request):
         links=online_counter_links
     )
 
+    event_layout = EventBaseLayout(self, request)
+    occurrences = OccurrenceCollection(session).query().limit(4)
     latest_events = LinkGroup(
         title=u"Veranstaltungen",
         links=[
             Link(
-                text=u"Gemeindeversammlung",
-                url="#",
-                subtitle=u"Montag, 16. März 2015, 19:30"
-            ),
-            Link(
-                text=u"Grümpelturnier",
-                url="#",
-                subtitle=u"Sonntag, 22. März 2015, 10:00"
-            ),
-            Link(
-                text=u"MuKi Turnen",
-                url="#",
-                subtitle=u"Freitag, 26. März 2015, 18:30"
-            ),
-            Link(
-                text=u"150 Jahre Govikon",
-                url="#",
-                subtitle=u"Sonntag, 31. März 2015, 11:00"
-            ),
+                text=occurrence.title,
+                url=request.link(occurrence),
+                subtitle=event_layout.format_date(occurrence.localized_start,
+                                                  'event')
+            )
+            for occurrence in occurrences
         ]
     )
 

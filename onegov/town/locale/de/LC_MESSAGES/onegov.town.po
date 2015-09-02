@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2015-09-01 12:13+0200\n"
+"POT-Creation-Date: 2015-09-02 08:57+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Fabian Reinhard <fabian.reinhard@seantis.ch>\n"
 "Language-Team: \n"
@@ -16,6 +16,27 @@ msgstr "Abbrechen"
 
 msgid "This site is hidden from the general public"
 msgstr "Diese Seite ist nicht öffentlich."
+
+msgid "Mo"
+msgstr "Mo"
+
+msgid "Tu"
+msgstr "Di"
+
+msgid "We"
+msgstr "Mi"
+
+msgid "Th"
+msgstr "Do"
+
+msgid "Fr"
+msgstr "Fr"
+
+msgid "Sa"
+msgstr "Sa"
+
+msgid "Su"
+msgstr "So"
 
 msgid "Homepage"
 msgstr "Startseite"
@@ -37,6 +58,13 @@ msgstr "Reservationen"
 
 msgid "Edit allocation"
 msgstr "Einteilung bearbeiten"
+
+#, python-format
+msgid "Every ${days} until ${end}"
+msgstr "Jeden ${days} bis zum ${end}."
+
+msgid "Events"
+msgstr "Veranstaltungen"
 
 msgid "Logout"
 msgstr "Logout"
@@ -97,6 +125,15 @@ msgstr "Diese Reservations-Ressource kann nicht gelöscht werden."
 msgid "There are existing reservations associated with this resource"
 msgstr "Es existieren Reservationen für diese Reservations-Ressource"
 
+msgid "Edit event"
+msgstr "Veranstaltung bearbeiten"
+
+msgid "Do you really want to delete this event?"
+msgstr "Möchten Sie die Veranstaltung wirklich löschen?"
+
+msgid "Delete event"
+msgstr "Veranstaltung löschen"
+
 msgid "Accept ticket"
 msgstr "Ticket annehmen"
 
@@ -106,8 +143,14 @@ msgstr "Möchten Sie diese Einteilung wirklich löschen?"
 msgid "Delete allocation"
 msgstr "Einteilung löschen"
 
+msgid "Publish event"
+msgstr "Veranstaltung veröffentlichen"
+
 msgid "Close ticket"
 msgstr "Ticket abschliessen"
+
+msgid "Withdraw event"
+msgstr "Veranstaltung zurückziehen"
 
 msgid "Form"
 msgstr "Formular"
@@ -231,27 +274,6 @@ msgstr ""
 "Um die Einteilung zu löschen, müssen zuerst alle bestehenden Reservationen "
 "abgesagt werden."
 
-msgid "Mo"
-msgstr "Mo"
-
-msgid "Tu"
-msgstr "Di"
-
-msgid "We"
-msgstr "Mi"
-
-msgid "Th"
-msgstr "Do"
-
-msgid "Fr"
-msgstr "Fr"
-
-msgid "Sa"
-msgstr "Sa"
-
-msgid "Su"
-msgstr "So"
-
 msgid "Start"
 msgstr "Von"
 
@@ -283,7 +305,7 @@ msgid "From"
 msgstr "Von"
 
 msgid "Until"
-msgstr "Bis"
+msgstr "Bis zum"
 
 msgid "Yes"
 msgstr "Ja"
@@ -291,8 +313,104 @@ msgstr "Ja"
 msgid "No"
 msgstr "Nein"
 
+msgid "Exhibition"
+msgstr "Ausstellung"
+
+msgid "Gastronomy"
+msgstr "Gastronomie"
+
+msgid "Health"
+msgstr "Gesundheit"
+
+msgid "Cinema"
+msgstr "Kino"
+
+msgid "Congress"
+msgstr "Kongress"
+
+msgid "Concert"
+msgstr "Konzert"
+
+msgid "Art"
+msgstr "Kunst"
+
+msgid "Literature"
+msgstr "Literatur"
+
+msgid "Market"
+msgstr "Markt"
+
+msgid "Music"
+msgstr "Musik"
+
+msgid "Party"
+msgstr "Party"
+
+msgid "Politics"
+msgstr "Politik"
+
+msgid "Religion"
+msgstr "Religion"
+
+msgid "Sports"
+msgstr "Sport"
+
+msgid "Dancing"
+msgstr "Tanz"
+
+msgid "Theater"
+msgstr "Theater"
+
+msgid "E-Mail"
+msgstr "E-Mail"
+
+msgid "Your E-Mail"
+msgstr "Ihre E-Mail Adresse"
+
 msgid "Title"
 msgstr "Titel"
+
+msgid "The title of this event."
+msgstr "Titel der Veranstaltung."
+
+msgid "Description"
+msgstr "Beschreibung"
+
+msgid "The description of this event."
+msgstr "Beschreibung der Veranstatlung."
+
+msgid "Location"
+msgstr "Ort"
+
+msgid "A description of the location of this event."
+msgstr "Beschreibung des Ortes der Veranstaltung"
+
+msgid "Tags"
+msgstr "Schlagworte"
+
+msgid "To"
+msgstr "Bis"
+
+msgid "Repeats itself every"
+msgstr "Wiederholt sich jeden"
+
+msgid "... until"
+msgstr "... bis zum"
+
+msgid "Please set and end date if the event is recurring."
+msgstr "Bitte ein Enddatum angeben, falls eine Wiederholungen ausgewählt ist."
+
+msgid "Please select a weekday if the event is recurring."
+msgstr "Bitte ein Wochentag auswählen für sich wiederholende Veranstaltungen."
+
+msgid "The end time must be later than the start time."
+msgstr "Das Ende der Veranstaltung muss nach dem Start liegen."
+
+msgid "The end date must be later than the start date."
+msgstr "Das Enddatum muss nach dem Startdatum liegen."
+
+msgid "The weekday of the start date must be selected."
+msgstr "Der Wochentag der Veranstaltung muss ausgewählt sein."
 
 msgid "Lead"
 msgstr "Einleitung"
@@ -326,9 +444,6 @@ msgstr "Vorname"
 
 msgid "Last name"
 msgstr "Nachname"
-
-msgid "E-Mail"
-msgstr "E-Mail"
 
 msgid "Phone"
 msgstr "Telefon"
@@ -419,6 +534,9 @@ msgstr "Letztes Jahr"
 
 msgid "Older"
 msgstr "Älter"
+
+msgid "Event"
+msgstr "Veranstaltung"
 
 msgid "Edit submission"
 msgstr "Eingabe bearbeiten"
@@ -530,6 +648,22 @@ msgstr ""
 "Unterseiten löschen. Um diese Seite zu löschen müssen Sie erst alle "
 "Unterseiten löschen, oder Sie wenden sich an einen Administrator."
 
+msgid ""
+"Your event submission is ready to be sent to the town. Please review your "
+"data and press \"Complete\" to finalize the process. If there's anything "
+"you'd like to change, click on \"Edit\" to return to the filled-out event."
+msgstr ""
+"Ihre Anfrage kann jetzt an die Gemeinde übermittelt werden. Bitte überprüfen "
+"Sie Ihre Angaben und klicken Sie auf \"Abschliessen\" um die Anfrage zu "
+"übermitteln. Wenn Sie Änderungen vornehmen möchten, klicken Sie auf "
+"\"Bearbeiten\" um zum Formular zurückzukehren. "
+
+msgid "Complete"
+msgstr "Abschliessen"
+
+msgid "State:"
+msgstr "Status:"
+
 msgid "Upload"
 msgstr "Hochladen"
 
@@ -620,8 +754,41 @@ msgstr "Vorherige Seite"
 msgid "Next Page"
 msgstr "Nächste Seite"
 
+msgid "State"
+msgstr "Status"
+
+msgid "Initiated"
+msgstr "Initiiert"
+
+msgid "Submitted"
+msgstr "Gemeldet"
+
+msgid "Published"
+msgstr "Veröffentlich"
+
+msgid "Withdrawn"
+msgstr "Zurückgezogen"
+
+msgid "Submitter"
+msgstr "Antragsteller/in"
+
+msgid "Date and time"
+msgstr "Datum und Zeit"
+
+msgid "Recurrence"
+msgstr "Wiederholungen"
+
+msgid "All dates"
+msgstr "Alle Termine"
+
 msgid "Dear Sir or Madam,"
 msgstr "Guten Tag"
+
+msgid "Your event has been published:"
+msgstr "Ihre Veranstaltung wurde veröffentlicht:"
+
+msgid "Your event has unfortunately been rejected:"
+msgstr "Ihre Veranstaltung musste leider abgelehnt werden:"
 
 msgid "Click the following link to set a new password:"
 msgstr "Klicken Sie auf den folgenden Link, um ein neues Passwort zu setzen:"
@@ -668,6 +835,21 @@ msgstr "Ticket Status abfragen"
 msgid "Your ticket has been reopened"
 msgstr "Ihr Ticket wurde wieder geöffnet"
 
+msgid "All occurrences of this event"
+msgstr "Alle Termine dieser Veranstaltung"
+
+msgid "No events found."
+msgstr "Keine Veranstaltungen gefunden."
+
+msgid "Filter by date"
+msgstr "Nach Datum filtern"
+
+msgid "Submit your event"
+msgstr "Veranstaltung melden"
+
+msgid "Submit your own event"
+msgstr "Einen eigenen Eintrag für den Veranstaltungskalender erfassen"
+
 msgid ""
 "You've reached this site because you are logged in. Visitors are "
 "automatically redirected to the following link:"
@@ -711,9 +893,6 @@ msgstr ""
 "übermitteln. Wenn Sie Änderungen vornehmen möchten, klicken Sie auf "
 "\"Bearbeiten\" um zum Formular zurückzukehren. "
 
-msgid "Complete"
-msgstr "Abschliessen"
-
 msgid "Show"
 msgstr "Anzeigen"
 
@@ -733,9 +912,6 @@ msgstr ""
 msgid "Ticket Number"
 msgstr "Referenz"
 
-msgid "State"
-msgstr "Status"
-
 msgid "Group"
 msgstr "Gruppe"
 
@@ -744,9 +920,6 @@ msgstr "Zuständig"
 
 msgid "Created"
 msgstr "Eingang"
-
-msgid "Submitter"
-msgstr "Antragsteller/in"
 
 msgid ""
 "Your request will be processed shortly. To see the state of your process "
@@ -765,9 +938,6 @@ msgstr ""
 "Ihre Anfrage wurde erfolgreich abgeschlossen. Falls Sie Dokumente über den "
 "Postweg verlangt haben, sollten Sie in den kommenden Tagen Post erhalten. "
 "Falls Sie Dokumente am Schalter abholen wollten, so können Sie das jetzt tun."
-
-msgid "State:"
-msgstr "Status:"
 
 msgid "Kind"
 msgstr "Art"
@@ -788,6 +958,44 @@ msgstr "Ihre Änderungen wurden gespeichert"
 msgid "A link was added to the clipboard"
 msgstr "Ein Verweis wurde in die Zwischenablage kopiert"
 
+msgid "Submit an event"
+msgstr "Veranstaltung melden"
+
+msgid "Initiated events"
+msgstr ""
+
+#, python-format
+msgid "You have published the event ${title}"
+msgstr "Sie haben die Veranstatlung ${title} veröffentlicht"
+
+#, python-format
+msgid "You have withdrawn the event ${title}"
+msgstr "Sie haben die Veranstatlung ${title} zurückgezogen"
+
+msgid "List"
+msgstr "Auflisten"
+
+msgid "Submitted events"
+msgstr "Gemeldete Veranstaltungen"
+
+msgid "Thank you for your submission!"
+msgstr "Vielen Dank für Ihre Eingabe!"
+
+msgid "Published events"
+msgstr "Veröffentlichte Veranstaltungen"
+
+msgid "Your event was published"
+msgstr "Ihre Veranstaltung wurde veröffentlicht"
+
+msgid "A ticket has been opened"
+msgstr "Ein neues Ticket wurde für Sie eröffnet"
+
+msgid "Your event was rejected"
+msgstr "Ihre Veranstaltung wurde abgelehnt"
+
+msgid "Withdrawn events"
+msgstr "Zurückgezogene Veranstaltungen"
+
 msgid "Access Denied"
 msgstr "Zugriff verweigert"
 
@@ -796,12 +1004,6 @@ msgstr "Neues Formular"
 
 msgid "Added a new form"
 msgstr "Ein neues Formular wurd hinzugefügt"
-
-msgid "Thank you for your submission!"
-msgstr "Vielen Dank für Ihre Eingabe!"
-
-msgid "A ticket has been opened"
-msgstr "Ein neues Ticket wurde für Sie eröffnet"
 
 msgid "Services"
 msgstr "Dienstleistungen"
@@ -836,6 +1038,19 @@ msgstr "Sie wurden eingeloggt."
 
 msgid "Wrong username or password."
 msgstr "Unbekannter Benutzername oder falsches Passwort."
+
+#, python-format
+msgid ""
+"${town} offers a versatile and colorful social life thanks to its generous "
+"and open culture. Whether exhibition, concert, village market or theater "
+"performance - there's an attractive event for everybody. You have the "
+"possibility to a submit to our event calendar."
+msgstr ""
+"${town} bietet dank seiner reichhaltigen und offenen Kultur ein vielseitiges "
+"und buntes Gesellschaftsleben. Ob Ausstellung, Konzert, Dorfmarkt oder "
+"Theateraufführung – bestimmt finden auch Sie eine attraktive Veranstaltung. "
+"Sie haben die Möglichkeit, einen Anlass in unseren Veranstaltungskalender "
+"einzutragen."
 
 msgid "New person"
 msgstr "Neue Person"

@@ -311,6 +311,7 @@
                 previous current_page.previous;
                 next current_page.next;
                 is_current current_page == page;
+                is_visible abs(current_page.page-page.page) < 6;
             ">
                 <tal:block condition="repeat.page.start and previous">
                     <li class="arrow">
@@ -318,7 +319,7 @@
                     </li>
                 </tal:block>
 
-                <li class="${is_current and 'current' or ''}">
+                <li tal:condition="is_visible" class="${is_current and 'current' or ''}">
                     <a href="${request.link(page)}">${page.page + 1}</a>
                 </li>
 
@@ -356,3 +357,44 @@
         </div>
     </div>
 </metal:reservations>
+
+<metal:display_event define-macro="display_event" i18n:domain="onegov.town">
+    <dl>
+        <tal:block tal:condition="request.is_logged_in">
+            <dt i18n:translate="">State</dt>
+            <dd i18n:translate="" tal:condition="event.state == 'initiated'">Initiated</dd>
+            <dd i18n:translate="" tal:condition="event.state == 'submitted'">Submitted</dd>
+            <dd i18n:translate="" tal:condition="event.state == 'published'">Published</dd>
+            <dd i18n:translate="" tal:condition="event.state == 'withdrawn'">Withdrawn</dd>
+        </tal:block>
+        <tal:block tal:condition="request.is_logged_in" tal:define="submitter event.meta.get('submitter_email') if event.meta else ''">
+            <dt i18n:translate="">Submitter</dt>
+            <dd>${submitter}</dd>
+        </tal:block>
+        <dt i18n:translate="">Title</dt>
+        <dd>${event.title}</dd>
+        <dt i18n:translate="">Description</dt>
+        <dd tal:content="structure event.description.replace('\n', '<br>')" />
+        <dt i18n:translate="">Location</dt>
+        <dd>${event.location}</dd>
+        <dt i18n:translate="">Tags</dt>
+        <dd>
+            <ul>
+                <li tal:repeat="tag event.tags" i18n:translate="">${tag}</li>
+            </ul>
+        </dd>
+        <dt i18n:translate="">Date and time</dt>
+        <dd>
+            <tal:block>${layout.format_date(event.localized_start, 'datetime')}-${layout.format_date(event.localized_end, 'time')}</tal:block>
+            <tal:block tal:condition="request.is_logged_in">(${event.timezone})</tal:block>
+        </dd>
+        <dt i18n:translate="">Recurrence</dt>
+        <dd>${layout.format_recurrence(event.recurrence)}</dd>
+        <dt i18n:translate="">All dates</dt>
+        <dd tal:define="occurrences event.occurrence_dates(localize=True)">
+            <ul>
+                <li tal:repeat="occurrence occurrences">${layout.format_date(occurrence, 'weekday')} ${layout.format_date(occurrence, 'date')}</li>
+            </ul>
+        </dd>
+    </dl>
+</metal:display_event>
