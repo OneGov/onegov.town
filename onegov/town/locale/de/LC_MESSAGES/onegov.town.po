@@ -474,8 +474,8 @@ msgstr "Neues Passwort"
 msgid "Describes what this reservation resource is about"
 msgstr "Beschreibt um was es bei dieser Reservations-Ressource geht"
 
-msgid "Details"
-msgstr "Details"
+msgid "Extra Fields Definition"
+msgstr "Extra-Felder Definition"
 
 msgid "The end date must be later than the start date"
 msgstr "Das End-Datum muss nach dem Start-Datum liegen"
