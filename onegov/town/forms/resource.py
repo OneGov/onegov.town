@@ -64,11 +64,12 @@ class ResourceCleanupForm(Form):
     )
 
     def validate(self):
-        result = super(ResourceCleanupForm, self).validate()
+        result = super().validate()
 
-        if self.start.data > self.end.data:
-            message = _("The end date must be later than the start date")
-            self.end.errors.append(message)
-            result = False
+        if self.start.data and self.end.data:
+            if self.start.data > self.end.data:
+                message = _("The end date must be later than the start date")
+                self.end.errors.append(message)
+                result = False
 
         return result

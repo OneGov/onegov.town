@@ -12,10 +12,15 @@ $('a').on('success.ic', function(evt, elt, data, textStatus, xhr) {
 // show the new content placeholder when hovering over the add content dropdown
 $('.show-new-content-placeholder')
     .on('mouseenter', function() {
-        $('.new-content-placeholder').text($(this).text()).show();
+        var placeholder = $('<li>').
+            text($(this).text())
+            .addClass('new-content-placeholder');
+
+        $('.children').append(placeholder);
+        placeholder.show();
     })
     .on('mouseleave', function() {
-        $('.new-content-placeholder').hide();
+        $('.new-content-placeholder').remove();
     });
 
 // initialize all foundation functions
@@ -32,6 +37,12 @@ if (!Modernizr.inputtypes.date) {
         format: 'Y-m-d',   // HTML5 (RFC3339)
         lang: 'de',
         lazyInit: false,
-        timepicker: false,
+        timepicker: false
     });
 }
+
+// Add image captions
+$('.page-text img[alt]').each(function(){
+    var caption = $("<span>").text($(this).attr('alt'));
+    $(this).after(caption);
+});

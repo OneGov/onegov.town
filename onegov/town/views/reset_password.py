@@ -40,8 +40,8 @@ def handle_password_reset_request(self, request, form):
 
         response = morepath.redirect(request.link(self))
         request.success(
-            _((u'A password reset link has been sent to ${email}, provided an '
-               u'account exists for this email address.'),
+            _(('A password reset link has been sent to ${email}, provided an '
+               'account exists for this email address.'),
               mapping={'email': form.email.data})
         )
         return response
@@ -54,7 +54,7 @@ def handle_password_reset_request(self, request, form):
 
     return {
         'layout': layout,
-        'title': _(u'Reset password'),
+        'title': _('Reset password'),
         'form': form,
         'form_width': 'small'
     }
@@ -69,12 +69,14 @@ def handle_password_reset(self, request, form):
     request.include('check_password')
 
     if form.submitted(request):
-        identity = form.get_identity(request)
-        if identity is not None:
-            response = morepath.redirect(request.link(self))
-            morepath.remember_identity(response, request, identity)
+        # do NOT log the user in at this point - only onegov.user.auth does
+        # logins - we only ever want one path to be able to login, which makes
+        # it easier to do it correctly.
+        #
+        # XXX move this to onegov.user.auth as well
+        if form.update_password(request):
             request.success(_("Password changed."))
-            return response
+            return morepath.redirect(request.link(self))
         else:
             request.alert(
                 _("Wrong username or password reset link not valid any more.")
@@ -96,7 +98,7 @@ def handle_password_reset(self, request, form):
 
     return {
         'layout': layout,
-        'title': _(u'Reset password'),
+        'title': _('Reset password'),
         'form': form,
         'form_width': 'small'
     }

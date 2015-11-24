@@ -1,5 +1,3 @@
-import arrow
-
 from cached_property import cached_property
 from dateutil import rrule
 from onegov.core.layout import ChameleonLayout
@@ -15,10 +13,12 @@ from onegov.town.elements import DeleteLink, Link, LinkGroup
 from onegov.town.models import (
     FileCollection,
     ImageCollection,
+    PageMove,
     Search,
     SiteCollection,
     Thumbnail
 )
+from onegov.user import Auth
 from purl import URL
 from sqlalchemy import desc
 
@@ -181,9 +181,17 @@ class Layout(ChameleonLayout):
     @cached_property
     def login_url(self):
         """ Returns the login url for the current page. """
-        return '{}?to={}'.format(
-            self.request.link(self.town, 'login'),
-            self.request.transform(self.request.path)
+        return self.request.link(
+            Auth.from_app(self.app, self.request.transform(self.request.path)),
+            name='login'
+        )
+
+    @cached_property
+    def logout_url(self):
+        """ Returns the logout url for the current page. """
+        return self.request.link(
+            Auth.from_app(self.app, self.request.transform(self.request.path)),
+            name='logout'
         )
 
     @cached_property
@@ -241,7 +249,7 @@ class DefaultLayout(Layout):
     """ The defaut layout meant for the public facing parts of the site. """
 
     def __init__(self, model, request):
-        super(Layout, self).__init__(model, request)
+        super().__init__(model, request)
 
         # always include the common js files
         self.request.include('common')
@@ -254,8 +262,8 @@ class DefaultLayout(Layout):
 
     @cached_property
     def root_pages(self):
-        query = PageCollection(self.app.session()).query()
-        query = query.order_by(desc(Page.type), Page.title)
+        query = PageCollection(self.app.session()).query(ordered=False)
+        query = query.order_by(desc(Page.type), Page.order)
         query = query.filter(Page.parent_id == None)
 
         return self.request.exclude_invisible(query.all())
@@ -273,29 +281,29 @@ class DefaultLayout(Layout):
 
         if request.current_role == 'editor':
             return [
-                Link(_(u'Logout'), request.link(self.town, 'logout')),
-                Link(_(u'Files'), request.link(FileCollection(self.app))),
-                Link(_(u'Images'), request.link(ImageCollection(self.app))),
-                Link(u'OneGov Cloud', 'http://www.onegovcloud.ch'),
-                Link(u'Seantis GmbH', 'https://www.seantis.ch')
+                Link(_('Logout'), self.logout_url),
+                Link(_('Files'), request.link(FileCollection(self.app))),
+                Link(_('Images'), request.link(ImageCollection(self.app))),
+                Link('OneGov Cloud', 'http://www.onegovcloud.ch'),
+                Link('Seantis GmbH', 'https://www.seantis.ch')
             ]
         elif request.current_role == 'admin':
             return [
-                Link(_(u'Logout'), request.link(self.town, 'logout')),
-                Link(_(u'Files'), request.link(FileCollection(self.app))),
-                Link(_(u'Images'), request.link(ImageCollection(self.app))),
-                Link(_(u'Settings'), request.link(self.town, 'einstellungen')),
-                Link(_(u'Tickets'), request.link(TicketCollection(
+                Link(_('Logout'), self.logout_url),
+                Link(_('Files'), request.link(FileCollection(self.app))),
+                Link(_('Images'), request.link(ImageCollection(self.app))),
+                Link(_('Settings'), request.link(self.town, 'einstellungen')),
+                Link(_('Tickets'), request.link(TicketCollection(
                     self.app.session()
                 ))),
-                Link(u'OneGov Cloud', 'http://www.onegovcloud.ch'),
-                Link(u'Seantis GmbH', 'https://www.seantis.ch')
+                Link('OneGov Cloud', 'http://www.onegovcloud.ch'),
+                Link('Seantis GmbH', 'https://www.seantis.ch')
             ]
         else:
             return [
-                Link(_(u'Login'), self.login_url),
-                Link(u'OneGov Cloud', 'http://www.onegovcloud.ch'),
-                Link(u'Seantis GmbH', 'https://www.seantis.ch')
+                Link(_('Login'), self.login_url),
+                Link('OneGov Cloud', 'http://www.onegovcloud.ch'),
+                Link('Seantis GmbH', 'https://www.seantis.ch')
             ]
 
 
@@ -304,6 +312,12 @@ class AdjacencyListLayout(DefaultLayout):
     :class:`onegov.core.orm.abstract.AdjacencyList`
 
     """
+
+    @cached_property
+    def sortable_url_template(self):
+        return self.csrf_protected_url(
+            self.request.link(PageMove.for_url_template())
+        )
 
     def get_breadcrumbs(self, item):
         """ Yields the breadcrumbs for the given adjacency list item. """
@@ -318,54 +332,52 @@ class AdjacencyListLayout(DefaultLayout):
     def get_sidebar(self, type=None):
         """ Yields the sidebar for the given adjacency list item. """
         query = self.model.siblings.filter(self.model.__class__.type == type)
-        query = query.order_by(self.model.__class__.title)
+        items = self.request.exclude_invisible(query.all())
 
-        for item in self.request.exclude_invisible(query.all()):
-            url = self.request.link(item)
-
+        for item in items:
             if item != self.model:
-                yield Link(item.title, url, model=item)
+                yield Link(item.title, self.request.link(item), model=item)
             else:
-                yield Link(item.title, url, model=item, active=True)
-
-                children = sorted(
-                    self.request.exclude_invisible(self.model.children),
-                    key=lambda c: c.title
+                children = (
+                    Link(c.title, self.request.link(c), model=c) for c
+                    in self.request.exclude_invisible(self.model.children)
                 )
 
-                for item in children:
-                    yield Link(
-                        text=item.title,
-                        url=self.request.link(item),
-                        classes=('childpage', ),
-                        model=item
-                    )
-
-                yield Link("...", "#", classes=('new-content-placeholder', ))
+                yield LinkGroup(
+                    title=item.title,
+                    links=tuple(children),
+                    model=item
+                )
 
 
 class PageLayout(AdjacencyListLayout):
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if self.request.is_logged_in:
+            self.request.include('sortable')
+
     @cached_property
     def breadcrumbs(self):
-        return list(self.get_breadcrumbs(self.model))
+        return tuple(self.get_breadcrumbs(self.model))
 
     @cached_property
     def sidebar_links(self):
-        return list(self.get_sidebar(type='topic'))
+        return tuple(self.get_sidebar(type='topic'))
 
 
 class NewsLayout(AdjacencyListLayout):
 
     @cached_property
     def breadcrumbs(self):
-        return list(self.get_breadcrumbs(self.model))
+        return tuple(self.get_breadcrumbs(self.model))
 
 
 class EditorLayout(AdjacencyListLayout):
 
     def __init__(self, model, request, site_title):
-        super(EditorLayout, self).__init__(model, request)
+        super().__init__(model, request)
         self.site_title = site_title
         self.include_editor()
 
@@ -380,7 +392,7 @@ class EditorLayout(AdjacencyListLayout):
 class FormEditorLayout(DefaultLayout):
 
     def __init__(self, model, request):
-        super(FormEditorLayout, self).__init__(model, request)
+        super().__init__(model, request)
         self.include_editor()
         self.include_code_editor()
 
@@ -388,7 +400,7 @@ class FormEditorLayout(DefaultLayout):
 class FormSubmissionLayout(DefaultLayout):
 
     def __init__(self, model, request, title=None):
-        super(FormSubmissionLayout, self).__init__(model, request)
+        super().__init__(model, request)
         self.title = title or self.form.title
 
     @cached_property
@@ -655,7 +667,7 @@ class ResourcesLayout(DefaultLayout):
 class ResourceLayout(DefaultLayout):
 
     def __init__(self, model, request):
-        super(ResourceLayout, self).__init__(model, request)
+        super().__init__(model, request)
 
         self.request.include('fullcalendar')
         self.request.include('fullcalendar_css')
@@ -753,25 +765,7 @@ class AllocationEditFormLayout(DefaultLayout):
 
 class EventBaseLayout(DefaultLayout):
 
-    weekday_format = 'dddd'
-    month_format = 'MMMM'
-    event_format = 'dddd, D. MMMM YYYY, HH:mm'
-
-    def format_date(self, date, format):
-        """ Takes a datetime and formats it.
-
-        This overrides :meth:`onegov.core.Layout.format_date` since we want to
-        display the date in the timezone given by the event, not a fixed one.
-
-        """
-        if format in ('date', 'time', 'datetime'):
-            return date.strftime(getattr(self, format + '_format'))
-
-        if format in ('weekday', 'month', 'smonth', 'event'):
-            return arrow.get(date).format(
-                getattr(self, format + '_format'),
-                locale=self.request.locale
-            )
+    event_format = 'EEEE, d. MMMM YYYY, HH:mm'
 
     def format_recurrence(self, recurrence):
         """ Returns a human readable version of an RRULE used by us. """
@@ -783,7 +777,7 @@ class EventBaseLayout(DefaultLayout):
             rule = rrule.rrulestr(recurrence)
             if rule._freq == rrule.WEEKLY:
                 return _(
-                    u"Every ${days} until ${end}",
+                    "Every ${days} until ${end}",
                     mapping={
                         'days': ', '.join((
                             self.request.translate(WEEKDAYS[day])

@@ -3,8 +3,7 @@ import sedate
 from datetime import datetime, time
 from isodate import parse_date, parse_datetime
 from libres.modules import errors as libres_errors
-from lxml import etree
-from lxml.html import fragments_fromstring
+from lxml.html import fragments_fromstring, tostring
 from onegov.ticket import TicketCollection
 from onegov.town import _
 from onegov.town.elements import DeleteLink, Link
@@ -45,7 +44,7 @@ def mark_images(html):
             else:
                 paragraph.attrib['class'] = 'has-img'
 
-    return ''.join(etree.tostring(e).decode('utf-8') for e in fragments)
+    return ''.join(tostring(e).decode('utf-8') for e in fragments)
 
 
 def parse_fullcalendar_request(request, timezone):
@@ -96,7 +95,7 @@ class AllocationEventInfo(object):
 
     @property
     def event_identification(self):
-        return u'{:%d.%m.%Y}: {}'.format(
+        return '{:%d.%m.%Y}: {}'.format(
             self.allocation.display_start(),
             self.event_time
         )
@@ -134,7 +133,10 @@ class AllocationEventInfo(object):
                     })
                 )
 
-        return '\n'.join((self.event_time, available))
+        # add an extra space at the end of the event time, so we can hide
+        # the <br> tag on the output without having the time and the
+        # availability seemingly joined together without space.
+        return '\n'.join((self.event_time + ' ', available))
 
     @property
     def event_class(self):
@@ -167,7 +169,7 @@ class AllocationEventInfo(object):
                     handler='RSV',
                     state='all',
                     extra_parameters={
-                        'allocation_id': self.allocation.id
+                        'allocation_id': str(self.allocation.id)
                     }
                 )),
                 classes=('RSV-link', )

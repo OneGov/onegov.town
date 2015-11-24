@@ -34,6 +34,12 @@
     font-weight: normal;
 }
 
+@mixin prefix ($prop, $val) {
+    -webkit-#{$prop}: #{$val};
+    -moz-#{$prop}: #{$val};
+    -ms-#{$prop}: #{$val};
+    #{$prop}: #{$val};
+}
 
 /*
     The maximum width of a line relative to the font. This limits textblocks
@@ -48,7 +54,9 @@ $max-line-width: 67ex;
     (100vw includes the scrollbar, 100% does not)
 */
 html {
-    margin-left: calc(100vw - 100%);
+    @media not print {
+        margin-left: calc(100vw - 100%);
+    }
 }
 
 /*
@@ -71,7 +79,10 @@ body {
 
 #inner-body {
     margin: 0 auto -$footer-height;
-    min-height: 100%;
+
+    @media not print {
+      min-height: 100%;
+    }
 }
 
 .header {
@@ -86,8 +97,13 @@ body {
 
 footer,
 .push {
-    animation-duration: 3s;
+    @include prefix(animation-duration, 3s);
     height: $footer-height; /* .push must be the same height as .footer */
+}
+
+#redactor-modal-box footer {
+    // the redactor also contains a footer which doesn't need a specific height
+    height: auto;
 }
 
 /*
@@ -248,6 +264,10 @@ form {
         width: 100%;
     }
 
+    label.error > meter {
+        top: -.55rem;
+    }
+
     meter::-webkit-meter-bar {
         background: $input-border-color !important;
         border: 0;
@@ -255,6 +275,10 @@ form {
 
     meter::-webkit-meter-optimum-value {
         background: $success-color;
+    }
+
+    meter::-webkit-meter-suboptimum-value {
+        background: $warning-color;
     }
 
     /*
@@ -382,6 +406,15 @@ input[type=color] {
 }
 
 /*
+    social media links in the footer
+*/
+.social-media-links {
+    font-size: 1em;
+    list-style-type: none;
+    margin: 0;
+}
+
+/*
     homepage tiles
 */
 
@@ -505,7 +538,7 @@ $more-link-icon: '\f054';
 
         small {
             display: block;
-            font-size: 1em;
+            font-size: .8em;
         }
     }
 
@@ -519,21 +552,6 @@ $more-link-icon: '\f054';
         }
     }
 }
-
-// .page-content-panel {
-//     li a {
-//         font-size: .8em;
-//     }
-
-//     > p {
-//         font-size: .8em;
-//     }
-
-//     h2 {
-//         font-size: .8em;
-//         font-weight: bold;
-//     }
-// }
 
 /*
     edit bar (and popup links)
@@ -632,36 +650,67 @@ $paste-link-icon: '\f0ea';
     margin-bottom: 1rem;
     padding: 1rem;
 
+    .dz-message {
+        margin-bottom: 1em;
+    }
+
     .dz-preview {
         float: left;
         margin-right: 1rem;
     }
 
-    .dz-details,
-    .dz-error-mark,
-    .dz-image,
-    .dz-success-mark {
-        margin-top: 1rem;
+    .dz-success-mark,
+    .dz-error-mark {
+        display: none;
+    }
+
+    .dz-progress {
+        display: block;
+        height: 5px;
+        width: 100%;
+
+        > span {
+            background-color: $info-color;
+            display: block;
+            height: 5px;
+        }
+    }
+
+    .dz-success {
+        .dz-progress span {
+            background-color: $success-color;
+        }
+
+        .dz-size::after {
+            content: ' \f00c';
+            font-family: 'FontAwesome';
+        }
+    }
+
+    .dz-error {
+        .dz-progress span {
+            background-color: $alert-color;
+        }
+
+        .dz-size::after {
+            content: ' \f071';
+            font-family: 'FontAwesome';
+        }
+    }
+
+    .dz-error-message {
+        color: $steel;
+        font-size: rem-calc(12);
+        margin: 1em 0;
     }
 
     .dz-filename {
-        display: none;
-    }
-
-    .dz-success .dz-error-mark {
-        display: none;
-    }
-
-    .dz-error .dz-success-mark {
-        display: none;
-    }
-
-    .dz-success-mark * {
-        fill: $success-color;
-    }
-
-    .dz-error-mark * {
-        fill: $alert-color;
+        font-size: rem-calc(12);
+        margin-bottom: .5em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 125px;
     }
 
     > div:last-child {
@@ -687,21 +736,24 @@ div#redactor-droparea {
     hide the "open in new tab" element in the redactor
 */
 
-#redactor-modal-link-insert label:last-child {
+#redactor-modal-link-insert label:last-child,
+#redactor-modal-image-edit input.redactor-image-link-option + label.redactor-image-link-option {
     display: none;
 }
 
 /*
-    the file manager redactor list doesn't need a max height, it has a limited
-    container already, but since we can't switch back to 'auto', we use a
-    really large value
+    hide the "image position" options in the redactor
 */
-#redactor-file-manager-box > ul {
-    max-height: 10000px !important;
+#redactor-modal-image-edit .redactor-image-position-option {
+    display: none;
 }
 
-#redactor-modal-file-insert {
-    padding-bottom: 0 !important;  // ..we also don't need this extra space
+/*
+    make the file manager box a bit larger than it is by default
+*/
+#redactor-file-manager-box > ul {
+    margin: 0 !important;
+    max-height: 450px !important;
 }
 
 /*
@@ -758,6 +810,15 @@ div#redactor-droparea {
 
     .has-img {
         max-width: none;
+
+        // image subtitles
+        span {
+            background-color: $vapor;
+            color: $monsoon;
+            display: block;
+            font-size: .875rem;
+            padding: .25em .75em;
+        }
     }
 }
 
@@ -813,25 +874,85 @@ div#redactor-droparea {
 */
 
 .sidebar {
-    li {
-        a.childpage,
-        a.new-content-placeholder {
-            color: $oil;
-            overflow: hidden;
-            padding-left: 1.5rem;
-            text-overflow: ellipsis;
+    ul {
+        list-style: none;
+
+        li .group-title {
+            display: block;
+            margin-bottom: .4rem;
         }
 
-        a.new-content-placeholder {
-            display: none;
+        .children {
+            margin-left: 0;
+
+            .new-content-placeholder,
+            a {
+                color: $oil;
+                overflow: hidden;
+                padding-left: 2rem;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            .new-content-placeholder {
+                display: none;
+            }
         }
     }
 }
 
-.sidebar-bottom {
-    ul {
-        padding-left: 0;
+/*
+    Sidebar drag & drop
+*/
+.dragging {
+    opacity: 1;
+
+    &.sortable-ghost {
+        opacity: 0;
     }
+}
+
+@keyframes flash-success {
+    0% { color: transparent; }
+    20% { color: $primary-color; }
+    25% { color: $primary-color; }
+    50% { color: lighten($primary-color, 20%); }
+    75% { color: $primary-color; }
+    80% { color: $primary-color; }
+    100% { color: transparent; }
+}
+
+@keyframes flash-failure {
+    0% { color: transparent; }
+    20% { color: $alert-color; }
+    25% { color: $alert-color; }
+    50% { color: lighten($alert-color, 20%); }
+    75% { color: $alert-color; }
+    80% { color: $alert-color; }
+    100% { color: transparent; }
+}
+
+.flash > a:after {
+    @include prefix(animation-duration, .7s);
+    @include prefix(animation-fill-mode, forwards);
+    font-family: 'FontAwesome';
+    margin-left: 3px;
+}
+
+.flash.success > a:after {
+    @include prefix(animation-name, flash-success);
+    color: $primary-color;
+    content: ' \f0c7';
+}
+
+.flash.failure > a:after {
+    @include prefix(animation-name, flash-failure);
+    color: $alert-color;
+    content: ' \f05e';
+}
+
+.sortable-chosen {
+    background-color: $yellow-pastel;
 }
 
 /*
@@ -1297,6 +1418,14 @@ tr.ticket:hover {
 }
 
 /*
+    Reservations Form
+*/
+.reservation-form h2 {
+    font-size: $h3-font-size - $h3-font-reduction;
+    font-weight: bold;
+}
+
+/*
     Fullcalendar Integration
 */
 
@@ -1371,16 +1500,22 @@ tr.ticket:hover {
     }
 
     .fc-event {
-        .fc-time {
+        div.fc-time {
             display: none;
         }
 
+        &.fc-short .fc-title {
+            br {
+                display: none;
+            }
+        }
+
         &.highlight {
-            animation-delay: 3s;
-            animation-duration: 2s;
-            animation-fill-mode: forwards;
-            animation-iteration-count: 1;
-            animation-name: fadeout-box-shadow;
+            @include prefix(animation-delay, 3s);
+            @include prefix(animation-duration, 2s);
+            @include prefix(animation-fill-mode, forwards);
+            @include prefix(animation-iteration-count, 1);
+            @include prefix(animation-name, fadeout-box-shadow);
             box-shadow: 0 5px 0 $yellow;
         }
 
@@ -1455,13 +1590,20 @@ tr.ticket:hover {
         background-color: $white-smoke;
     }
 
-    div {
-        text-align: center;
+    @media #{$large-up} {
+        span {
+            display: block;
+            font-size: 1rem;
+            text-align: center;
 
-        &.day {
-            font-size: 3em;
-            font-weight: bold;
+            &.day {
+                font-size: 3rem;
+                font-weight: bold;
+            }
 
+            &.dot {
+                display: none;
+            }
         }
     }
 }
@@ -1485,6 +1627,7 @@ tr.ticket:hover {
     @include smooth-edges;
 
     margin-top: 2em;
+    padding: 1rem 1rem .5rem;
 
     h2 {
         color: $primary-color;
@@ -1722,4 +1865,49 @@ ul.search-results {
     overflow-x: hidden;
     overflow-y: scroll;
     padding: 1em;
+}
+
+/*
+    People list
+*/
+.people-list li {
+    list-style: none;
+}
+
+/*
+    A-Z Blocks
+*/
+
+.atoz-block {
+    h2 {
+        border-bottom: 1px solid $gray-pastel;
+    }
+}
+
+@media #{$large-only} {
+    .atoz-block {
+        h2 {
+            max-width: 50%;
+        }
+    }
+}
+
+
+/*
+    Print Styles
+*/
+@media print {
+    .ticket-count,
+    .searchbox,
+    .top-bar,
+    .edit-bar,
+    .alert-box,
+    .side-nav,
+    .bottom-links,
+    .occurrences-day-date,
+    .occurrences-filter-tags,
+    .occurrences-filter-date {
+        display: none;
+
+    }
 }

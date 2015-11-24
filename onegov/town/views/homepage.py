@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """ The onegov town homepage. """
 
 from collections import namedtuple
@@ -7,13 +5,12 @@ from onegov.event import OccurrenceCollection
 from onegov.core.security import Public
 from onegov.form import FormCollection
 from onegov.libres import ResourceCollection
-from onegov.page import PageCollection, Page
 from onegov.people import PersonCollection
 from onegov.town import _
 from onegov.town.app import TownApp
 from onegov.town.elements import Link, LinkGroup
 from onegov.town.layout import DefaultLayout, EventBaseLayout
-from onegov.town.models import AtoZ, Town
+from onegov.town.models import AtoZPages, Town
 
 
 @TownApp.html(model=Town, template='homepage.pt', permission=Public)
@@ -26,15 +23,15 @@ def view_town(self, request):
 
     Tile = namedtuple('Tile', ['page', 'links', 'number'])
 
-    pages = PageCollection(session)
-    children_query = pages.query().order_by(Page.title)
-
     tiles = []
+    homepage_pages = request.app.homepage_pages
     for ix, page in enumerate(layout.root_pages):
-
         if page.type == 'topic':
-            children = children_query.filter(Page.parent_id == page.id)
-            children = children.limit(3).all()
+            children = homepage_pages.get(page.id, tuple())
+            children = (session.merge(c, load=False) for c in children)
+
+            if not request.is_logged_in:
+                children = (c for c in children if not c.is_hidden_from_public)
         else:
             children = tuple()
 
@@ -42,8 +39,10 @@ def view_town(self, request):
             page=Link(page.title, request.link(page)),
             number=ix + 1,
             links=[
-                Link(c.title, request.link(c), classes=('tile-sub-link',))
-                for c in children
+                Link(
+                    c.title, request.link(c),
+                    classes=('tile-sub-link',), model=c
+                ) for c in children
             ]
         ))
 
@@ -54,12 +53,14 @@ def view_town(self, request):
         Link(
             text=_("Online Counter"),
             url=request.link(FormCollection(session)),
-            subtitle=_("Forms and applications")
+            subtitle=self.meta.get('online_counter_label')
+            or _("Forms and applications")
         ),
         Link(
             text=_("Reservations"),
             url=request.link(ResourceCollection(libres_context)),
-            subtitle=_("Daypasses and rooms")
+            subtitle=self.meta.get('reservations_label')
+            or _("Daypasses and rooms")
         ),
     ]
 
@@ -72,7 +73,8 @@ def view_town(self, request):
             Link(
                 text=_("SBB Daypass"),
                 url=request.link(sbb),
-                subtitle=_("Generalabonnement for Towns")
+                subtitle=self.meta.get('sbb_daypass_label')
+                or _("Generalabonnement for Towns")
             )
         )
 
@@ -115,7 +117,7 @@ def view_town(self, request):
             ),
             Link(
                 text=_("Topics"),
-                url=request.link(AtoZ(request)),
+                url=request.link(AtoZPages(request)),
                 subtitle=_("Catalog A-Z")
             ),
         ]

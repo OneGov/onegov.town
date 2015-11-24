@@ -1,12 +1,10 @@
-# -*- coding: utf-8 -*-
-
 from setuptools import setup, find_packages
 
 name = 'onegov.town'
 description = (
     'OneGov web application for small towns.'
 )
-version = '0.6.4'
+version = '0.9.0'
 
 
 def get_long_description():
@@ -39,7 +37,6 @@ setup(
         'elasticsearch',
         'isodate',
         'rjsmin',
-        'lazy-object-proxy',
         'lxml',
         'onegov.core>=0.4.25',
         'onegov.event>=0.0.5',
@@ -48,6 +45,7 @@ setup(
         'onegov.libres>=0.0.4',
         'onegov.page>=0.1.0',
         'onegov.people>=0.0.2',
+        'onegov.shared',
         'onegov.search',
         'onegov.ticket>=0.0.2',
         'onegov.user',
@@ -63,7 +61,6 @@ setup(
         test=[
             'coverage',
             'onegov.testing',
-            'mock',
             'webtest',
             'pyquery',
             'pytest-localserver'
@@ -78,8 +75,9 @@ setup(
     """,
     classifiers=[
         'Intended Audience :: Developers',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3 :: Only',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
     ]

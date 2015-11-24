@@ -20,7 +20,7 @@ from onegov.libres.models import Resource
 from onegov.town.app import TownApp
 from onegov.town.converters import extended_date_converter
 from onegov.town.models import (
-    AtoZ,
+    AtoZPages,
     Clipboard,
     Editor,
     File,
@@ -28,6 +28,7 @@ from onegov.town.models import (
     Image,
     ImageCollection,
     News,
+    PageMove,
     Search,
     SiteCollection,
     Thumbnail,
@@ -37,11 +38,17 @@ from onegov.town.models import (
 from onegov.page import PageCollection
 from onegov.people import Person, PersonCollection
 from onegov.ticket import Ticket, TicketCollection
+from onegov.user import Auth
 
 
 @TownApp.path(model=Town, path='/')
 def get_town(app):
     return app.town
+
+
+@TownApp.path(model=Auth, path='/auth')
+def get_auth(app, to='/'):
+    return Auth.from_app(app, to)
 
 
 @TownApp.path(model=Topic, path='/themen', absorb=True)
@@ -203,6 +210,20 @@ def get_sitecollection(app):
     return SiteCollection(app.session())
 
 
+@TownApp.path(model=PageMove,
+              path='/page-move/{subject_id}/{direction}/{target_id}',
+              converters=dict(subject_id=int, target_id=int))
+def get_page_move(app, subject_id, direction, target_id):
+    session = app.session()
+    pages = PageCollection(session)
+
+    subject = pages.by_id(subject_id)
+    target = pages.by_id(target_id)
+
+    if subject and target:
+        return PageMove(session, subject, target, direction)
+
+
 @TownApp.path(model=OccurrenceCollection, path='/veranstaltungen',
               converters=dict(start=extended_date_converter,
                               end=extended_date_converter, tags=[]))
@@ -230,6 +251,6 @@ def get_search(request, q='', page=0):
     return Search(request, q, page)
 
 
-@TownApp.path(model=AtoZ, path='/a-z')
+@TownApp.path(model=AtoZPages, path='/a-z')
 def get_a_to_z(request):
-    return AtoZ(request)
+    return AtoZPages(request)

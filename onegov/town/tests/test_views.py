@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import onegov.core
 import onegov.town
 import pytest
@@ -33,7 +32,7 @@ class SkipFirstForm(object):
         if len(self.forms) > 1:
             return self.forms[1]
         else:
-            return super(SkipFirstForm, self).form
+            return super().form
 
 
 class Response(SkipFirstForm, BaseResponse):
@@ -61,44 +60,44 @@ def test_view_permissions():
 
 def test_view_form_alert(town_app):
 
-    login = Client(town_app).get('/login')
+    login = Client(town_app).get('/auth/login')
     login = login.form.submit()
 
-    assert u'Das Formular enthält Fehler' in login
+    assert 'Das Formular enthält Fehler' in login
 
 
 def test_view_login(town_app):
 
     client = Client(town_app)
 
-    assert client.get('/logout', expect_errors=True).status_code == 403
+    assert client.get('/auth/logout', expect_errors=True).status_code == 403
 
-    response = client.get('/login')
+    response = client.get('/auth/login')
 
     # German is the default translation and there's no English translation yet
     # (the default *is* English, but it needs to be added as a locale, or it
     # won't be used)
     assert response.status_code == 200
-    assert u"E-Mail Adresse" in response
-    assert u"Passwort" in response
+    assert "E-Mail Adresse" in response
+    assert "Passwort" in response
 
-    assert client.get('/logout', expect_errors=True).status_code == 403
+    assert client.get('/auth/logout', expect_errors=True).status_code == 403
 
-    response.form.set('email', 'admin@example.org')
+    response.form.set('username', 'admin@example.org')
     response = response.form.submit()
     assert response.status_code == 200
-    assert u"E-Mail Adresse" in response
-    assert u"Passwort" in response
-    assert u"Dieses Feld wird benötigt." in response
-    assert client.get('/logout', expect_errors=True).status_code == 403
+    assert "E-Mail Adresse" in response
+    assert "Passwort" in response
+    assert "Dieses Feld wird benötigt." in response
+    assert client.get('/auth/logout', expect_errors=True).status_code == 403
 
-    response.form.set('email', 'admin@example.org')
+    response.form.set('username', 'admin@example.org')
     response.form.set('password', 'hunter2')
     response = response.form.submit()
 
     assert response.status_code == 302
-    assert client.get('/logout').status_code == 302
-    assert client.get('/logout', expect_errors=True).status_code == 403
+    assert client.get('/auth/logout').status_code == 302
+    assert client.get('/auth/logout', expect_errors=True).status_code == 403
 
 
 def test_view_files(town_app):
@@ -107,8 +106,8 @@ def test_view_files(town_app):
 
     assert client.get('/dateien', expect_errors=True).status_code == 403
 
-    login_page = client.get('/login')
-    login_page.form.set('email', 'admin@example.org')
+    login_page = client.get('/auth/login')
+    login_page.form.set('username', 'admin@example.org')
     login_page.form.set('password', 'hunter2')
     login_page.form.submit()
 
@@ -129,8 +128,8 @@ def test_view_images(town_app):
 
     assert client.get('/bilder', expect_errors=True).status_code == 403
 
-    login_page = client.get('/login')
-    login_page.form.set('email', 'admin@example.org')
+    login_page = client.get('/auth/login')
+    login_page.form.set('username', 'admin@example.org')
     login_page.form.set('password', 'hunter2')
     login_page.form.submit()
 
@@ -206,19 +205,20 @@ def test_login(town_app):
     assert links.text() == 'Login'
 
     login_page = client.get(links.attr('href'))
-    login_page.form['email'] = 'admin@example.org'
+    login_page.form['username'] = 'admin@example.org'
     login_page.form['password'] = ''
     login_page = login_page.form.submit()
 
-    assert u"Dieses Feld wird benötigt" in login_page.text
+    assert "Dieses Feld wird benötigt" in login_page.text
 
-    login_page.form['email'] = 'admin@example.org'
+    login_page.form['username'] = 'admin@example.org'
     login_page.form['password'] = 'wrong'
     login_page = login_page.form.submit()
 
-    assert "Unbekannter Benutzername oder falsches Passwort" in login_page.text
+    assert "Falsche E-Mail Adresse, falsches Passwort oder falscher Yubikey."\
+        in login_page.text
 
-    login_page.form['email'] = 'admin@example.org'
+    login_page.form['username'] = 'admin@example.org'
     login_page.form['password'] = 'hunter2'
 
     index_page = login_page.form.submit().follow()
@@ -241,18 +241,18 @@ def test_reset_password(town_app):
     assert links.text() == 'Login'
     login_page = client.get(links.attr('href'))
 
-    request_page = login_page.click(u'Passwort zurücksetzen')
-    assert u'Passwort zurücksetzen' in request_page.text
+    request_page = login_page.click('Passwort zurücksetzen')
+    assert 'Passwort zurücksetzen' in request_page.text
 
     request_page.form['email'] = 'someone@example.org'
     assert 'someone@example.org' in request_page.form.submit().follow()
-    assert len(town_app.smtpserver.outbox) == 0
+    assert len(town_app.smtp.outbox) == 0
 
     request_page.form['email'] = 'admin@example.org'
     assert 'admin@example.org' in request_page.form.submit().follow()
-    assert len(town_app.smtpserver.outbox) == 1
+    assert len(town_app.smtp.outbox) == 1
 
-    message = town_app.smtpserver.outbox[0]
+    message = town_app.smtp.outbox[0]
     message = message.get_payload(0).get_payload(decode=True)
     message = message.decode('iso-8859-1')
     link = list(document_fromstring(message).iterlinks())[0][2]
@@ -264,7 +264,7 @@ def test_reset_password(town_app):
     reset_page.form['email'] = 'someone_else@example.org'
     reset_page.form['password'] = 'new_password'
     reset_page = reset_page.form.submit()
-    assert u"Ungültiger Addresse oder abgelaufener Link" in reset_page.text
+    assert "Ungültiger Addresse oder abgelaufener Link" in reset_page.text
     assert token in reset_page.text
 
     reset_page.form['email'] = 'admin@example.org'
@@ -275,19 +275,22 @@ def test_reset_password(town_app):
 
     reset_page.form['email'] = 'admin@example.org'
     reset_page.form['password'] = 'new_password'
-    assert u"Passwort geändert" in reset_page.form.submit().follow().text
+    homepage = reset_page.form.submit().follow().text
+    assert "Passwort geändert" in homepage
+    assert "Login" in homepage  # do not automatically log in the user
 
     reset_page.form['email'] = 'admin@example.org'
     reset_page.form['password'] = 'new_password'
     reset_page = reset_page.form.submit()
-    assert u"Ungültiger Addresse oder abgelaufener Link" in reset_page.text
+    assert "Ungültiger Addresse oder abgelaufener Link" in reset_page.text
 
-    login_page.form['email'] = 'admin@example.org'
+    login_page.form['username'] = 'admin@example.org'
     login_page.form['password'] = 'hunter2'
     login_page = login_page.form.submit()
-    assert "Unbekannter Benutzername oder falsches Passwort" in login_page.text
+    assert "Falsche E-Mail Adresse, falsches Passwort oder falscher Yubikey."\
+        in login_page.text
 
-    login_page.form['email'] = 'admin@example.org'
+    login_page.form['username'] = 'admin@example.org'
     login_page.form['password'] = 'new_password'
     assert "Sie wurden eingeloggt" in login_page.form.submit().follow().text
 
@@ -297,8 +300,8 @@ def test_settings(town_app):
 
     assert client.get('/einstellungen', expect_errors=True).status_code == 403
 
-    login_page = client.get('/login')
-    login_page.form['email'] = 'admin@example.org'
+    login_page = client.get('/auth/login')
+    login_page.form['username'] = 'admin@example.org'
     login_page.form['password'] = 'hunter2'
     login_page.form.submit()
 
@@ -312,13 +315,13 @@ def test_settings(town_app):
     settings_page.form['reply_to'] = 'info@govikon.ch'
     settings_page = settings_page.form.submit()
 
-    assert u"Ungültige Farbe." in settings_page.text
+    assert "Ungültige Farbe." in settings_page.text
 
     settings_page.form['primary_color'] = '#ccddee'
     settings_page.form['reply_to'] = 'info@govikon.ch'
     settings_page = settings_page.form.submit()
 
-    assert u"Ungültige Farbe." not in settings_page.text
+    assert "Ungültige Farbe." not in settings_page.text
 
     settings_page.form['logo_url'] = 'https://seantis.ch/logo.img'
     settings_page.form['reply_to'] = 'info@govikon.ch'
@@ -344,26 +347,26 @@ def test_unauthorized(town_app):
     client = Client(town_app)
 
     unauth_page = client.get('/einstellungen', expect_errors=True)
-    assert u"Zugriff verweigert" in unauth_page.text
-    assert u"folgen Sie diesem Link um sich anzumelden" in unauth_page.text
+    assert "Zugriff verweigert" in unauth_page.text
+    assert "folgen Sie diesem Link um sich anzumelden" in unauth_page.text
 
     link = unauth_page.pyquery('#alternate-login-link')[0]
     login_page = client.get(link.attrib.get('href'))
-    login_page.form['email'] = 'editor@example.org'
+    login_page.form['username'] = 'editor@example.org'
     login_page.form['password'] = 'hunter2'
     unauth_page = login_page.form.submit().follow(expect_errors=True)
 
-    assert u"Zugriff verweigert" in unauth_page.text
-    assert u"mit einem anderen Benutzer anzumelden" in unauth_page.text
+    assert "Zugriff verweigert" in unauth_page.text
+    assert "mit einem anderen Benutzer anzumelden" in unauth_page.text
 
     link = unauth_page.pyquery('#alternate-login-link')[0]
     login_page = client.get(link.attrib.get('href'))
-    login_page.form['email'] = 'admin@example.org'
+    login_page.form['username'] = 'admin@example.org'
     login_page.form['password'] = 'hunter2'
     settings_page = login_page.form.submit().follow()
 
     assert settings_page.status_code == 200
-    assert u"Zugriff verweigert" not in settings_page
+    assert "Zugriff verweigert" not in settings_page
 
 
 def test_pages(town_app):
@@ -372,8 +375,8 @@ def test_pages(town_app):
     root_url = client.get('/').pyquery('.top-bar-section a').attr('href')
     assert len(client.get(root_url).pyquery('.edit-bar')) == 0
 
-    login_page = client.get('/login?to={}'.format(root_url))
-    login_page.form['email'] = 'admin@example.org'
+    login_page = client.get('/auth/login?to={}'.format(root_url))
+    login_page.form['username'] = 'admin@example.org'
     login_page.form['password'] = 'hunter2'
     root_page = login_page.form.submit().follow()
 
@@ -424,8 +427,8 @@ def test_pages(town_app):
 def test_news(town_app):
     client = Client(town_app)
 
-    login_page = client.get('/login')
-    login_page.form['email'] = 'admin@example.org'
+    login_page = client.get('/auth/login')
+    login_page.form['username'] = 'admin@example.org'
     login_page.form['password'] = 'hunter2'
     page = login_page.form.submit().follow()
 
@@ -456,7 +459,7 @@ def test_news(town_app):
     assert "It is very good" in page.text
     assert "It is lots of fun" not in page.text
 
-    page = page.click('weiterlesen...')
+    page = page.click('weiterlesen…')
 
     assert "We have a new homepage" in page.text
     assert "It is very good" in page.text
@@ -475,8 +478,8 @@ def test_delete_pages(town_app):
 
     root_url = client.get('/').pyquery('.top-bar-section a').attr('href')
 
-    login_page = client.get('/login?to={}'.format(root_url))
-    login_page.form['email'] = 'admin@example.org'
+    login_page = client.get('/auth/login?to={}'.format(root_url))
+    login_page.form['username'] = 'admin@example.org'
     login_page.form['password'] = 'hunter2'
 
     root_page = login_page.form.submit().follow()
@@ -502,13 +505,13 @@ def test_links(town_app):
 
     root_url = client.get('/').pyquery('.top-bar-section a').attr('href')
 
-    login_page = client.get('/login?to={}'.format(root_url))
-    login_page.form['email'] = 'admin@example.org'
+    login_page = client.get('/auth/login?to={}'.format(root_url))
+    login_page.form['username'] = 'admin@example.org'
     login_page.form['password'] = 'hunter2'
     root_page = login_page.form.submit().follow()
 
-    new_link = root_page.click(u"Verknüpfung")
-    assert u"Neue Verknüpfung" in new_link
+    new_link = root_page.click("Verknüpfung")
+    assert "Neue Verknüpfung" in new_link
 
     new_link.form['title'] = 'Google'
     new_link.form['url'] = 'https://www.google.ch'
@@ -606,9 +609,9 @@ def test_pending_submission_successful_file_upload(town_app):
     form_page = form_page.form.submit().follow()
 
     assert "README.txt" in form_page.text
-    assert u"Datei ersetzen" in form_page.text
-    assert u"Datei löschen" in form_page.text
-    assert u"Datei behalten" in form_page.text
+    assert "Datei ersetzen" in form_page.text
+    assert "Datei löschen" in form_page.text
+    assert "Datei behalten" in form_page.text
 
     # unfortunately we can't test more here, as webtest doesn't support
     # multiple differing fields of the same name...
@@ -617,8 +620,8 @@ def test_pending_submission_successful_file_upload(town_app):
 def test_edit_builtin_form(town_app):
     client = Client(town_app)
 
-    login_page = client.get('/login')
-    login_page.form.set('email', 'editor@example.org')
+    login_page = client.get('/auth/login')
+    login_page.form.set('username', 'editor@example.org')
     login_page.form.set('password', 'hunter2')
     login_page.form.submit()
 
@@ -635,8 +638,8 @@ def test_edit_builtin_form(town_app):
 def test_add_custom_form(town_app):
     client = Client(town_app)
 
-    login_page = client.get('/login')
-    login_page.form.set('email', 'editor@example.org')
+    login_page = client.get('/auth/login')
+    login_page.form.set('username', 'editor@example.org')
     login_page.form.set('password', 'hunter2')
     login_page.form.submit()
 
@@ -648,7 +651,7 @@ def test_add_custom_form(town_app):
     form_page.form['definition'] = "abc ="
     form_page = form_page.form.submit()
 
-    assert u"Das Formular ist nicht gültig." in form_page
+    assert "Das Formular ist nicht gültig." in form_page
 
     # this error is line based
     form_page = client.get('/formulare/neu')
@@ -658,7 +661,7 @@ def test_add_custom_form(town_app):
     form_page.form['definition'] = "xxx = !!!"
     form_page = form_page.form.submit()
 
-    assert u"Der Syntax in der 1. Zeile ist ungültig." in form_page
+    assert "Der Syntax in der 1. Zeile ist ungültig." in form_page
     assert 'data-highlight-line="1"' in form_page
 
     form_page.form['definition'] = "Name * = ___\nE-Mail * = @@@"
@@ -684,8 +687,8 @@ def test_delete_builtin_form(town_app):
     response = client.delete(builtin_form, expect_errors=True)
     assert response.status_code == 403
 
-    login_page = client.get('/login')
-    login_page.form.set('email', 'editor@example.org')
+    login_page = client.get('/auth/login')
+    login_page.form.set('username', 'editor@example.org')
     login_page.form.set('password', 'hunter2')
     login_page.form.submit()
 
@@ -696,8 +699,8 @@ def test_delete_builtin_form(town_app):
 def test_delete_custom_form(town_app):
     client = Client(town_app)
 
-    login_page = client.get('/login')
-    login_page.form.set('email', 'editor@example.org')
+    login_page = client.get('/auth/login')
+    login_page.form.set('username', 'editor@example.org')
     login_page.form.set('password', 'hunter2')
     login_page.form.submit()
 
@@ -718,8 +721,8 @@ def test_show_uploaded_file(town_app):
 
     client = Client(town_app)
 
-    login_page = client.get('/login')
-    login_page.form.set('email', 'editor@example.org')
+    login_page = client.get('/auth/login')
+    login_page.form.set('username', 'editor@example.org')
     login_page.form.set('password', 'hunter2')
     login_page.form.submit()
 
@@ -742,8 +745,8 @@ def test_show_uploaded_file(town_app):
 def test_hide_page(town_app):
     client = Client(town_app)
 
-    login_page = client.get('/login')
-    login_page.form.set('email', 'editor@example.org')
+    login_page = client.get('/auth/login')
+    login_page.form.set('username', 'editor@example.org')
     login_page.form.set('password', 'hunter2')
     login_page.form.submit()
 
@@ -768,8 +771,8 @@ def test_hide_page(town_app):
 def test_hide_news(town_app):
     client = Client(town_app)
 
-    login_page = client.get('/login')
-    login_page.form.set('email', 'editor@example.org')
+    login_page = client.get('/auth/login')
+    login_page.form.set('username', 'editor@example.org')
     login_page.form.set('password', 'hunter2')
     login_page.form.submit()
 
@@ -794,8 +797,8 @@ def test_hide_news(town_app):
 def test_hide_form(town_app):
     client = Client(town_app)
 
-    login_page = client.get('/login')
-    login_page.form.set('email', 'editor@example.org')
+    login_page = client.get('/auth/login')
+    login_page.form.set('username', 'editor@example.org')
     login_page.form.set('password', 'hunter2')
     login_page.form.submit()
 
@@ -819,8 +822,8 @@ def test_hide_form(town_app):
 def test_people_view(town_app):
     client = Client(town_app)
 
-    login_page = client.get('/login')
-    login_page.form.set('email', 'editor@example.org')
+    login_page = client.get('/auth/login')
+    login_page.form.set('username', 'editor@example.org')
     login_page.form.set('password', 'hunter2')
     login_page.form.submit()
 
@@ -832,18 +835,18 @@ def test_people_view(town_app):
     new_person.form['last_name'] = 'Gordon'
     person = new_person.form.submit().follow()
 
-    assert 'Flash Gordon' in person
+    assert 'Gordon Flash' in person
 
     people = client.get('/personen')
 
-    assert 'Flash Gordon' in people
+    assert 'Gordon Flash' in people
 
     edit_person = person.click('Bearbeiten')
     edit_person.form['first_name'] = 'Merciless'
     edit_person.form['last_name'] = 'Ming'
     person = edit_person.form.submit().follow()
 
-    assert 'Merciless Ming' in person
+    assert 'Ming Merciless' in person
 
     client.delete(person.request.url)
 
@@ -854,8 +857,8 @@ def test_people_view(town_app):
 def test_with_people(town_app):
     client = Client(town_app)
 
-    login_page = client.get('/login')
-    login_page.form.set('email', 'editor@example.org')
+    login_page = client.get('/auth/login')
+    login_page.form.set('username', 'editor@example.org')
     login_page.form.set('password', 'hunter2')
     login_page.form.submit()
 
@@ -873,19 +876,19 @@ def test_with_people(town_app):
 
     new_page = client.get('/themen/leben-wohnen').click('Thema')
 
-    assert 'Flash Gordon' in new_page
-    assert 'Merciless Ming' in new_page
+    assert 'Gordon Flash' in new_page
+    assert 'Ming Merciless' in new_page
 
     new_page.form['title'] = 'About Flash'
-    new_page.form['people_flash_gordon'] = True
-    new_page.form['people_flash_gordon_function'] = 'Astronaut'
+    new_page.form['people_gordon_flash'] = True
+    new_page.form['people_gordon_flash_function'] = 'Astronaut'
     edit_page = new_page.form.submit().follow().click('Bearbeiten')
 
-    assert edit_page.form['people_flash_gordon'].value == 'y'
-    assert edit_page.form['people_flash_gordon_function'].value == 'Astronaut'
+    assert edit_page.form['people_gordon_flash'].value == 'y'
+    assert edit_page.form['people_gordon_flash_function'].value == 'Astronaut'
 
-    assert edit_page.form['people_merciless_ming'].value is None
-    assert edit_page.form['people_merciless_ming_function'].value == ''
+    assert edit_page.form['people_ming_merciless'].value is None
+    assert edit_page.form['people_ming_merciless_function'].value == ''
 
 
 def test_tickets(town_app):
@@ -896,8 +899,8 @@ def test_tickets(town_app):
 
     assert len(client.get('/').pyquery('.ticket-count')) == 0
 
-    login_page = client.get('/login')
-    login_page.form.set('email', 'editor@example.org')
+    login_page = client.get('/auth/login')
+    login_page.form.set('username', 'editor@example.org')
     login_page.form.set('password', 'hunter2')
     login_page.form.submit()
 
@@ -909,18 +912,18 @@ def test_tickets(town_app):
     form_page.form['definition'] = "E-Mail *= @@@"
     form_page = form_page.form.submit()
 
-    client.get('/logout')
+    client.get('/auth/logout')
 
     form_page = client.get('/formular/newsletter')
     form_page.form['e_mail'] = 'info@seantis.ch'
 
-    assert len(town_app.smtpserver.outbox) == 0
+    assert len(town_app.smtp.outbox) == 0
 
     status_page = form_page.form.submit().follow().form.submit().follow()
 
-    assert len(town_app.smtpserver.outbox) == 1
+    assert len(town_app.smtp.outbox) == 1
 
-    message = town_app.smtpserver.outbox[0]
+    message = town_app.smtp.outbox[0]
     message = message.get_payload(0).get_payload(decode=True)
     message = message.decode('iso-8859-1')
 
@@ -930,8 +933,8 @@ def test_tickets(town_app):
     assert 'FRM-' in status_page
     assert 'Offen' in status_page
 
-    login_page = client.get('/login')
-    login_page.form.set('email', 'editor@example.org')
+    login_page = client.get('/auth/login')
+    login_page.form.set('username', 'editor@example.org')
     login_page.form.set('password', 'hunter2')
     login_page.form.submit()
 
@@ -962,9 +965,9 @@ def test_tickets(town_app):
     assert client.get('/').pyquery('.ticket-count div').text()\
         == '0 Offen 0 In Bearbeitung'
 
-    assert len(town_app.smtpserver.outbox) == 2
+    assert len(town_app.smtp.outbox) == 2
 
-    message = town_app.smtpserver.outbox[1]
+    message = town_app.smtp.outbox[1]
     message = message.get_payload(0).get_payload(decode=True)
     message = message.decode('iso-8859-1')
 
@@ -987,7 +990,7 @@ def test_tickets(town_app):
     assert client.get('/').pyquery('.ticket-count div').text()\
         == '0 Offen 1 In Bearbeitung'
 
-    message = town_app.smtpserver.outbox[2]
+    message = town_app.smtp.outbox[2]
     message = message.get_payload(0).get_payload(decode=True)
     message = message.decode('iso-8859-1')
 
@@ -1036,26 +1039,26 @@ def test_resource_slots(town_app):
     assert result[0]['start'] == '2015-08-04T00:00:00+02:00'
     assert result[0]['end'] == '2015-08-05T00:00:00+02:00'
     assert result[0]['className'] == 'event-available'
-    assert result[0]['title'] == u"Ganztägig\nVerfügbar"
+    assert result[0]['title'] == "Ganztägig \nVerfügbar"
 
     assert result[1]['start'] == '2015-08-05T00:00:00+02:00'
     assert result[1]['end'] == '2015-08-06T00:00:00+02:00'
     assert result[1]['className'] == 'event-available'
-    assert result[1]['title'] == u"Ganztägig\nVerfügbar"
+    assert result[1]['title'] == "Ganztägig \nVerfügbar"
 
     url = '/ressource/foo/slots?start=2015-08-06&end=2015-08-06'
     result = client.get(url).json
 
     assert len(result) == 1
     assert result[0]['className'] == 'event-unavailable'
-    assert result[0]['title'] == u"12:00 - 16:00\nBesetzt"
+    assert result[0]['title'] == "12:00 - 16:00 \nBesetzt"
 
 
 def test_resources(town_app):
     client = Client(town_app)
 
-    login_page = client.get('/login')
-    login_page.form.set('email', 'admin@example.org')
+    login_page = client.get('/auth/login')
+    login_page.form.set('username', 'admin@example.org')
     login_page.form.set('password', 'hunter2')
     login_page.form.submit()
 
@@ -1084,8 +1087,8 @@ def test_resources(town_app):
 def test_clipboard(town_app):
     client = Client(town_app)
 
-    login_page = client.get('/login')
-    login_page.form.set('email', 'admin@example.org')
+    login_page = client.get('/auth/login')
+    login_page.form.set('username', 'admin@example.org')
     login_page.form.set('password', 'hunter2')
     login_page.form.submit()
 
@@ -1106,8 +1109,8 @@ def test_clipboard(town_app):
 def test_clipboard_separation(town_app):
     client = Client(town_app)
 
-    login_page = client.get('/login')
-    login_page.form.set('email', 'admin@example.org')
+    login_page = client.get('/auth/login')
+    login_page.form.set('username', 'admin@example.org')
     login_page.form.set('password', 'hunter2')
     login_page.form.submit()
 
@@ -1119,8 +1122,8 @@ def test_clipboard_separation(town_app):
     # new client (browser) -> new clipboard
     client = Client(town_app)
 
-    login_page = client.get('/login')
-    login_page.form.set('email', 'admin@example.org')
+    login_page = client.get('/auth/login')
+    login_page.form.set('username', 'admin@example.org')
     login_page.form.set('password', 'hunter2')
     login_page.form.submit()
 
@@ -1130,8 +1133,8 @@ def test_clipboard_separation(town_app):
 def test_copy_pages_to_news(town_app):
     client = Client(town_app)
 
-    login_page = client.get('/login')
-    login_page.form.set('email', 'admin@example.org')
+    login_page = client.get('/auth/login')
+    login_page.form.set('username', 'admin@example.org')
     login_page.form.set('password', 'hunter2')
     login_page.form.submit()
 
@@ -1156,8 +1159,8 @@ def test_sitecollection(town_app):
 
     assert client.get('/sitecollection', expect_errors=True).status_code == 403
 
-    login_page = client.get('/login')
-    login_page.form.set('email', 'admin@example.org')
+    login_page = client.get('/auth/login')
+    login_page.form.set('username', 'admin@example.org')
     login_page.form.set('password', 'hunter2')
     login_page.form.submit()
 
@@ -1173,8 +1176,8 @@ def test_sitecollection(town_app):
 def test_allocations(town_app):
     client = Client(town_app)
 
-    login_page = client.get('/login')
-    login_page.form.set('email', 'admin@example.org')
+    login_page = client.get('/auth/login')
+    login_page.form.set('username', 'admin@example.org')
     login_page.form.set('password', 'hunter2')
     login_page.form.submit()
 
@@ -1195,7 +1198,7 @@ def test_allocations(town_app):
     ))
 
     assert len(slots.json) == 2
-    assert slots.json[0]['title'] == u"Ganztägig\nVerfügbar"
+    assert slots.json[0]['title'] == "Ganztägig \nVerfügbar"
 
     # change the daypasses
     edit = client.get(extract_href(slots.json[0]['actions'][1]))
@@ -1208,7 +1211,7 @@ def test_allocations(town_app):
     ))
 
     assert len(slots.json) == 1
-    assert slots.json[0]['title'] == u"Ganztägig\n2/2 Verfügbar"
+    assert slots.json[0]['title'] == "Ganztägig \n2/2 Verfügbar"
 
     # try to create a new allocation over an existing one
     new = client.get((
@@ -1220,7 +1223,7 @@ def test_allocations(town_app):
     new.form['daypasses_limit'] = 1
     new = new.form.submit()
 
-    assert u"Es besteht bereits eine Einteilung im gewünschten Zeitraum" in new
+    assert "Es besteht bereits eine Einteilung im gewünschten Zeitraum" in new
 
     # move the existing allocations
     slots = client.get((
@@ -1270,8 +1273,8 @@ def test_allocations(town_app):
 def test_allocation_times(town_app):
     client = Client(town_app)
 
-    login_page = client.get('/login')
-    login_page.form.set('email', 'admin@example.org')
+    login_page = client.get('/auth/login')
+    login_page.form.set('username', 'admin@example.org')
     login_page.form.set('password', 'hunter2')
     login_page.form.submit()
 
@@ -1367,18 +1370,22 @@ def test_reserve_allocation(town_app):
     ticket = details.form.submit().follow().follow()
 
     assert 'RSV-' in ticket.text
-    assert len(town_app.smtpserver.outbox) == 1
+    assert len(town_app.smtp.outbox) == 1
+
+    # make sure the resulting reservation has no session_id set
+    ids = [r.session_id for r in scheduler.managed_reservations()]
+    assert not any(ids)
 
     # try to create another reservation the same time
     reserve = client.get(reserve_url)
     reserve.form['e_mail'] = 'info@example.org'
     result = reserve.form.submit()
 
-    assert u"Der gewünschte Zeitraum ist nicht mehr verfügbar." in result
+    assert "Der gewünschte Zeitraum ist nicht mehr verfügbar." in result
 
     # try deleting the allocation with the existing reservation
-    login_page = client.get('/login')
-    login_page.form.set('email', 'admin@example.org')
+    login_page = client.get('/auth/login')
+    login_page.form.set('username', 'admin@example.org')
     login_page.form.set('password', 'hunter2')
     login_page.form.submit()
 
@@ -1404,9 +1411,9 @@ def test_reserve_allocation(town_app):
     ticket = ticket.click('Reservation annehmen').follow()
 
     assert 'Reservation annehmen' not in ticket
-    assert len(town_app.smtpserver.outbox) == 2
+    assert len(town_app.smtp.outbox) == 2
 
-    message = town_app.smtpserver.outbox[1]
+    message = town_app.smtp.outbox[1]
     message = message.get_payload(0).get_payload(decode=True)
     message = message.decode('iso-8859-1')
 
@@ -1431,14 +1438,14 @@ def test_reserve_allocation(town_app):
     assert town_app.session().query(Reservation).count() == 0
     assert town_app.session().query(FormSubmission).count() == 0
 
-    assert u"Der hinterlegte Datensatz wurde entfernt" in ticket
+    assert "Der hinterlegte Datensatz wurde entfernt" in ticket
     assert '28.08.2015' in ticket
     assert '4' in ticket
     assert '0xdeadbeef' in ticket
 
-    assert len(town_app.smtpserver.outbox) == 3
+    assert len(town_app.smtp.outbox) == 3
 
-    message = town_app.smtpserver.outbox[2]
+    message = town_app.smtp.outbox[2]
     message = message.get_payload(0).get_payload(decode=True)
     message = message.decode('iso-8859-1')
 
@@ -1449,7 +1456,7 @@ def test_reserve_allocation(town_app):
     # close the ticket
     ticket.click('Ticket abschliessen')
 
-    assert len(town_app.smtpserver.outbox) == 4
+    assert len(town_app.smtp.outbox) == 4
 
 
 def test_reserve_no_definition(town_app):
@@ -1482,7 +1489,7 @@ def test_reserve_no_definition(town_app):
     ticket = reserve.form.submit().follow().follow()
 
     assert 'RSV-' in ticket.text
-    assert len(town_app.smtpserver.outbox) == 1
+    assert len(town_app.smtp.outbox) == 1
 
 
 def test_reserve_session_bound(town_app):
@@ -1555,7 +1562,7 @@ def test_two_parallel_reservations(town_app):
 
     # one will win, one will lose
     assert f1.follow().status_code == 302
-    assert u"Der gewünschte Zeitraum ist nicht mehr verfügbar." in f2.follow()
+    assert "Der gewünschte Zeitraum ist nicht mehr verfügbar." in f2.follow()
 
 
 def test_cleanup_allocations(town_app):
@@ -1580,23 +1587,23 @@ def test_cleanup_allocations(town_app):
     # clean up the data
     client = Client(town_app)
 
-    login_page = client.get('/login')
-    login_page.form.set('email', 'admin@example.org')
+    login_page = client.get('/auth/login')
+    login_page.form.set('username', 'admin@example.org')
     login_page.form.set('password', 'hunter2')
     login_page.form.submit()
 
-    cleanup = client.get('/ressource/sbb-tageskarte').click(u"Aufräumen")
+    cleanup = client.get('/ressource/sbb-tageskarte').click("Aufräumen")
     cleanup.form['start'] = date(2015, 8, 31)
     cleanup.form['end'] = date(2015, 8, 1)
     cleanup = cleanup.form.submit()
 
-    assert u"Das End-Datum muss nach dem Start-Datum liegen" in cleanup
+    assert "Das End-Datum muss nach dem Start-Datum liegen" in cleanup
 
     cleanup.form['start'] = date(2015, 8, 1)
     cleanup.form['end'] = date(2015, 8, 31)
     resource = cleanup.form.submit().follow()
 
-    assert u"1 Einteilungen wurden erfolgreich entfernt" in resource
+    assert "1 Einteilungen wurden erfolgreich entfernt" in resource
 
 
 def test_view_occurrences_on_startpage(town_app):
@@ -1618,7 +1625,7 @@ def test_view_occurrences(town_app):
 
     def events(query=''):
         page = client.get('/veranstaltungen/?{}'.format(query))
-        return [event.text for event in page.pyquery('h2 a')]
+        return [event.text for event in page.pyquery('h3 a')]
 
     def total_events(query=''):
         page = client.get('/veranstaltungen/?{}'.format(query))
@@ -1653,7 +1660,7 @@ def test_view_occurrences(town_app):
     query = 'tags=Sports'
     assert tags(query) == ["Sport"]
     assert total_events(query) == 10
-    assert set(events(query)) == set(["MuKi Turnen", u"Grümpelturnier"])
+    assert set(events(query)) == set(["MuKi Turnen", "Grümpelturnier"])
 
     query = 'tags=Politics&tags=Party'
     assert sorted(tags(query)) == ["Party", "Politik"]
@@ -1774,8 +1781,8 @@ def test_submit_event(town_app):
 
     assert "My Event" not in client.get('/veranstaltungen')
 
-    assert len(town_app.smtpserver.outbox) == 1
-    message = town_app.smtpserver.outbox[0]
+    assert len(town_app.smtp.outbox) == 1
+    message = town_app.smtp.outbox[0]
     assert message.get('to') == "test@example.org"
     message = message.get_payload(0).get_payload(decode=True)
     message = message.decode('utf-8')
@@ -1784,8 +1791,8 @@ def test_submit_event(town_app):
     assert "Zugriff verweigert" in preview_page.form.submit(expect_errors=True)
 
     # Accept ticket
-    login_page = client.get('/login')
-    login_page.form.set('email', 'editor@example.org')
+    login_page = client.get('/auth/login')
+    login_page.form.set('username', 'editor@example.org')
     login_page.form.set('password', 'hunter2')
     login_page.form.submit()
 
@@ -1815,8 +1822,8 @@ def test_submit_event(town_app):
 
     assert "My Event" in client.get('/veranstaltungen')
 
-    assert len(town_app.smtpserver.outbox) == 2
-    message = town_app.smtpserver.outbox[1]
+    assert len(town_app.smtp.outbox) == 2
+    message = town_app.smtp.outbox[1]
     assert message.get('to') == "test@example.org"
     message = message.get_payload(0).get_payload(decode=True)
     message = message.decode('utf-8')
@@ -1830,12 +1837,13 @@ def test_submit_event(town_app):
         assert (start_date + timedelta(days=days)).strftime('%d.%m.%Y') in \
             message
     assert "Ihre Veranstaltung wurde angenommen" in message
+    assert ticket_nr in message
 
     # Close ticket
     ticket_page.click("Ticket abschliessen").follow()
 
-    assert len(town_app.smtpserver.outbox) == 3
-    message = town_app.smtpserver.outbox[2]
+    assert len(town_app.smtp.outbox) == 3
+    message = town_app.smtp.outbox[2]
     assert message.get('to') == "test@example.org"
     message = message.get_payload(0).get_payload(decode=True)
     message = message.decode('utf-8')
@@ -1856,8 +1864,8 @@ def test_edit_event(town_app):
     form_page.form['end_time'] = "22:00"
     form_page.form.submit().follow().form.submit().follow()
 
-    login_page = client.get('/login')
-    login_page.form.set('email', 'editor@example.org')
+    login_page = client.get('/auth/login')
+    login_page.form.set('username', 'editor@example.org')
     login_page.form.set('password', 'hunter2')
     login_page.form.submit()
 
@@ -1907,39 +1915,41 @@ def test_delete_event(town_app):
     form_page.form['end_time'] = "22:00"
     form_page.form.submit().follow().form.submit().follow()
 
-    login_page = client.get('/login')
-    login_page.form.set('email', 'editor@example.org')
+    login_page = client.get('/auth/login')
+    login_page.form.set('username', 'editor@example.org')
     login_page.form.set('password', 'hunter2')
     login_page.form.submit()
 
     ticket_page = client.get('/tickets/ALL/open').click("Annehmen").follow()
     ticket_page = ticket_page.click("Veranstaltung annehmen").follow()
+    ticket_nr = ticket_page.pyquery('.ticket-number').text()
 
     assert "My Event" in client.get('/veranstaltungen')
 
     # Try to delete a submitted event directly
     event_page = client.get('/veranstaltungen').click("My Event")
 
-    assert u"Diese Veranstaltung kann nicht gelöscht werden." in \
+    assert "Diese Veranstaltung kann nicht gelöscht werden." in \
         event_page.pyquery('a.delete-link')[0].values()
 
     # Delete the event via the ticket
     delete_link = ticket_page.pyquery('a.delete-link').attr('ic-delete-from')
     client.delete(delete_link)
 
-    assert len(town_app.smtpserver.outbox) == 3
-    message = town_app.smtpserver.outbox[2]
+    assert len(town_app.smtp.outbox) == 3
+    message = town_app.smtp.outbox[2]
     assert message.get('to') == "test@example.org"
     message = message.get_payload(0).get_payload(decode=True)
     message = message.decode('utf-8')
     assert "My Event" in message
     assert "Ihre Veranstaltung musste leider abgelehnt werden" in message
+    assert ticket_nr in message
 
     assert "My Event" not in client.get('/veranstaltungen')
 
     # Delete a non-submitted event
     event_page = client.get('/veranstaltungen').click("Gemeindeversammlung")
-    assert u"Möchten Sie die Veranstaltung wirklich löschen?" in \
+    assert "Möchten Sie die Veranstaltung wirklich löschen?" in \
         event_page.pyquery('a.delete-link')[0].values()
 
     delete_link = event_page.pyquery('a.delete-link').attr('ic-delete-from')
@@ -1951,8 +1961,8 @@ def test_delete_event(town_app):
 def test_basic_search(es_town_app):
     client = Client(es_town_app)
 
-    login_page = client.get('/login')
-    login_page.form['email'] = 'admin@example.org'
+    login_page = client.get('/auth/login')
+    login_page.form['username'] = 'admin@example.org'
     login_page.form['password'] = 'hunter2'
     login_page.form.submit().follow()
 
@@ -1993,8 +2003,8 @@ def test_basic_search(es_town_app):
 def test_basic_autocomplete(es_town_app):
     client = Client(es_town_app)
 
-    login_page = client.get('/login')
-    login_page.form.set('email', 'editor@example.org')
+    login_page = client.get('/auth/login')
+    login_page.form.set('username', 'editor@example.org')
     login_page.form.set('password', 'hunter2')
     login_page.form.submit()
 
@@ -2006,5 +2016,39 @@ def test_basic_autocomplete(es_town_app):
     new_person.form.submit()
 
     es_town_app.es_client.indices.refresh(index='_all')
-    assert client.get('/suche/suggest?q=Fl').json == ["Flash Gordon"]
-    assert client.get('/suche/suggest?q=Go').json == []
+    assert client.get('/suche/suggest?q=Go').json == ["Gordon Flash"]
+    assert client.get('/suche/suggest?q=Fl').json == []
+
+
+def test_pages_on_homepage(es_town_app):
+    client = Client(es_town_app)
+
+    login_page = client.get('/auth/login')
+    login_page.form.set('username', 'editor@example.org')
+    login_page.form.set('password', 'hunter2')
+    login_page.form.submit()
+
+    new_page = client.get('/themen/bildung-gesellschaft').click('Thema')
+    new_page.form['title'] = "0xdeadbeef"
+    new_page = new_page.form.submit().follow()
+
+    assert '0xdeadbeef' not in client.get('/')
+
+    edit_page = new_page.click('Bearbeiten')
+    edit_page.form['is_visible_on_homepage'] = True
+    edit_page.form.submit()
+
+    assert '0xdeadbeef' in client.get('/')
+
+    edit_page = new_page.click('Bearbeiten')
+    edit_page.form['is_hidden_from_public'] = True
+    edit_page.form.submit()
+
+    assert '0xdeadbeef' in client.get('/')
+    assert '0xdeadbeef' not in Client(es_town_app).get('/')
+
+    client.delete(
+        new_page.pyquery('a[ic-delete-from]')[0].attrib['ic-delete-from']
+    )
+
+    assert '0xdeadbeef' not in client.get('/')

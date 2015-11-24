@@ -55,11 +55,15 @@ def publish_event(self, request):
 
     self.publish()
 
-    request.success(_(u"You have accepted the event ${title}", mapping={
+    request.success(_("You have accepted the event ${title}", mapping={
         'title': self.title
     }))
 
     if self.meta.get('submitter_email'):
+
+        session = request.app.session()
+        ticket = TicketCollection(session).by_handler_id(self.id.hex)
+
         send_html_mail(
             request=request,
             template='mail_event_accepted.pt',
@@ -67,6 +71,7 @@ def publish_event(self, request):
             receivers=(self.meta.get('submitter_email'), ),
             content={
                 'model': self,
+                'ticket': ticket
             }
         )
 
@@ -189,7 +194,7 @@ def handle_edit_event(self, request, form):
     if form.submitted(request):
         form.update_model(self)
 
-        request.success(_(u"Your changes were saved"))
+        request.success(_("Your changes were saved"))
 
         if 'return-to' in request.GET:
             return morepath.redirect(request.GET['return-to'])
@@ -235,6 +240,7 @@ def handle_delete_event(self, request):
             receivers=(self.meta.get('submitter_email'), ),
             content={
                 'model': self,
+                'ticket': ticket
             }
         )
 

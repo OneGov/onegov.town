@@ -4,10 +4,129 @@ Changelog
 Unreleased
 ~~~~~~~~~~
 
-- People portraits are now round and work better on mobile.
+- Hides 'no lead-in' hint on news overview.
   [href]
 
-- Improve page panel design, allowing for longer function texts.
+- Renders image captions a bit more subtle.
+  [href]
+
+- Improves the legibility of small allocations in the calendar.
+  [href]
+
+- Improves display of new reservation form.
+  [href]
+
+0.9.0 (2015-11-20)
+~~~~~~~~~~~~~~~~~~~
+
+- Hides hidden resources in the overview.
+  [href]
+
+- Shows missing lead info on resources and forms in addition to pages.
+  [href]
+
+- The user is no longer logged-in right after a password reset.
+
+  This increases security by making sure that this is not a backdoor to
+  circumvent future 2FA implementations.
+  [href]
+
+- Removes the double scrollbars in the file select dialog.
+  [href]
+
+- Improves file/image upload styling, adding a progress bar for uploads.
+  [href]
+
+0.8.1 (2015-11-18)
+~~~~~~~~~~~~~~~~~~~
+
+- Fixes a critical issue which could result in lost reservations.
+  [href]
+
+0.8.0 (2015-11-18)
+~~~~~~~~~~~~~~~~~~~
+
+- Adds the ability to override the default labels for the online counter,
+  the reservations and the sbb daypass on the homepage.
+  [href]
+
+- Improves print styles.
+  [msom]
+
+- Adds image captions.
+  [msom]
+
+- Improves event list for mobiles.
+  [msom]
+
+- Adds ticket reference to event mails.
+  [msom]
+
+- Hides "open in new tab" and "text orientation" in image edit dialog.
+  [msom]
+
+- Fixes generation of faulty empty tags in mark_images.
+  [msom]
+
+- Sorts uploaded files alphabetically.
+  [msom]
+
+- Adds social media links.
+  [msom]
+
+- Adds links to contact page and opening hours page.
+  [msom]
+
+- Visualizes the contrast ratio of the primary color with a meter.
+  [msom]
+
+- Shows a warning if a page contains no lead.
+  [msom]
+
+0.7.1 (2015-10-26)
+~~~~~~~~~~~~~~~~~~~
+
+- Makes sure the page move api only accepts numbers for its ids.
+  [href]
+
+- Introduces a delay to drag & drop operations to prevent accidents.
+  [href]
+
+0.7.0 (2015-10-22)
+~~~~~~~~~~~~~~~~~~~
+
+- Adds the ability to have topics and links appear on the frontpage by
+  selecting a checkbox on the edit dialog.
+  [href]
+
+- Adds the ability to order pages using drag & drop in the sidebar.
+  [href]
+
+- People are now always rendered "Firstname Lastname", without salutation.
+  [href]
+
+0.6.6 (2015-10-19)
+~~~~~~~~~~~~~~~~~~~
+
+- Change default locale from 'de_ch' to 'de_CH', as the former does not exist.
+  [href]
+
+0.6.5 (2015-10-16)
+~~~~~~~~~~~~~~~~~~~
+
+- Updates redactor to 10.2.5.
+  [href]
+
+- Switch from 'de' to 'de_CH' to properly support Swiss formatting.
+  [href]
+
+- Removes Python 2.x support.
+  [href]
+
+- Logouts now redirect to the current page, just like logins.
+  [href]
+
+- Fixes various little design issues.
   [href]
 
 - Fixes elasticsearch offline warning being recorded mistakenly.

@@ -2,11 +2,13 @@ from onegov.core import utils
 from onegov.page import Page
 from onegov.search import ORMSearchable
 from onegov.town.forms import LinkForm, PageForm
+from onegov.town.models.atoz import AtoZ
 from onegov.town.models.traitinfo import TraitInfo
 from onegov.town.models.extensions import (
     ContactExtension,
     HiddenFromPublicExtension,
     PersonLinkExtension,
+    VisibleOnHomepageExtension,
 )
 from sqlalchemy import desc
 from sqlalchemy.orm import undefer, object_session
@@ -47,8 +49,8 @@ class SearchablePage(ORMSearchable):
         }
 
 
-class Topic(Page, TraitInfo, SearchablePage,
-            HiddenFromPublicExtension, ContactExtension, PersonLinkExtension):
+class Topic(Page, TraitInfo, SearchablePage, HiddenFromPublicExtension,
+            VisibleOnHomepageExtension, ContactExtension, PersonLinkExtension):
     __mapper_args__ = {'polymorphic_identity': 'topic'}
 
     es_type_name = 'topics'
@@ -87,7 +89,10 @@ class Topic(Page, TraitInfo, SearchablePage,
 
     def get_form_class(self, trait, request):
         if trait == 'link':
-            return LinkForm
+            return self.with_content_extensions(LinkForm, request, extensions=[
+                HiddenFromPublicExtension,
+                VisibleOnHomepageExtension
+            ])
 
         if trait == 'page':
             return self.with_content_extensions(PageForm, request)
@@ -146,3 +151,24 @@ class News(Page, TraitInfo, SearchablePage,
         query = query.options(undefer('content'))
 
         return query
+
+
+class AtoZPages(AtoZ):
+
+    def get_title(self, item):
+        return item.title
+
+    def get_items(self):
+        from onegov.town.models.page import Topic
+
+        # XXX implement correct collation support on the database level
+        topics = self.request.app.session().query(Topic).all()
+        topics = sorted(topics, key=self.sortkey)
+
+        if self.request.is_logged_in:
+            return [topic for topic in topics if topic.trait == 'page']
+        else:
+            return [
+                topic for topic in topics if topic.trait == 'page'
+                and not topic.is_hidden_from_public
+            ]

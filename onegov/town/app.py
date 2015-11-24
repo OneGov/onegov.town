@@ -10,15 +10,18 @@ use different templating languages.
 import transaction
 
 from cached_property import cached_property
+from collections import defaultdict
 from contextlib import contextmanager
 from onegov.core import Framework
 from onegov.core import utils
-from onegov.search import ElasticsearchApp
 from onegov.libres import LibresIntegration
+from onegov.page import PageCollection
+from onegov.search import ElasticsearchApp
+from onegov.shared import asset
 from onegov.ticket import TicketCollection
 from onegov.town import log
 from onegov.town.initial_content import add_builtin_forms
-from onegov.town.models import Town
+from onegov.town.models import Town, Topic
 from onegov.town.theme import TownTheme
 from webassets import Bundle
 
@@ -78,6 +81,37 @@ class TownApp(Framework, LibresIntegration, ElasticsearchApp):
     def update_ticket_count(self):
         return self.cache.delete('ticket_count')
 
+    @property
+    def homepage_pages(self):
+        return self.cache.get_or_create(
+            'homepage_pages', self.load_homepage_pages)
+
+    def load_homepage_pages(self):
+        pages = PageCollection(self.session()).query()
+        pages = pages.filter(Topic.type == 'topic')
+
+        # XXX use JSON/JSONB for this (the attribute is not there if it's
+        # false, so this is not too bad speed-wise but it's still awful)
+        pages = pages.filter(Topic.meta.contains(
+            'is_visible_on_homepage'
+        ))
+
+        result = defaultdict(list)
+        for page in pages.all():
+            if page.is_visible_on_homepage:
+                result[page.root.id].append(page)
+
+        for key in result:
+            result[key] = list(sorted(
+                result[key],
+                key=lambda p: utils.normalize_for_url(p.title)
+            ))
+
+        return result
+
+    def update_homepage_pages(self):
+        return self.cache.delete('homepage_pages')
+
     def send_email(self, **kwargs):
         """ Wraps :meth:`onegov.core.framework.Framework.send_email`, setting
         the reply_to address by using the reply address from the town
@@ -87,14 +121,12 @@ class TownApp(Framework, LibresIntegration, ElasticsearchApp):
 
         assert 'reply_to' in self.town.meta
 
-        reply_to = u"{} <{}>".format(
-            self.town.name, self.town.meta['reply_to']
-        )
+        reply_to = "{} <{}>".format(self.town.name, self.town.meta['reply_to'])
 
-        return super(TownApp, self).send_email(reply_to=reply_to, **kwargs)
+        return super().send_email(reply_to=reply_to, **kwargs)
 
     def configure_application(self, **cfg):
-        super(TownApp, self).configure_application(**cfg)
+        super().configure_application(**cfg)
 
         if self.has_database_connection:
             schema_prefix = self.namespace + '-'
@@ -124,6 +156,8 @@ class TownApp(Framework, LibresIntegration, ElasticsearchApp):
     @cached_property
     def webassets_bundles(self):
 
+        jsminifier = 'rjsmin'
+
         confirm = Bundle(
             'js/confirm.jsx',
             filters='jsx',
@@ -132,7 +166,7 @@ class TownApp(Framework, LibresIntegration, ElasticsearchApp):
 
         dropzone = Bundle(
             'js/dropzone.js',
-            filters='rjsmin',
+            filters=jsminifier,
             output='bundles/dropzone.bundle.js'
         )
 
@@ -162,7 +196,7 @@ class TownApp(Framework, LibresIntegration, ElasticsearchApp):
             'js/imagemanager.js',
             'js/redactor.de.js',
             'js/editor.js',
-            filters='rjsmin',
+            filters=jsminifier,
             output='bundles/editor.bundle.js'
         )
 
@@ -171,7 +205,7 @@ class TownApp(Framework, LibresIntegration, ElasticsearchApp):
             'js/ace-mode-form.js',
             'js/ace-theme-tomorrow.js',
             'js/code_editor.js',
-            filters='rjsmin',
+            filters=jsminifier,
             output='bundles/code_editor.bundle.js'
         )
 
@@ -183,12 +217,12 @@ class TownApp(Framework, LibresIntegration, ElasticsearchApp):
             'js/intercooler.js',
             'js/underscore.js',
             'js/react.js',
-            'js/form_dependencies.js',
+            asset('js/form_dependencies.js'),
             confirm,
             typeahead,
             'js/jquery.datetimepicker.js',
             'js/common.js',
-            filters='rjsmin',
+            filters=jsminifier,
             output='bundles/common.bundle.js'
         )
 
@@ -205,7 +239,7 @@ class TownApp(Framework, LibresIntegration, ElasticsearchApp):
             'js/fullcalendar.de.js',
             'js/jquery.popupoverlay.js',
             'js/fullcalendar_custom.js',
-            filters='rjsmin',
+            filters=jsminifier,
             output='bundles/fullcalendar.bundle.js'
         )
 
@@ -218,15 +252,28 @@ class TownApp(Framework, LibresIntegration, ElasticsearchApp):
         check_password = Bundle(
             'js/zxcvbn.js',
             'js/check_password.js',
-            filters='rjsmin',
+            filters=jsminifier,
             output='bundles/check_password.bundle.js'
+        )
+
+        check_contrast = Bundle(
+            'js/check_contrast.js',
+            filters=jsminifier,
+            output='bundles/check_contrast.bundle.js'
         )
 
         events = Bundle(
             'js/url.js',
             'js/events.js',
-            filters='rjsmin',
+            filters=jsminifier,
             output='bundles/events.bundle.js'
+        )
+
+        sortable = Bundle(
+            'js/sortable.js',
+            'js/sortable_custom.js',
+            filters=jsminifier,
+            output='bundles/sortable.bundle.js'
         )
 
         return {
@@ -238,9 +285,11 @@ class TownApp(Framework, LibresIntegration, ElasticsearchApp):
             'editor': editor,
             'code_editor': code_editor,
             'check_password': check_password,
+            'check_contrast': check_contrast,
             'fullcalendar': fullcalendar,
             'fullcalendar_css': fullcalendar_css,
             'events': events,
+            'sortable': sortable
         }
 
 
@@ -254,16 +303,15 @@ def get_theme():
     return TownTheme()
 
 
-@TownApp.setting(section='i18n', name='domain')
-def get_i18n_domain():
-    return 'onegov.town'
-
-
-@TownApp.setting(section='i18n', name='localedir')
-def get_i18n_localedir():
-    return utils.module_path('onegov.town', 'locale')
+@TownApp.setting(section='i18n', name='localedirs')
+def get_i18n_localedirs():
+    return [
+        utils.module_path('onegov.town', 'locale'),
+        utils.module_path('onegov.form', 'locale'),
+        utils.module_path('onegov.user', 'locale')
+    ]
 
 
 @TownApp.setting(section='i18n', name='default_locale')
 def get_i18n_default_locale():
-    return 'de'
+    return 'de_CH'

@@ -155,7 +155,7 @@
                 <p class="news-date">${layout.format_date(item.created, 'relative')}</p>
                 <p class="news-lead">${item.content.lead}</p>
                 <p class="news-continue" tal:condition="item.content.text">
-                    <a tal:attributes="href request.link(item)" i18n:translate="">read on...</a>
+                    <a tal:attributes="href request.link(item)" i18n:translate="">read on…</a>
                 </p>
             </div>
         </div>
@@ -184,25 +184,40 @@
     </tal:block>
 </metal:hidden_page_hint>
 
+<metal:empty_lead_hint define-macro="empty_page_lead_hint" i18n:domain="onegov.town">
+    <tal:block condition="not item.lead and request.is_logged_in|nothing">
+        <div class="row">
+            <div class="small-12 columns">
+                <div class="panel callout">
+                    <p i18n:translate>This site contains no lead.</p>
+                </div>
+            </div>
+        </div>
+    </tal:block>
+</metal:empty_lead_hint>
+
 <metal:page_content define-macro="page_content" i18n:domain="onegov.town">
-    <div class="row" tal:condition="lead or text or people or contact">
+    <div class="row">
         <tal:block condition="not: people or contact">
             <div class="small-12 columns">
                 <span class="page-lead" tal:condition="lead" tal:content="lead" />
                 <div class="page-text" tal:condition="text" tal:content="structure text" />
+                <div metal:define-slot="after-text"></div>
             </div>
+
         </tal:block>
         <tal:block condition="people or contact">
             <div class="small-12 medium-8 columns">
                 <span class="page-lead" tal:condition="lead" tal:content="lead" />
                 <div class="page-text" tal:condition="text" tal:content="structure text" />
+                <div metal:define-slot="after-text"></div>
             </div>
             <div class="small-12 medium-4 columns" tal:condition="people or contact">
                 <div class="page-content-panel contact-panel" tal:condition="contact">
                     <p tal:content="structure contact.rstrip('\n').replace('\n', '<br>')"></p>
                 </div>
                 <div class="page-content-panel people-panel" tal:condition="people">
-                    <h2 class="show-for-sr" i18n:translate>People</h2>
+                    <h2 i18n:translate>People</h2>
                     <ul>
                         <li tal:repeat="person people">
                             <a href="${request.link(person)}">${person.title}</a>
@@ -294,10 +309,23 @@
 </metal:person_card>
 
 <metal:sidebar define-macro="sidebar" i18n:domain="onegov.town">
-    <ul class="side-nav">
-        <li tal:repeat="link layout.sidebar_links" tal:attributes="class getattr(link, 'active', None) and 'active' or ''">
-            <tal:block replace="structure link(request)" />
-        </li>
+    <ul class="side-nav" data-sortable data-sortable-url="${layout.sortable_url_template}">
+        <tal:block repeat="link layout.sidebar_links">
+            <li tal:define="is_group hasattr(link, 'links')" class="${is_group and 'active' or ''}" data-sortable-id="${request.is_logged_in and link.model.id}">
+                <tal:block condition="not:is_group" replace="structure link(request)" />
+                <tal:block condition="is_group">
+                    <a href="#" class="group-title">${link.title}
+                        <metal:block use-macro="layout.macros['hidden_from_public_hint']" tal:define="item link"/>
+                    </a>
+                    <ul class="children" tal:condition="link.links"
+                        data-sortable data-sortable-url="${layout.sortable_url_template}">
+                        <li tal:repeat="child link.links" data-sortable-id="${request.is_logged_in and child.model.id}">
+                            <tal:block replace="structure child(request)" />
+                        </li>
+                    </ul>
+                </tal:block>
+            </li>
+        </tal:block>
     </ul>
 </metal:sidebar>
 
@@ -411,8 +439,22 @@
         <dt i18n:translate="">All dates</dt>
         <dd tal:define="occurrences event.occurrence_dates(localize=True)">
             <ul>
-                <li tal:repeat="occurrence occurrences">${layout.format_date(occurrence, 'weekday')} ${layout.format_date(occurrence, 'date')}</li>
+                <li tal:repeat="occurrence occurrences">${layout.format_date(occurrence, 'weekday_long')} ${layout.format_date(occurrence, 'date')}</li>
             </ul>
         </dd>
     </dl>
 </metal:display_event>
+
+<metal:atoz define-macro="atoz" i18n:domain="onegov.town">
+    <div class="atoz-block" tal:repeat="item items">
+        <h2>${item[0]}</h2>
+        <ul>
+            <li tal:repeat="detail item[1]">
+                <div metal:define-slot="item-detail">
+                    <a href="${request.link(detail)}">${detail.title}</a>
+                    <metal:hint tal:define="item detail" use-macro="layout.macros['hidden_from_public_hint']" />
+                </div>
+            </li>
+        </ul>
+    </div>
+</metal:atoz>

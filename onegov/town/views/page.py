@@ -19,6 +19,7 @@ def delete_page(self, request):
         raise exc.HTTPMethodNotAllowed()
 
     PageCollection(request.app.session()).delete(self)
+    request.app.update_homepage_pages()
     request.success(self.trait_messages[self.trait]['delete_message'])
 
 
@@ -45,7 +46,7 @@ def view_topic(self, request):
         'page': self,
         'children': [
             Link(child.title, request.link(child), model=child)
-            for child in sorted(children, key=lambda c: c.title)
+            for child in children
         ]
     }
 
