@@ -4,6 +4,9 @@ Changelog
 Unreleased
 ~~~~~~~~~~
 
+- Localize date input format.
+  [msom]
+
 0.11.2 (2015-12-08)
 ~~~~~~~~~~~~~~~~~~~
 
