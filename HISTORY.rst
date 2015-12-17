@@ -4,6 +4,9 @@ Changelog
 Unreleased
 ~~~~~~~~~~
 
+- Localize date input format.
+  [msom]
+
 - Opens links pointing to files in a new tab.
   [href]
 
