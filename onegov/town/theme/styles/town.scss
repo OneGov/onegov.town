@@ -1360,6 +1360,10 @@ $all-ticket-icon: '\f055';
         &.ticket-action {
             white-space: nowrap;
         }
+
+        &.ticket-group div:first-child {
+            font-weight: bold;
+        }
     }
 
     th {
@@ -1904,6 +1908,7 @@ tr.ticket:hover {
             &:hover {
                 text-decoration: none;
             }
+
             &::before {
                 @include icon($disabled-icon);
                 color: $monsoon;

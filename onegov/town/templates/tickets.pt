@@ -42,11 +42,10 @@
                                 ${ticket.number}
                             </a>
                         </td>
-                        <td class="ticket-group">
-                            ${translate(ticket.group)}
-                        </td>
-                        <td class="ticket-title">
-                            ${ticket.title}
+                        <td class="ticket-group" colspan="2">
+                            <div>${translate(ticket.group)}</div>
+                            <div>${ticket.title}</div>
+                            <div>${ticket.subtitle}</div>
                         </td>
                         <td class="ticket-date">
                             ${layout.format_date(ticket.created, 'relative')}
@@ -58,9 +57,6 @@
                                 </a>
                             </tal:block>
                             <tal:block condition="ticket.state != 'open'">
-                                <tal:block condition="ticket.user_id">
-                                    ${ticket.user.username}
-                                </tal:block>
                             </tal:block>
                         </td>
                     </tr>
