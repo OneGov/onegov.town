@@ -1350,7 +1350,9 @@ $all-ticket-icon: '\f055';
     td {
         vertical-align: top;
 
+        &.ticket-date,
         &.ticket-user {
+            color: $monsoon;
             text-align: right;
         }
 
@@ -1359,6 +1361,10 @@ $all-ticket-icon: '\f055';
         &.ticket-date,
         &.ticket-action {
             white-space: nowrap;
+        }
+
+        &.ticket-group div:first-child {
+            font-weight: bold;
         }
     }
 
@@ -1411,18 +1417,6 @@ $all-ticket-icon: '\f055';
 .ticket-handler-EVN td:first-child::before {
     @include icon($evn-handler-icon);
     color: $monsoon;
-}
-
-.ticket-row-state-pending td:last-child::after {
-    @include icon($pending-ticket-icon);
-    color: $monsoon;
-    padding-left: .5ex;
-}
-
-.ticket-row-state-closed td:last-child::after {
-    @include icon($closed-ticket-icon);
-    color: $monsoon;
-    padding-left: .5ex;
 }
 
 tr.ticket:hover {
@@ -1904,6 +1898,7 @@ tr.ticket:hover {
             &:hover {
                 text-decoration: none;
             }
+
             &::before {
                 @include icon($disabled-icon);
                 color: $monsoon;

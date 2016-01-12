@@ -4,6 +4,9 @@ Changelog
 Unreleased
 ~~~~~~~~~~
 
+- Adds more information about tickets to the tickets overview.
+  [href]
+
 - Stops non-existing ressource paths from triggering an exceptions.
   [href]
 
