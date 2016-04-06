@@ -1,4 +1,5 @@
 from onegov.core import utils
+from onegov.core.orm.mixins import content_property
 from onegov.page import Page
 from onegov.search import ORMSearchable
 from onegov.town.forms import LinkForm, PageForm
@@ -7,6 +8,7 @@ from onegov.town.models.traitinfo import TraitInfo
 from onegov.town.models.extensions import (
     ContactExtension,
     HiddenFromPublicExtension,
+    CoordinatesExtension,
     PersonLinkExtension,
     VisibleOnHomepageExtension,
 )
@@ -23,13 +25,9 @@ class SearchablePage(ORMSearchable):
         'text': {'type': 'localized_html'}
     }
 
-    @property
-    def lead(self):
-        return self.content.get('lead', '')
-
-    @property
-    def text(self):
-        return self.content.get('text', '')
+    lead = content_property('lead')
+    text = content_property('text')
+    url = content_property('url')
 
     @property
     def es_public(self):
@@ -51,7 +49,8 @@ class SearchablePage(ORMSearchable):
 
 
 class Topic(Page, TraitInfo, SearchablePage, HiddenFromPublicExtension,
-            VisibleOnHomepageExtension, ContactExtension, PersonLinkExtension):
+            VisibleOnHomepageExtension, ContactExtension, PersonLinkExtension,
+            CoordinatesExtension):
     __mapper_args__ = {'polymorphic_identity': 'topic'}
 
     es_type_name = 'topics'
@@ -102,7 +101,8 @@ class Topic(Page, TraitInfo, SearchablePage, HiddenFromPublicExtension,
 
 
 class News(Page, TraitInfo, SearchablePage,
-           HiddenFromPublicExtension, ContactExtension, PersonLinkExtension):
+           HiddenFromPublicExtension, ContactExtension, PersonLinkExtension,
+           CoordinatesExtension):
     __mapper_args__ = {'polymorphic_identity': 'news'}
 
     es_type_name = 'news'

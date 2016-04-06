@@ -1,6 +1,18 @@
 Changelog
 ---------
 
+1.6.1 (2016-04-06)
+~~~~~~~~~~~~~~~~~~~
+
+- Adds a proper margin to the map in the event view.
+  [href]
+
+1.6.0 (2016-04-05)
+~~~~~~~~~~~~~~~~~~~
+
+- Adds the ability to add coordinates to pages, forms, resources and events.
+  [href]
+
 - Gives admins the ability to manage subscriptions.
   [href]
 

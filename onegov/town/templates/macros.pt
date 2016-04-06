@@ -206,22 +206,25 @@
 
 <metal:page_content define-macro="page_content" i18n:domain="onegov.town">
     <div class="row">
-        <tal:block condition="not: people or contact">
+        <tal:block condition="not: people or contact or coordinates">
             <div class="small-12 columns">
                 <span class="page-lead" tal:condition="lead" tal:content="lead" />
                 <div class="page-text" tal:condition="text" tal:content="structure text" />
                 <div metal:define-slot="after-text"></div>
             </div>
         </tal:block>
-        <tal:block condition="people or contact">
+        <tal:block condition="people or contact or coordinates">
             <div class="small-12 medium-8 columns">
                 <span class="page-lead" tal:condition="lead" tal:content="lead" />
                 <div class="page-text" tal:condition="text" tal:content="structure text" />
                 <div metal:define-slot="after-text"></div>
             </div>
-            <div class="small-12 medium-4 columns" tal:condition="people or contact">
-                <div class="page-content-panel contact-panel" tal:condition="contact">
-                    <tal:block content="structure contact" />
+            <div class="small-12 medium-4 columns" tal:condition="people or contact or coordinates">
+                <div class="page-content-panel contact-panel" tal:condition="contact or coordinates">
+                    <tal:block condition="contact" content="structure contact" />
+                    <br tal:condition="coordinates and contact" />
+                    <h2 i18n:translate tal:condition="not contact">Map</h2>
+                    <div tal:condition="coordinates" class="marker-map" data-map-type="thumbnail" data-lat="${coordinates.lat}" data-lon="${coordinates.lon}" data-zoom="${coordinates.zoom}"></div>
                 </div>
                 <div class="page-content-panel people-panel" tal:condition="people">
                     <h2 i18n:translate>People</h2>
@@ -449,6 +452,10 @@
         <dd tal:content="structure event.description.replace('\n', '<br>')" />
         <dt i18n:translate="">Location</dt>
         <dd>${event.location}</dd>
+        <dt i18n:translate="" tal:condition="event.has_coordinates">Karte</dt>
+        <dd tal:condition="event.has_coordinates">
+            <div class="marker-map" data-map-type="thumbnail" data-lat="${event.lat}" data-lon="${event.lon}" data-zoom="${event.zoom}"></div>
+        </dd>
         <dt i18n:translate="">Tags</dt>
         <dd>
             <ul>
