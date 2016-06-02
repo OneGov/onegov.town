@@ -1,6 +1,18 @@
 Changelog
 ---------
 
+- Adds a shortcut to create reservation n with the start/end of reservation n - 1.
+  [href]
+
+- Always select the first field when opening a reservation popup.
+  [href]
+
+- Accepts a wider range of inputs when changing the reservation start/end.
+  [href]
+
+- Fixes calendar performance regression introduced in 1.7.0.
+  [href]
+
 1.8.2 (2016-05-31)
 ~~~~~~~~~~~~~~~~~~~
 

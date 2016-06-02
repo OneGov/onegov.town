@@ -278,7 +278,7 @@ rc.showActionsPopup = function(calendar, element, event) {
         $(event.actions.join('')).appendTo(wrapper);
     }
 
-    ReservationForm.render(reservation.get(0), event, function(state) {
+    ReservationForm.render(reservation.get(0), event, rc.previousReservationState, function(state) {
         var url = new Url(event.reserveurl);
         url.query.start = state.start;
         url.query.end = state.end;
@@ -344,7 +344,7 @@ rc.onPopupOpen = function(calendar) {
         popup.addClass(className);
     });
 
-    var links = popup.find('a');
+    var links = popup.find('a:not(.internal)');
 
     // hookup all links with intercool
     links.each(function(_ix, link) {
@@ -453,11 +453,34 @@ rc.setupReservationSelect = function(fcOptions) {
         calendar.on('rc-reservations-changed', function() {
             $.getJSON(fcOptions.reservations + '&ie-cache=' + (new Date()).getTime(), function(reservations) {
                 ReservationSelection.render(selection.get(0), calendar, reservations, fcOptions.reservationform);
+                rc.loadPreviousReservationState(reservations);
             });
         });
 
         calendar.trigger('rc-reservations-changed');
     });
+};
+
+// takes the loaded reservations and deduces the previous state from them
+rc.loadPreviousReservationState = function(reservations) {
+    if (reservations.length > 0) {
+        reservations = _.sortBy(reservations, function(reservation) {
+            return reservation.created;
+        });
+
+        for (var i = reservations.length - 1; i >= 0; i--) {
+            if (reservations[i].time.match(/^\d{2}:\d{2} - \d{2}:\d{2}$/)) {
+                rc.previousReservationState = {
+                    'start': reservations[i].time.split(' - ')[0],
+                    'end': reservations[i].time.split(' - ')[1]
+                };
+
+                break;
+            }
+        }
+    } else {
+        rc.previousReservationState = {};
+    }
 };
 
 // renders the occupied partitions on an event
@@ -695,6 +718,15 @@ ReservationForm = React.createClass({
 
         return state;
     },
+    componentDidMount: function() {
+        var node = $(this.getDOMNode());
+
+        // the timeout is set to 100ms because the popup will do its own focusing
+        // after 50ms (we could use it, but we want to focus AND select)
+        setTimeout(function() {
+            node.find('input:first').focus().select();
+        }, 100);
+    },
     handleInputChange: function(e) {
         var state = _.extend({}, this.state);
         var name = e.target.getAttribute('name');
@@ -719,16 +751,92 @@ ReservationForm = React.createClass({
         this.setState(state);
     },
     handleButton: function(e) {
-        this.props.onSubmit.call(this.getDOMNode(), this.state);
+        var node = this.getDOMNode();
+        var self = this;
+
+        $(node).find('input').each(function(_ix, el) {
+            $(el).blur();
+        });
+
+        setTimeout(function() {
+            self.props.onSubmit.call(node, self.state);
+        }, 0);
+
         e.preventDefault();
     },
+    handleSetPreviousTime: function(e) {
+        var previousState = this.props.previousReservationState;
+        var node = $(this.getDOMNode());
+        var inputs = node.find('[name="start"],[name="end"]');
+
+        $(inputs[0]).val(previousState.start);
+        $(inputs[1]).val(previousState.end);
+
+        // briefly highlight the inputs
+        inputs.addClass('highlighted');
+        setTimeout(function() {
+            inputs.removeClass('highlighted');
+        }, 500);
+
+        var state = _.extend({}, this.state);
+        state.start = previousState.start;
+        state.end = previousState.end;
+
+        this.setState(state);
+
+        e.preventDefault();
+    },
+    handleTimeInputFocus: function(e) {
+        if (!Modernizr.inputtypes.time) {
+            e.target.select();
+            e.preventDefault();
+        }
+    },
+    handleTimeInputMouseUp: function(e) {
+        if (!Modernizr.inputtypes.time) {
+            e.preventDefault();
+        }
+    },
+    handleTimeInputBlur: function(e) {
+        if (!Modernizr.inputtypes.time) {
+            e.target.value = this.inferTime(e.target.value);
+            this.handleInputChange(e);
+        }
+    },
+    inferTime: function(time) {
+        time = time.replace(':', '');
+
+        if (time.match(/^\d{1}$/)) {
+            time = '0' + time + '00';
+        } else if (time.match(/^\d{2}$/)) {
+            time += '00';
+        } else if (time.match(/^\d{3}$/)) {
+            time += '0';
+        }
+
+        if (time.match(/^\d{4}$/)) {
+            time = time.slice(0, 2) + ':' + time.slice(2, 4);
+        }
+
+        return time;
+    },
     parseTime: function(date, time) {
-        if (!time.match(/^\d{2}:\d{2}$/)) {
+        time = this.inferTime(time);
+
+        if (!time.match(/^[0-2]{1}[0-9]{1}:?[0-5]{1}[0-9]{1}$/)) {
             return null;
         }
 
         var hour = parseInt(time.split(':')[0], 10);
         var minute = parseInt(time.split(':')[1], 10);
+
+        if (hour < 0 || 24 < hour) {
+            return null;
+        }
+
+        if (minute < 0 || 60 < minute) {
+            return null;
+        }
 
         date.hour(hour);
         date.minute(minute);
@@ -759,10 +867,21 @@ ReservationForm = React.createClass({
     },
     render: function() {
         var buttonEnabled = this.isValidState();
+        var showWholeDay = this.props.partlyAvailable && this.props.wholeDay;
+        var showTimeRange = this.props.partlyAvailable && (!this.props.wholeDay || !this.state.wholeDay);
+
+        var showPreviousTime = showTimeRange &&
+            !_.isEmpty(this.props.previousReservationState) &&
+            (
+                this.props.previousReservationState.start !== this.state.start ||
+                this.props.previousReservationState.end !== this.state.end
+            );
+
+        var showQuota = !this.props.partlyAvailable;
 
         return (
             <form>
-                {this.props.partlyAvailable && this.props.wholeDay && (
+                {showWholeDay && (
                     <div className="field">
                         <span className="label-text">{locale("Whole day")}</span>
 
@@ -785,13 +904,16 @@ ReservationForm = React.createClass({
                     </div>
                 )}
 
-                {this.props.partlyAvailable && (!this.props.wholeDay || !this.state.wholeDay) && (
+                {showTimeRange && (
                     <div className="field split">
                         <div>
                             <label htmlFor="start">{locale("From")}</label>
                             <input name="start" type="time" size="4"
                                 defaultValue={this.state.start}
                                 onChange={this.handleInputChange}
+                                onFocus={this.handleTimeInputFocus}
+                                onMouseUp={this.handleTimeInputMouseUp}
+                                onBlur={this.handleTimeInputBlur}
                                 className={this.isValidStart(this.state.start) && 'valid' || 'invalid'}
                             />
                         </div>
@@ -800,12 +922,24 @@ ReservationForm = React.createClass({
                             <input name="end" type="time" size="4"
                                 defaultValue={this.state.end}
                                 onChange={this.handleInputChange}
+                                onFocus={this.handleTimeInputFocus}
+                                onMouseUp={this.handleTimeInputMouseUp}
+                                onBlur={this.handleTimeInputBlur}
                                 className={this.isValidEnd(this.state.end) && 'valid' || 'invalid'}
                             />
                         </div>
                     </div>
                 )}
-                {!this.props.partlyAvailable && (
+
+                {showPreviousTime && (
+                    <a href="#" onClick={this.handleSetPreviousTime} className="select-previous-time internal">
+                        <span>{this.props.previousReservationState.start}</span>
+                        <i className="fa fa-chevron-circle-up" aria-hidden="true"></i>
+                        <span>{this.props.previousReservationState.end}</span>
+                    </a>
+                )}
+
+                {showQuota && (
                     <div className="field">
                         <div>
                             <label htmlFor="count">{locale("Count")}</label>
@@ -825,7 +959,7 @@ ReservationForm = React.createClass({
     }
 });
 
-ReservationForm.render = function(element, event, onSubmit) {
+ReservationForm.render = function(element, event, previousReservationState, onSubmit) {
 
     var fullyAvailable = event.partitions.length === 1 && event.partitions[0][1] === false;
 
@@ -838,6 +972,7 @@ ReservationForm.render = function(element, event, onSubmit) {
             end={event.end}
             wholeDay={event.wholeDay}
             fullyAvailable={fullyAvailable}
+            previousReservationState={previousReservationState}
             onSubmit={onSubmit}
         />,
     element);
