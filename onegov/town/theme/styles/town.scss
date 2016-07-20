@@ -1935,10 +1935,10 @@ button {
     .partition-occupied {
         background: repeating-linear-gradient(
             45deg,
-            #666,
-            #666 10px,
-            #bbb 10px,
-            #bbb 20px
+            $steel,
+            $steel 10px,
+            $iron 10px,
+            $iron 20px
         );
     }
 
@@ -2009,7 +2009,7 @@ button {
 
         // fix borders missing with zurb foundation
         tbody div.fc-content-skeleton td {
-            border-color: #ddd;
+            border-color: $gainsboro;
         }
     }
 
@@ -2203,7 +2203,7 @@ button {
     Popup Menu
 */
 .popup {
-    background-color: #fff;
+    background-color: $white;
     border: 1px solid $gainsboro;
     border-radius: 5px;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, .3);
@@ -2277,7 +2277,7 @@ button {
 
         &::after {
             border-color: rgba(213, 213, 213, 0);
-            border-right-color: #fff;
+            border-right-color: $white;
             border-width: 7px;
             margin-top: -7px;
         }
@@ -2299,7 +2299,7 @@ button {
 
         &::after {
             border-color: rgba(213, 213, 213, 0);
-            border-top-color: #fff;
+            border-top-color: $white;
             border-width: 7px;
         }
 
