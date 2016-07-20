@@ -699,8 +699,10 @@ $new-photo-album: '\f03e';
 $new-reservation-icon: '\f271';
 $new-room-icon: '\f015';
 $paste-link-icon: '\f0ea';
+$select-icon: '\f14a';
 $send-link-icon: '\f1d9';
 $occupancy-link-icon: '\f022';
+$upload-icon: '\f0ee';
 
 .edit-bar {
     background-color: $primary-color;
@@ -752,8 +754,10 @@ $occupancy-link-icon: '\f022';
     .new-reservation:before { @include icon($new-reservation-icon); }
     .new-room:before { @include icon($new-room-icon); }
     .paste-link:before { @include icon($paste-link-icon); }
+    .select:before { @include icon($select-icon); }
     .send-link:before { @include icon($send-link-icon); }
     .occupancy-link::before { @include icon($occupancy-link-icon); }
+    .upload::before { @include icon($upload-icon); }
 }
 
 /*

@@ -1106,6 +1106,11 @@ class ImageSetCollectionLayout(DefaultLayout):
     def editbar_links(self):
         if self.request.is_logged_in:
             return [
+                Link(
+                    text=_("Manage images"),
+                    url=self.request.link(ImageFileCollection(self.app)),
+                    classes=('upload', )
+                ),
                 LinkGroup(
                     title=_("Add"),
                     links=[
@@ -1140,6 +1145,11 @@ class ImageSetLayout(DefaultLayout):
     def editbar_links(self):
         if self.request.is_logged_in:
             return [
+                Link(
+                    text=_("Choose images"),
+                    url=self.request.link(self.model, 'auswahl'),
+                    classes=('select', )
+                ),
                 Link(
                     text=_("Edit"),
                     url=self.request.link(
