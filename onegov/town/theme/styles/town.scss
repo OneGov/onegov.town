@@ -695,6 +695,7 @@ $new-news-icon: '\f1ea';
 $new-newsletter-icon: '\f003';
 $new-page-icon: '\f0f6';
 $new-person-icon: '\f007';
+$new-photo-album: '\f03e';
 $new-reservation-icon: '\f271';
 $new-room-icon: '\f015';
 $paste-link-icon: '\f0ea';
@@ -747,6 +748,7 @@ $occupancy-link-icon: '\f022';
     .new-newsletter:before { @include icon($new-newsletter-icon); }
     .new-page:before { @include icon($new-page-icon); }
     .new-person:before { @include icon($new-person-icon); }
+    .new-photo-album:before { @include icon($new-photo-album); }
     .new-reservation:before { @include icon($new-reservation-icon); }
     .new-room:before { @include icon($new-room-icon); }
     .paste-link:before { @include icon($paste-link-icon); }
@@ -1719,7 +1721,7 @@ tr.ticket:hover {
     max-height: 400px;
     max-width: 275px;
     overflow-x: hidden;
-    overflow-y: scroll;
+    overflow-y: auto;
 
     a {
         font-size: .875rem;

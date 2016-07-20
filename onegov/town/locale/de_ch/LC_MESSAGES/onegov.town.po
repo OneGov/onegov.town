@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2016-06-21 15:11+0200\n"
+"POT-Creation-Date: 2016-07-20 13:38+0200\n"
 "PO-Revision-Date: 2015-10-15 09:42+0200\n"
 "Last-Translator: Denis Krienbühl <denis.krienbuehl@seantis.ch>\n"
 "Language-Team: German\n"
@@ -76,6 +76,9 @@ msgstr "Newsletter"
 
 msgid "Subscribers"
 msgstr "Abonnenten"
+
+msgid "Photo Albums"
+msgstr "Fotoalben"
 
 msgid "Logout"
 msgstr "Logout"
@@ -166,6 +169,9 @@ msgstr "Senden"
 msgid "Delete newsletter"
 msgstr "Newsletter löschen"
 
+msgid "Delete photo album"
+msgstr "Fotoalbum löschen"
+
 msgid "Accept ticket"
 msgstr "Ticket annehmen"
 
@@ -192,6 +198,9 @@ msgstr "Raum"
 
 msgid "Daypass"
 msgstr "Tagskarte"
+
+msgid "Photo Album"
+msgstr "Fotoalbum"
 
 msgid "Not a valid color."
 msgstr "Ungültige Farbe."
@@ -441,6 +450,9 @@ msgstr "Text"
 msgid "Definition"
 msgstr "Definition"
 
+msgid "Describes what this photo album is about"
+msgstr "Beschreibt kurz um was es bei dem Fotoalbum geht"
+
 msgid "Used in the overview and the e-mail subject"
 msgstr "Wird in der Übersicht und als E-Mail Subjekt verwendet"
 
@@ -660,14 +672,14 @@ msgstr "Diesen Monat"
 msgid "Last month"
 msgstr "Letzter Monat"
 
-msgid "This year"
-msgstr "Dieses Jahr"
-
 msgid "Last year"
 msgstr "Letztes Jahr"
 
 msgid "Older"
 msgstr "Älter"
+
+msgid "This year"
+msgstr "Dieses Jahr"
 
 msgid "Event"
 msgstr "Veranstaltung"
@@ -871,6 +883,9 @@ msgstr "Bild Löschen"
 
 msgid "No images uploaded yet"
 msgstr "Noch keine Bilder hochgeladen"
+
+msgid "No photo albums defined yet."
+msgstr "Noch keine Fotoalben erstellt."
 
 msgid "Skip navigation"
 msgstr "Navigation überspringen"
@@ -1423,11 +1438,20 @@ msgstr "SBB Tageskarte"
 msgid "All contacts"
 msgstr "Alle Kontakte"
 
+msgid "From the town"
+msgstr "Aus der Gemeinde"
+
 msgid "Topics"
 msgstr "Themen"
 
 msgid "Catalog A-Z"
 msgstr "Katalog A-Z"
+
+msgid "New Photo Album"
+msgstr ""
+
+msgid "Added a new photo album"
+msgstr ""
 
 #, python-format
 msgid "Do you really want to unsubscribe \"{}\"?"
