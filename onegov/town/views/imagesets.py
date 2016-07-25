@@ -58,7 +58,7 @@ def handle_new_imageset(self, request, form):
 
 @TownApp.form(model=ImageSet, name='bearbeiten', template='form.pt',
               permission=Private, form=get_form_class)
-def handle_edit_resource(self, request, form):
+def handle_edit_imageset(self, request, form):
     if form.submitted(request):
         form.populate_obj(self)
 
@@ -80,7 +80,9 @@ def handle_edit_resource(self, request, form):
 
 
 @TownApp.view(model=ImageSet, request_method='DELETE', permission=Private)
-def handle_delete_resource(self, request):
+def handle_delete_imageset(self, request):
+    request.assert_valid_csrf_token()
+
     collection = ImageSetCollection(request.app.session())
     collection.delete(self)
 
