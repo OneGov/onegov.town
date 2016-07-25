@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2016-07-20 15:07+0200\n"
+"POT-Creation-Date: 2016-07-25 14:24+0200\n"
 "PO-Revision-Date: 2015-10-15 09:42+0200\n"
 "Last-Translator: Denis Krienbühl <denis.krienbuehl@seantis.ch>\n"
 "Language-Team: German\n"
@@ -1252,6 +1252,9 @@ msgstr ""
 msgid "Your search returned no results."
 msgstr "Zu Ihrer Suche wurde nichts gefunden"
 
+msgid "Confirm selection"
+msgstr "Auswahl bestätigen"
+
 msgid "This newsletter has not been sent yet."
 msgstr "Dieser Newsletter wurde noch nicht gesendet."
 
@@ -1453,8 +1456,14 @@ msgstr "Themen"
 msgid "Catalog A-Z"
 msgstr "Katalog A-Z"
 
+msgid "Select images"
+msgstr "Bilder auswählen"
+
 msgid "New Photo Album"
-msgstr ""
+msgstr "Neues Fotoalbum"
+
+msgid "Select"
+msgstr "Auswahl"
 
 msgid "Added a new photo album"
 msgstr ""

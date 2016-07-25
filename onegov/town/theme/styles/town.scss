@@ -13,6 +13,14 @@
             filter: gray;
     -webkit-filter: grayscale(100%);
 }
+
+@mixin reset-filter() {
+       -moz-filter: none;
+        -ms-filter: none;
+         -o-filter: none;
+            filter: none;
+    -webkit-filter: none;
+}
 // scss-lint:enable all
 
 @mixin hairline() {
@@ -2766,6 +2774,39 @@ ul.search-results {
     .title {
         margin-bottom: .5rem;
     }
+}
+
+/*
+    Image select
+*/
+
+.image-select {
+    .image-box {
+        @include grayscale;
+
+        &.selected,
+        &:hover {
+            @include reset-filter();
+
+            img {
+                border-radius: 1px;
+                box-shadow: 0 0 0 3px $primary-color;
+            }
+        }
+
+        input[type="checkbox"] {
+            height: 100%;
+            left: 0;
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            width: 100%;
+
+            &:hover {
+                cursor: pointer;
+            }
+        }
+    }    
 }
 
 /*

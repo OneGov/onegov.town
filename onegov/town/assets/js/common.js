@@ -56,3 +56,11 @@ $('.disable-scroll').on('mouseover', function() {
 $('.disable-scroll').on('mouseout', function() {
     $(this).off('mousewheel');
 });
+
+// Toggle the selected state in image selection views when clicking the checkbox
+$('.image-select input[type="checkbox"]').on('click', function(e) {
+    var target = $(e.target);
+    var checked = target.is(':checked');
+
+    target.closest('.image-box').toggleClass('selected', checked);
+});
