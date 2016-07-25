@@ -11,12 +11,12 @@ from onegov.town.app import TownApp
 from onegov.town.elements import Img, Link
 from onegov.town.layout import DefaultLayout
 from onegov.town.models import (
-    GeneralFileCollection,
-    ImageFileCollection,
     GeneralFile,
+    GeneralFileCollection,
     ImageFile,
+    ImageFileCollection,
     LegacyFile,
-    LegacyImage
+    LegacyImage,
 )
 from sedate import utcnow
 from webob import exc

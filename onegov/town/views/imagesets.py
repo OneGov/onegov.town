@@ -1,12 +1,19 @@
 import morepath
 
 from onegov.core.security import Public, Private
+from onegov.file import File
 from onegov.town import _
 from onegov.town.app import TownApp
-from onegov.town.models import ImageSet, ImageSetCollection
-from onegov.town.layout import ImageSetLayout, ImageSetCollectionLayout
-from onegov.town.forms import ImageSetForm
 from onegov.town.elements import Link
+from onegov.town.forms import ImageSetForm
+from onegov.town.layout import ImageSetLayout, ImageSetCollectionLayout
+from onegov.town.models import (
+    ImageFile,
+    ImageSet,
+    ImageSetCollection,
+    ImageFileCollection
+)
+from purl import URL
 from unidecode import unidecode
 
 
@@ -32,6 +39,59 @@ def view_imagesets(self, request):
         'title': _("Photo Albums"),
         'imagesets': request.exclude_invisible(imagesets)
     }
+
+
+@TownApp.html(model=ImageSet, name='auswahl', template='select_images.pt',
+              permission=Private, request_method='GET')
+def select_images(self, request):
+
+    collection = ImageFileCollection(request.app.session())
+    selected = {f.id for f in self.files}
+
+    def produce_image(id):
+        return {
+            'id': id,
+            'src': request.class_link(File, {'id': id}, 'thumbnail'),
+            'selected': id in selected
+        }
+
+    images = [
+        {
+            'group': request.translate(group),
+            'images': tuple(produce_image(id) for group, id in items)
+        } for group, items in collection.grouped_by_date()
+    ]
+
+    layout = ImageSetLayout(self, request)
+    layout.breadcrumbs.append(Link(_("Select"), '#'))
+
+    action = URL(request.link(self, 'auswahl')).query_param(
+        'csrf-token', request.new_csrf_token())
+
+    return {
+        'layout': layout,
+        'title': _("Select images"),
+        'images': images,
+        'action': action
+    }
+
+
+@TownApp.html(model=ImageSet, name='auswahl', template='select_images.pt',
+              permission=Private, request_method='POST')
+def handle_select_images(self, request):
+
+    # we do custom form handling here, so we need to check for CSRF manually
+    request.assert_valid_csrf_token()
+
+    if not request.POST:
+        self.files = []
+    else:
+        self.files = request.app.session().query(ImageFile)\
+            .filter(ImageFile.id.in_(request.POST)).all()
+
+    request.success(_("Your changes were saved"))
+
+    return morepath.redirect(request.link(self))
 
 
 @TownApp.form(model=ImageSetCollection, name='neu', template='form.pt',

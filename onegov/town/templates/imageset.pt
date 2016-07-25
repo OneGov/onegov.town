@@ -5,5 +5,11 @@
     <tal:block metal:fill-slot="content">
         <tal:block metal:use-macro="layout.macros.page_content"
              tal:define="lead imageset.meta.get('lead'); text None; people None; contact None; coordinates None;" />
+
+        <tal:block repeat="image imageset.files">
+            <p class="has-img">
+                <img src="${request.link(image)}" />
+            </p>
+        </tal:block>
     </tal:block>
 </div>
