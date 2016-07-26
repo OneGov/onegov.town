@@ -976,8 +976,22 @@ div#redactor-droparea {
 /*
     hide the "image position" options in the redactor
 */
-#redactor-modal-image-edit .redactor-image-position-option {
-    display: none;
+#redactor-modal-image-edit {
+    .redactor-image-position-option {
+        display: none;
+    }
+
+    /*
+        disable image alt text editor
+    */
+    :nth-child(1),
+    :nth-child(2) {
+        display: none;
+    }
+
+    :nth-child(3) {
+        margin-top: -10px !important;
+    }
 }
 
 /*
@@ -1025,17 +1039,12 @@ div#redactor-droparea {
 /*
     image subtitles
 */
-
-// image subtitles
-.has-img,
-.has-video {
-    span {
-        background-color: $vapor;
-        color: $monsoon;
-        display: block;
-        font-size: .875rem;
-        padding: .25em .75em;
-    }
+.alt-text {
+    background-color: $vapor;
+    color: $monsoon;
+    display: block;
+    font-size: .875rem;
+    padding: .25em .75em;
 }
 
 /*
@@ -2819,7 +2828,7 @@ ul.search-results {
                 cursor: pointer;
             }
         }
-    }    
+    }
 }
 
 /*

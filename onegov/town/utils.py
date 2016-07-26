@@ -74,6 +74,10 @@ def annotate_html(html):
                     break
                 parent = parent.getparent()
 
+        for img in element.xpath('//img'):
+            img.set('class', 'lazyload')
+            img.set('src', '')
+
     return ''.join(tostring(e).decode('utf-8') for e in fragments)
 
 

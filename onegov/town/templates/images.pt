@@ -16,7 +16,7 @@
                     <h3 i18n:translate="">${group['group']}</h3>
                     <ul class="small-block-grid-1 medium-block-grid-2 large-block-grid-4">
                         <li tal:repeat="image group['images']" id="image-${repeat.image.index}" class="image-box">
-                            <a class="th" href="${image.url}" tal:condition="image">
+                            <a href="${image.url}" tal:condition="image">
                                 <img data-src="${image.src}" class="lazyload" />
                             </a>
                             <a class="delete confirm"
@@ -25,7 +25,7 @@
                                data-confirm="Do you really want to delete the image?"
                                data-confirm-yes="Delete Image"
                                data-confirm-no="Cancel"
-                               i18n:attributes="data-confirm;data-confirm-yes;data-confirm-no">✗</a>
+                               i18n:attributes="data-confirm;data-confirm-yes;data-confirm-no"><i class="fa fa-times" aria-hidden="true"></i></a>
                         </li>
                     </ul>
                 </tal:block>

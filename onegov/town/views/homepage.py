@@ -145,7 +145,7 @@ def view_town(self, request):
             Link(
                 text=_("Photo Albums"),
                 url=request.link(ImageSetCollection(session)),
-                subtitle=_("From the town")
+                subtitle=_("Impressions")
             ),
             Link(
                 text=_("Topics"),

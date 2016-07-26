@@ -31,7 +31,7 @@ $(document).find('#footer_height').val($('footer > div').height() + 'px');
 
 // Add image captions
 $('.page-text img[alt][alt!=""]').each(function() {
-    var caption = $("<span>").text($(this).attr('alt'));
+    var caption = $("<span class='alt-text'>").text($(this).attr('alt'));
     $(this).after(caption);
 });
 

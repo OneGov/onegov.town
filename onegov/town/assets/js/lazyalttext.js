@@ -3,7 +3,16 @@
 // the alt text for all images in a single location, without having to
 // do much on the html output side
 document.addEventListener('lazybeforeunveil', function(e) {
-    var src = $(e.target).data('src');
+    var target = $(e.target);
+    var src = target.data('src');
+
+    if (target.parents('.redactor-editor').length !== 0) {
+        return;  // skip inside the redactor editor
+    }
+
+    if (target.parents('#redactor-image-manager-box').length !== 0) {
+        return;  // skip inside the image manger selection box
+    }
 
     $.ajax({method: 'HEAD', url: src,
         success: function(_data, _textStatus, request) {
@@ -11,7 +20,7 @@ document.addEventListener('lazybeforeunveil', function(e) {
 
             if (alt.trim() !== "") {
                 $(e.target).attr('alt', alt);
-                $('<span>').text(alt).insertAfter(e.target);
+                $('<span class="alt-text">').text(alt).insertAfter(e.target);
             }
         }
     });

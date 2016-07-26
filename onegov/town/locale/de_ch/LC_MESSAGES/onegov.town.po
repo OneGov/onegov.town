@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2016-07-25 16:33+0200\n"
+"POT-Creation-Date: 2016-07-26 16:36+0200\n"
 "PO-Revision-Date: 2015-10-15 09:42+0200\n"
 "Last-Translator: Denis Krienbühl <denis.krienbuehl@seantis.ch>\n"
 "Language-Team: German\n"
@@ -1450,8 +1450,8 @@ msgstr "SBB Tageskarte"
 msgid "All contacts"
 msgstr "Alle Kontakte"
 
-msgid "From the town"
-msgstr "Aus der Gemeinde"
+msgid "Impressions"
+msgstr "Impressionen"
 
 msgid "Topics"
 msgstr "Themen"
@@ -1658,6 +1658,9 @@ msgstr "Alle Tickets"
 
 msgid "You have been successfully unsubscribed from all regular emails."
 msgstr "Sie wurden erfolgreich von allen regelmässigen E-Mails abgemeldet."
+
+#~ msgid "From the town"
+#~ msgstr "Aus der Gemeinde"
 
 #~ msgid "Upload images"
 #~ msgstr "Bilder hochladen"
