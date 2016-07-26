@@ -1,6 +1,9 @@
 Changelog
 ---------
 
+- Large image lists are now lazy loaded.
+  [href]
+
 - Adds the ability to organize images in albums.
   [href]
 

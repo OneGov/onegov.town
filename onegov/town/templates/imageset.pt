@@ -8,7 +8,7 @@
 
         <tal:block repeat="image imageset.files">
             <p class="has-img">
-                <img src="${request.link(image)}" />
+                <img data-src="${request.link(image)}" class="lazyload" />
             </p>
         </tal:block>
     </tal:block>

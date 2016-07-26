@@ -2784,8 +2784,14 @@ ul.search-results {
     .image-box {
         @include grayscale;
 
-        &.selected,
         &:hover {
+            img {
+                border-radius: 1px;
+                box-shadow: 0 0 0 3px $gainsboro;
+            }
+        }
+
+        &.selected {
             @include reset-filter();
 
             img {
