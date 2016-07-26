@@ -1023,6 +1023,22 @@ div#redactor-droparea {
 }
 
 /*
+    image subtitles
+*/
+
+// image subtitles
+.has-img,
+.has-video {
+    span {
+        background-color: $vapor;
+        color: $monsoon;
+        display: block;
+        font-size: .875rem;
+        padding: .25em .75em;
+    }
+}
+
+/*
     page text
 */
 
@@ -1050,15 +1066,6 @@ div#redactor-droparea {
     .has-img,
     .has-video {
         max-width: none;
-
-        // image subtitles
-        span {
-            background-color: $vapor;
-            color: $monsoon;
-            display: block;
-            font-size: .875rem;
-            padding: .25em .75em;
-        }
     }
 
     .has-video {

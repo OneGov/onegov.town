@@ -301,5 +301,6 @@ def get_common_asset():
     yield 'datetimepicker.js'
     yield 'url.js'
     yield 'date-range-selector.js'
+    yield 'lazyalttext.js'
     yield 'lazysizes.js'
     yield 'common.js'
