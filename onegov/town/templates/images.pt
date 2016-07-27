@@ -17,7 +17,8 @@
                     <ul class="small-block-grid-1 medium-block-grid-2 large-block-grid-4">
                         <li tal:repeat="image group['images']" id="image-${repeat.image.index}" class="image-box">
                             <a href="${image.url}" tal:condition="image">
-                                <img data-src="${image.src}" class="lazyload" />
+                                <img tal:condition="image.alt" data-src="${image.src}" class="lazyload" alt="${image.alt}" />
+                                <img tal:condition="not:image.alt" data-src="${image.src}" class="lazyload missing-alt" alt="Click to add a description" i18n:attributes="alt" />
                             </a>
                             <a class="delete confirm"
                                ic-delete-from="${image.url}?csrf-token=${layout.csrf_token}"

@@ -1047,6 +1047,11 @@ div#redactor-droparea {
     padding: .25em .75em;
 }
 
+.alt-text-missing {
+    background-color: $yellow-pastel;
+    font-style: italic;
+}
+
 /*
     page text
 */

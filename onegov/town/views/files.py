@@ -51,9 +51,10 @@ def view_get_image_collection(self, request):
     request.include('dropzone')
 
     images = view_get_image_collection_json(
-        self, request, produce_image=lambda id: Img(
-            src=request.class_link(File, {'id': id}, 'thumbnail'),
-            url=request.class_link(File, {'id': id})
+        self, request, produce_image=lambda image: Img(
+            src=request.class_link(File, {'id': image.id}, 'thumbnail'),
+            url=request.class_link(File, {'id': image.id}),
+            alt=(image.note or '').strip()
         )
     )
 
@@ -85,17 +86,19 @@ def view_get_file_collection_json(self, request):
 def view_get_image_collection_json(self, request, produce_image=None):
 
     if not produce_image:
-        def produce_image(id):
+        def produce_image(image):
             return {
-                'thumb': request.class_link(File, {'id': id}, 'thumbnail'),
-                'image': request.class_link(File, {'id': id})
+                'thumb': request.class_link(
+                    File, {'id': image.id}, 'thumbnail'),
+                'image': request.class_link(
+                    File, {'id': image.id})
             }
 
     return [
         {
             'group': request.translate(group),
-            'images': tuple(produce_image(id) for group, id in items)
-        } for group, items in self.grouped_by_date()
+            'images': tuple(produce_image(image) for group, image in items)
+        } for group, items in self.grouped_by_date(id_only=False)
     ]
 
 

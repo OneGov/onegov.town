@@ -68,7 +68,7 @@ class GroupFilesByDateMixin(object):
             start=older_start,
             end=older_end)
 
-    def query_intervals(self, intervals, before_filter=None):
+    def query_intervals(self, intervals, before_filter=None, process=None):
         base_query = self.query().order_by(desc(File.last_change))
 
         if before_filter:
@@ -79,7 +79,8 @@ class GroupFilesByDateMixin(object):
             query = query.filter(File.last_change <= interval.end)
 
             for result in query.all():
-                yield interval.name, result.id
+                if process is not None:
+                    yield interval.name, process(result)
 
     def grouped_by_date(self, today=None, id_only=True):
         """ Returns all files grouped by natural language dates.
@@ -99,8 +100,14 @@ class GroupFilesByDateMixin(object):
 
             return query
 
+        def process(result):
+            if id_only:
+                return result.id
+
+            return result
+
         return groupby(
-            self.query_intervals(intervals, before_filter),
+            self.query_intervals(intervals, before_filter, process),
             key=lambda item: item[0]
         )
 
