@@ -11,6 +11,7 @@ var appendAltText = function(image, alt) {
         caption = $("<span class='alt-text'>").text(alt);
     }
 
+    caption.css("maxWidth", image.width());
     image.after(caption);
 };
 
