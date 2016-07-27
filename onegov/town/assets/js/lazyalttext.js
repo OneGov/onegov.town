@@ -2,9 +2,9 @@
 // to a higher server load (mtigated by caching), but it helps us to keep
 // the alt text for all images in a single location, without having to
 // do much on the html output side
-document.addEventListener('lazybeforeunveil', function(e) {
-    var target = $(e.target);
-    var src = target.data('src');
+var onLazyLoadAltText = function(element) {
+    var target = $(element);
+    var src = target.attr('src') || target.data('src');
 
     if (target.parents('.redactor-editor').length !== 0) {
         return;  // skip inside the redactor editor
@@ -19,9 +19,19 @@ document.addEventListener('lazybeforeunveil', function(e) {
             var alt = request.getResponseHeader('X-File-Note');
 
             if (alt.trim() !== "") {
-                $(e.target).attr('alt', alt);
-                $('<span class="alt-text">').text(alt).insertAfter(e.target);
+                target.attr('alt', alt);
+                $('<span class="alt-text">').text(alt).insertAfter(target);
             }
         }
+    });
+};
+
+document.addEventListener('lazybeforeunveil', function(e) {
+    onLazyLoadAltText(e.target);
+});
+
+$(document).ready(function() {
+    $('.lazyload-alt').each(function() {
+        onLazyLoadAltText(this);
     });
 });

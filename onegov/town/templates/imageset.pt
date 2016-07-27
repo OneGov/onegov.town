@@ -7,8 +7,12 @@
              tal:define="lead imageset.meta.get('lead'); text None; people None; contact None; coordinates None;" />
 
         <tal:block repeat="image imageset.files">
-            <p class="has-img">
-                <img data-src="${request.link(image)}" class="lazyload" />
+            <!--! the first three images are loaded conventionally, the rest are loaded lazily -->
+            <p class="has-img" tal:condition="repeat.image.number <= 3">
+                <img src="${request.link(image)}" alt="${image.note}" class="lazyload-alt" />
+            </p>
+            <p class="has-img" tal:condition="repeat.image.number > 3">
+                <img data-src="${request.link(image)}" class="lazyload" alt="${image.note}" />
             </p>
         </tal:block>
     </tal:block>

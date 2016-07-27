@@ -190,29 +190,25 @@ def migrate_alt_text(context):
     for item in items:
         html = lxml.html.fromstring(item.text)
         for img in html.xpath('//img'):
-            # lazy load all images from now on
-            src = img.get('src') or None
+            src = (img.get('src') or '').strip()
 
-            if src is None:
+            if not src:
                 continue
 
-            img.set('src', '')
-            img.set('data-src', src)
-
-            if (img.get('class') or '').strip():
-                img.set('class', img.get('class') + ' lazyload')
-            else:
-                img.set('class', 'lazyload')
-
-            # and use the alt text if possible
+            # check if it's one of the internal images
             match = url_expression.match(src)
 
             if not match:
                 continue
 
-            fid = match.group(1)
-            alts[fid] = img.get('alt')
-            img.set('alt', '')
+            # remember the alt text for each image
+            if img.get('alt'):
+                fid = match.group(1)
+                alts[fid] = img.get('alt')
+                img.set('alt', '')
+
+            # load the alt text lazily from now on (might be added later)
+            img.set('class', 'lazyload-alt')
 
         item.text = lxml.html.tostring(html).decode('utf-8')
 

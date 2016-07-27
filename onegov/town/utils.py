@@ -75,8 +75,7 @@ def annotate_html(html):
                 parent = parent.getparent()
 
         for img in element.xpath('//img'):
-            img.set('class', 'lazyload')
-            img.set('src', '')
+            img.set('class', 'lazyload-alt')
 
     return ''.join(tostring(e).decode('utf-8') for e in fragments)
 
