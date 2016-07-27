@@ -48,17 +48,21 @@ def view_get_file_collection(self, request):
 @TownApp.html(model=ImageFileCollection, template='images.pt',
               permission=Private)
 def view_get_image_collection(self, request):
+    request.include('common')
     request.include('dropzone')
+    request.include('editalttext')
+
+    layout = DefaultLayout(self, request)
 
     images = view_get_image_collection_json(
         self, request, produce_image=lambda image: Img(
             src=request.class_link(File, {'id': image.id}, 'thumbnail'),
             url=request.class_link(File, {'id': image.id}),
-            alt=(image.note or '').strip()
+            alt=(image.note or '').strip(),
+            extra=layout.csrf_protected_url(request.link(image, 'note'))
         )
     )
 
-    layout = DefaultLayout(self, request)
     layout.breadcrumbs = [
         Link(_("Homepage"), layout.homepage_url),
         Link(_("Images"), request.link(self))
@@ -67,7 +71,7 @@ def view_get_image_collection(self, request):
     return {
         'layout': layout,
         'title': _('Images'),
-        'images': images,
+        'images': images
     }
 
 

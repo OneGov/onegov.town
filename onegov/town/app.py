@@ -279,6 +279,11 @@ def get_dropzone_asset():
     yield 'dropzone.js'
 
 
+@TownApp.webasset('editalttext')
+def get_editalttext_asset():
+    yield 'editalttext.js'
+
+
 @TownApp.webasset('common')
 def get_common_asset():
     yield 'jquery.datetimepicker.css'

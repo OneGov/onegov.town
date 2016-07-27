@@ -12,11 +12,19 @@
         <div class="row">
             <div class="small-12 columns">
                 <h2 i18n:translate="">All Images</h2>
+
+                <div class="panel">
+                    <p i18n:translate="">
+                        To edit the image descriptions, click on one, enter your descrption and press return.
+                        To abort press escape.
+                    </p>
+                </div>
+
                 <tal:block tal:repeat="group images">
                     <h3 i18n:translate="">${group['group']}</h3>
                     <ul class="small-block-grid-1 medium-block-grid-2 large-block-grid-4">
                         <li tal:repeat="image group['images']" id="image-${repeat.image.index}" class="image-box">
-                            <a href="${image.url}" tal:condition="image">
+                            <a href="${image.url}" tal:condition="image" class="editable-alt" data-note-update-url="${image.extra}">
                                 <img tal:condition="image.alt" data-src="${image.src}" class="lazyload" alt="${image.alt}" />
                                 <img tal:condition="not:image.alt" data-src="${image.src}" class="lazyload missing-alt" alt="Click to add a description" i18n:attributes="alt" />
                             </a>

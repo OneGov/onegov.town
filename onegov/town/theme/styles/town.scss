@@ -1045,11 +1045,20 @@ div#redactor-droparea {
     display: block;
     font-size: .875rem;
     padding: .25em .75em;
+    transition: background .5s ease-in-out;
 }
 
 .alt-text-missing {
     background-color: $yellow-pastel;
     font-style: italic;
+}
+
+.alt-text-changed-success {
+    background-color: $green-light;
+}
+
+.alt-text-changed-error {
+    background-color: $red-light;
 }
 
 /*
