@@ -1,6 +1,6 @@
 from onegov.form import Form
 from onegov.town import _
-from wtforms import StringField, TextAreaField, validators
+from wtforms import RadioField, StringField, TextAreaField, validators
 
 
 class ImageSetForm(Form):
@@ -10,3 +10,10 @@ class ImageSetForm(Form):
         label=_("Lead"),
         description=_("Describes what this photo album is about"),
         render_kw={'rows': 4})
+
+    view = RadioField(
+        label=_("View"),
+        choices=[
+            ('full', _("Full size images")),
+            ('grid', _("Grid layout"))
+        ])

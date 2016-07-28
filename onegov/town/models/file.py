@@ -143,6 +143,7 @@ class ImageSet(FileSet, HiddenFromPublicExtension, ORMSearchable):
         }
 
     lead = meta_property('lead')
+    view = meta_property('view')
 
 
 class ImageSetCollection(FileSetCollection):

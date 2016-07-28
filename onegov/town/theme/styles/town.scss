@@ -851,6 +851,19 @@ $upload-icon: '\f0ee';
 }
 
 /*
+    imageset view
+*/
+.full-imageset {
+    > p {
+        margin-bottom: 2rem;
+    }
+
+    > p:first-child {
+        margin-top: .5rem;
+    }
+}
+
+/*
     image control elements
 */
 .image-box {

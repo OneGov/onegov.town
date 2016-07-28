@@ -1,3 +1,12 @@
+// adjust the width of a caption to the width of the image
+var adjustCaption = function(image) {
+    var caption = image.siblings('.alt-text').first();
+
+    setTimeout(function() {
+        caption.css("maxWidth", image.width());
+    }, 25);
+};
+
 // append the alt text below the image in a span element
 var appendAltText = function(image, alt) {
     image = $(image);
@@ -11,8 +20,8 @@ var appendAltText = function(image, alt) {
         caption = $("<span class='alt-text'>").text(alt);
     }
 
-    caption.css("maxWidth", image.width());
     image.after(caption);
+    adjustCaption(image);
 };
 
 // load's onegov.file's alt texts through a separate HEAD request - leads
@@ -32,6 +41,11 @@ var onLazyLoadAltText = function(element) {
     }
 
     if (target.siblings('.alt-text').length !== 0) {
+
+        // the image might have been loaded after the alt text, in this case
+        // we need to adjust the caption width because it relies on the image
+        adjustCaption(target);
+
         return;  // we already have an alt text
     }
 
