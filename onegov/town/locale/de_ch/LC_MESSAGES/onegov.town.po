@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2016-07-28 09:32+0200\n"
+"POT-Creation-Date: 2016-07-28 09:44+0200\n"
 "PO-Revision-Date: 2015-10-15 09:42+0200\n"
 "Last-Translator: Denis Krienbühl <denis.krienbuehl@seantis.ch>\n"
 "Language-Team: German\n"
@@ -908,6 +908,9 @@ msgstr "Bild Löschen"
 
 msgid "No images uploaded yet"
 msgstr "Noch keine Bilder hochgeladen"
+
+msgid "This album does not contain any images yet."
+msgstr "Dieses Fotoalbum enthält noch keine Bilder."
 
 msgid "No photo albums defined yet."
 msgstr "Noch keine Fotoalben erstellt."

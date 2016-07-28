@@ -13,6 +13,7 @@ class ImageSetForm(Form):
 
     view = RadioField(
         label=_("View"),
+        default='full',
         choices=[
             ('full', _("Full size images")),
             ('grid', _("Grid layout"))

@@ -6,6 +6,10 @@
         <tal:block metal:use-macro="layout.macros.page_content"
              tal:define="lead imageset.meta.get('lead'); text None; people None; contact None; coordinates None;" />
 
+        <p tal:condition="not:imageset.files" i18n:translate>
+            This album does not contain any images yet.
+        </p>
+
         <div tal:repeat="image imageset.files" tal:condition="imageset.view == 'full'" class="page-text full-imageset">
             <!--! the first three images are loaded conventionally, the rest are loaded lazily -->
             <p class="has-img" tal:condition="repeat.image.number <= 3">
