@@ -15,6 +15,7 @@ from onegov.town.models import (
     GeneralFileCollection,
     ImageFile,
     ImageFileCollection,
+    ImageSetCollection,
     LegacyFile,
     LegacyImage,
 )
@@ -66,6 +67,13 @@ def view_get_image_collection(self, request):
     layout.breadcrumbs = [
         Link(_("Homepage"), layout.homepage_url),
         Link(_("Images"), request.link(self))
+    ]
+
+    layout.editbar_links = [
+        Link(
+            text=_("Manage Photo Albums"),
+            url=request.class_link(ImageSetCollection),
+            classes=('new-photo-album', ))
     ]
 
     return {
