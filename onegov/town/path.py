@@ -2,6 +2,7 @@
 
 from datetime import date
 from libres.db.models import Allocation, Reservation
+from onegov.core.converters import extended_date_converter
 from onegov.event import (
     Event,
     EventCollection,
@@ -24,7 +25,6 @@ from onegov.newsletter import (
     RecipientCollection,
 )
 from onegov.town.app import TownApp
-from onegov.town.converters import extended_date_converter
 from onegov.town.models import (
     AtoZPages,
     Clipboard,
