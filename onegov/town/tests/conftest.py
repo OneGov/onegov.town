@@ -6,7 +6,6 @@ import tempfile
 import transaction
 import shutil
 
-from onegov.core.crypto import hash_password
 from onegov.core.utils import Bunch, scan_morepath_modules
 from onegov.town.initial_content import (
     add_initial_content, builtin_form_definitions
@@ -22,12 +21,6 @@ def handlers():
     onegov.ticket.handlers.registry = {}
 
 
-@pytest.fixture(scope='session')
-def town_password():
-    # only hash the password for the test users once per test session
-    return hash_password('hunter2')
-
-
 @pytest.yield_fixture(scope='session')
 def filestorage():
     directory = tempfile.mkdtemp()
@@ -41,23 +34,23 @@ def form_definitions():
 
 
 @pytest.yield_fixture(scope='function')
-def town_app(postgres_dsn, filestorage, town_password, smtp,
+def town_app(postgres_dsn, filestorage, test_password, smtp,
              form_definitions):
     yield new_town_app(
-        postgres_dsn, filestorage, town_password, smtp, form_definitions
+        postgres_dsn, filestorage, test_password, smtp, form_definitions
     )
 
 
 @pytest.yield_fixture(scope='function')
-def es_town_app(postgres_dsn, filestorage, town_password, smtp,
+def es_town_app(postgres_dsn, filestorage, test_password, smtp,
                 form_definitions, es_url):
     yield new_town_app(
-        postgres_dsn, filestorage, town_password, smtp, form_definitions,
+        postgres_dsn, filestorage, test_password, smtp, form_definitions,
         es_url
     )
 
 
-def new_town_app(postgres_dsn, filestorage, town_password, smtp,
+def new_town_app(postgres_dsn, filestorage, test_password, smtp,
                  form_definitions, es_url=None):
 
     scan_morepath_modules(onegov.town.TownApp)
@@ -110,12 +103,12 @@ def new_town_app(postgres_dsn, filestorage, town_password, smtp,
 
     session.add(User(
         username='admin@example.org',
-        password_hash=town_password,
+        password_hash=test_password,
         role='admin'
     ))
     session.add(User(
         username='editor@example.org',
-        password_hash=town_password,
+        password_hash=test_password,
         role='editor'
     ))
 

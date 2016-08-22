@@ -9,54 +9,16 @@ use different templating languages.
 
 from collections import defaultdict
 from contextlib import contextmanager
-from onegov.core import Framework, utils
-from onegov.file import DepotApp
-from onegov.gis import MapboxApp
-from onegov.libres import LibresIntegration
+from onegov.core import utils
+from onegov.org import OrgApp
 from onegov.page import PageCollection
-from onegov.search import ElasticsearchApp
 from onegov.ticket import TicketCollection
 from onegov.town.models import Town, Topic
 from onegov.town.theme import TownTheme
 from sqlalchemy.orm.attributes import flag_modified
 
 
-class TownApp(Framework, LibresIntegration, ElasticsearchApp, MapboxApp,
-              DepotApp):
-    """ The town application. Include this in your onegov.yml to serve it
-    with onegov-server.
-
-    """
-
-    serve_static_files = True
-
-    def is_allowed_application_id(self, application_id):
-        """ Stops onegov.server from ever passing the request to the town
-        application, if the schema does not exist. This way we can host
-        onegov.town in a way that allows all requests to *.onegovcloud.ch.
-
-        If the schema for ``newyork.onegovcloud.ch`` exists, the request is
-        handled. If the schema does not exist, the request is not handled.
-
-        Here we basically decide if a town exists or not.
-
-        """
-        schema = self.namespace + '-' + application_id
-
-        if schema in self.known_schemas:
-            return True
-
-        # block invalid schemas from ever being checked
-        if not self.session_manager.is_valid_schema(schema):
-            return False
-
-        # if the schema exists, remember it
-        if self.session_manager.is_schema_found_on_database(schema):
-            self.known_schemas.add(schema)
-
-            return True
-
-        return False
+class TownApp(OrgApp):
 
     @property
     def town(self):
@@ -158,17 +120,6 @@ class TownApp(Framework, LibresIntegration, ElasticsearchApp, MapboxApp,
         reply_to = "{} <{}>".format(self.town.name, self.town.meta['reply_to'])
 
         return super().send_email(reply_to=reply_to, **kwargs)
-
-    def configure_application(self, **cfg):
-        super().configure_application(**cfg)
-
-        if self.has_database_connection:
-            schema_prefix = self.namespace + '-'
-
-            self.known_schemas = set(
-                s for s in self.session_manager.list_schemas()
-                if s.startswith(schema_prefix)
-            )
 
     @property
     def theme_options(self):
