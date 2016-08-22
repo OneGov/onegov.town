@@ -1,6 +1,6 @@
 from onegov.core.utils import Bunch
 from onegov.form import Form
-from onegov.town.models.extensions import (
+from onegov.org.models.extensions import (
     PersonLinkExtension, ContactExtension, HiddenFromPublicExtension
 )
 from uuid import UUID

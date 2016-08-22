@@ -17,8 +17,8 @@ from onegov.page import PageCollection
 from onegov.people import Person
 from onegov.town import TownApp
 from onegov.town.initial_content import add_resources
-from onegov.town.models.extensions import ContactExtension
-from onegov.town.models.file import (
+from onegov.org.models.extensions import ContactExtension
+from onegov.org.models.file import (
     GeneralFileCollection,
     ImageFile,
     ImageFileCollection

@@ -7,7 +7,7 @@ from onegov.page import PageCollection
 from onegov.town import _
 from onegov.town.app import TownApp
 from onegov.town.layout import EditorLayout
-from onegov.town.models import Clipboard, Editor
+from onegov.org.models import Clipboard, Editor
 
 
 def get_form_class(editor, request):

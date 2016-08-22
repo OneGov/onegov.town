@@ -4,9 +4,9 @@ from onegov.core.security import Public, Private
 from onegov.org.elements import Link
 from onegov.people import Person, PersonCollection
 from onegov.town import _, TownApp
-from onegov.town.forms import PersonForm
+from onegov.org.forms import PersonForm
 from onegov.town.layout import PersonLayout, PersonCollectionLayout
-from onegov.town.models import AtoZ
+from onegov.org.models import AtoZ
 
 
 @TownApp.html(model=PersonCollection, template='people.pt', permission=Public)

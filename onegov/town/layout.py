@@ -11,7 +11,7 @@ from onegov.page import Page, PageCollection
 from onegov.people import PersonCollection
 from onegov.ticket import TicketCollection
 from onegov.town import _
-from onegov.town.models import (
+from onegov.org.models import (
     GeneralFileCollection,
     ImageFileCollection,
     ImageSetCollection,

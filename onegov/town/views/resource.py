@@ -19,11 +19,11 @@ from onegov.org.elements import Link
 from onegov.org import utils
 from onegov.ticket import Ticket
 from onegov.town import TownApp, _
-from onegov.town.forms import (
+from onegov.org.forms import (
     ResourceForm, ResourceCleanupForm, ResourceExportForm
 )
 from onegov.town.layout import ResourcesLayout, ResourceLayout
-from onegov.town.models.resource import DaypassResource, RoomResource
+from onegov.org.models.resource import DaypassResource, RoomResource
 from sqlalchemy.sql.expression import nullsfirst
 from webob import exc
 

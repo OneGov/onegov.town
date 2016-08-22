@@ -5,9 +5,9 @@ from onegov.core.utils import Bunch, normalize_for_url
 from onegov.form import FormCollection, FormDefinition
 from onegov.org.elements import Link
 from onegov.town import _, TownApp
-from onegov.town.forms import CustomDefinitionForm
+from onegov.org.forms import CustomDefinitionForm
 from onegov.town.layout import FormEditorLayout
-from onegov.town.models import CustomFormDefinition
+from onegov.org.models import CustomFormDefinition
 from webob import exc
 
 

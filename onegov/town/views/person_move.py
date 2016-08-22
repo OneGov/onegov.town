@@ -1,6 +1,6 @@
 from onegov.core.security import Private
 from onegov.town import TownApp
-from onegov.town.models import PersonMove
+from onegov.org.models import PersonMove
 
 
 @TownApp.view(model=PersonMove, permission=Private, request_method='PUT')

@@ -10,7 +10,7 @@ from onegov.org.elements import Img, Link
 from onegov.town import _
 from onegov.town.app import TownApp
 from onegov.town.layout import DefaultLayout
-from onegov.town.models import (
+from onegov.org.models import (
     GeneralFile,
     GeneralFileCollection,
     ImageFile,

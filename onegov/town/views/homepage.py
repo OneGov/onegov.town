@@ -11,7 +11,8 @@ from onegov.people import PersonCollection
 from onegov.town import _
 from onegov.town.app import TownApp
 from onegov.town.layout import DefaultLayout, EventBaseLayout
-from onegov.town.models import AtoZPages, Town, ImageSetCollection
+from onegov.org.models import AtoZPages, ImageSetCollection
+from onegov.town.models import Town
 
 
 @TownApp.html(model=Town, template='homepage.pt', permission=Public)

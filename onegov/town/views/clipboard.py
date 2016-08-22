@@ -2,7 +2,7 @@ import morepath
 
 from onegov.core.security import Private
 from onegov.town import _, TownApp
-from onegov.town.models import Clipboard
+from onegov.org.models import Clipboard
 
 
 @TownApp.view(model=Clipboard, permission=Private)

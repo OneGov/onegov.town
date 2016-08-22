@@ -14,7 +14,8 @@ from onegov.org import OrgApp
 from onegov.org.app import get_i18n_localedirs as get_org_i18n_localedirs
 from onegov.page import PageCollection
 from onegov.ticket import TicketCollection
-from onegov.town.models import Town, Topic
+from onegov.org.models import Topic
+from onegov.town.models import Town
 from onegov.town.theme import TownTheme
 from sqlalchemy.orm.attributes import flag_modified
 

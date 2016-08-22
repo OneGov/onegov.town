@@ -8,7 +8,7 @@ from onegov.org import utils
 from onegov.org.elements import Link
 from onegov.town import TownApp, _
 from onegov.town.layout import ResourceLayout, AllocationEditFormLayout
-from onegov.town.forms import (
+from onegov.org.forms import (
     DaypassAllocationForm,
     DaypassAllocationEditForm,
     RoomAllocationForm,

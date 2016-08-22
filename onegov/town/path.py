@@ -25,7 +25,7 @@ from onegov.newsletter import (
     RecipientCollection,
 )
 from onegov.town.app import TownApp
-from onegov.town.models import (
+from onegov.org.models import (
     AtoZPages,
     Clipboard,
     Editor,
@@ -45,8 +45,8 @@ from onegov.town.models import (
     Search,
     SiteCollection,
     Topic,
-    Town,
 )
+from onegov.town.models import Town
 from onegov.page import PageCollection
 from onegov.people import Person, PersonCollection
 from onegov.ticket import Ticket, TicketCollection

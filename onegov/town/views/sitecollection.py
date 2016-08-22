@@ -1,6 +1,6 @@
 from onegov.core.security import Private
 from onegov.town import _, TownApp
-from onegov.town.models import SiteCollection
+from onegov.org.models import SiteCollection
 
 
 @TownApp.json(model=SiteCollection, permission=Private)

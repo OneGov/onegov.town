@@ -16,13 +16,13 @@ from onegov.newsletter import (
 )
 from onegov.newsletter.errors import AlreadyExistsError
 from onegov.town import _, TownApp
-from onegov.town.forms import NewsletterForm, NewsletterSendForm, SignupForm
+from onegov.org.forms import NewsletterForm, NewsletterSendForm, SignupForm
 from onegov.town.layout import (
     DefaultMailLayout,
     NewsletterLayout,
     RecipientLayout
 )
-from onegov.town.models import News
+from onegov.org.models import News
 from sedate import utcnow
 from sqlalchemy import desc
 from sqlalchemy.orm import undefer
