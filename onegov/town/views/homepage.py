@@ -1,17 +1,17 @@
 """ The onegov town homepage. """
 
 from collections import namedtuple
-from onegov.event import OccurrenceCollection
 from onegov.core.security import Public
+from onegov.event import OccurrenceCollection
 from onegov.form import FormCollection
 from onegov.libres import ResourceCollection
 from onegov.newsletter import NewsletterCollection
 from onegov.org.elements import Link, LinkGroup
+from onegov.org.layout import DefaultLayout, EventBaseLayout
+from onegov.org.models import AtoZPages, ImageSetCollection
 from onegov.people import PersonCollection
 from onegov.town import _
 from onegov.town.app import TownApp
-from onegov.town.layout import DefaultLayout, EventBaseLayout
-from onegov.org.models import AtoZPages, ImageSetCollection
 from onegov.town.models import Town
 
 

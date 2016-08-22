@@ -11,10 +11,10 @@ from onegov.form import FormCollection, merge_forms
 from onegov.libres import Resource
 from onegov.org import utils
 from onegov.org.elements import Link
+from onegov.org.forms import ReservationForm
+from onegov.org.layout import ReservationLayout
 from onegov.ticket import TicketCollection
 from onegov.town import TownApp, _
-from onegov.org.forms import ReservationForm
-from onegov.town.layout import ReservationLayout
 from onegov.town.mail import send_html_mail
 from purl import URL
 from sqlalchemy.orm.attributes import flag_modified

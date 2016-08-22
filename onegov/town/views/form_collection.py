@@ -2,9 +2,9 @@
 
 from onegov.core.security import Public
 from onegov.form import FormCollection
+from onegov.org.layout import FormCollectionLayout
 from onegov.town import _
 from onegov.town.app import TownApp
-from onegov.town.layout import FormCollectionLayout
 from unidecode import unidecode
 
 

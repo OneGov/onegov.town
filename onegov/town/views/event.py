@@ -5,14 +5,14 @@ from morepath.request import Response
 from onegov.core.security import Private, Public
 from onegov.event import Event, EventCollection, OccurrenceCollection
 from onegov.org.elements import Link
+from onegov.org.forms import EventForm
+from onegov.org.layout import EventLayout
 from onegov.ticket import TicketCollection
 from onegov.town import _
 from onegov.town.app import TownApp
-from onegov.org.forms import EventForm
-from onegov.town.layout import EventLayout
 from onegov.town.mail import send_html_mail
-from sedate import utcnow
 from purl import URL
+from sedate import utcnow
 from uuid import uuid4
 from webob import exc
 

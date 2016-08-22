@@ -3,11 +3,11 @@
 import morepath
 
 from onegov.core.security import Private
+from onegov.org.layout import EditorLayout
+from onegov.org.models import Clipboard, Editor
 from onegov.page import PageCollection
 from onegov.town import _
 from onegov.town.app import TownApp
-from onegov.town.layout import EditorLayout
-from onegov.org.models import Clipboard, Editor
 
 
 def get_form_class(editor, request):

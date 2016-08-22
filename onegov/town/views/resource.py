@@ -22,7 +22,7 @@ from onegov.town import TownApp, _
 from onegov.org.forms import (
     ResourceForm, ResourceCleanupForm, ResourceExportForm
 )
-from onegov.town.layout import ResourcesLayout, ResourceLayout
+from onegov.org.layout import ResourcesLayout, ResourceLayout
 from onegov.org.models.resource import DaypassResource, RoomResource
 from sqlalchemy.sql.expression import nullsfirst
 from webob import exc

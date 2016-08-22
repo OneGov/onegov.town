@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 from onegov.core.templates import render_template
+from onegov.org.layout import DefaultMailLayout
 from onegov.ticket import Ticket, TicketCollection
 from onegov.town import _, TownApp
-from onegov.town.layout import DefaultMailLayout
 from onegov.user import UserCollection
 from sedate import replace_timezone, to_timezone
 from sqlalchemy.orm import undefer

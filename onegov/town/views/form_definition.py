@@ -6,7 +6,7 @@ from onegov.form import FormCollection, FormDefinition
 from onegov.org.elements import Link
 from onegov.town import _, TownApp
 from onegov.org.forms import CustomDefinitionForm
-from onegov.town.layout import FormEditorLayout
+from onegov.org.layout import FormEditorLayout
 from onegov.org.models import CustomFormDefinition
 from webob import exc
 

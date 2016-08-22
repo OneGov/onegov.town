@@ -1,4 +1,5 @@
 """ The onegov town collection of images uploaded to the site. """
+
 from csv import writer
 from datetime import date
 from io import StringIO
@@ -7,10 +8,10 @@ from onegov.core.security import Public
 from onegov.core.utils import linkify
 from onegov.event import Event, Occurrence, OccurrenceCollection
 from onegov.org.elements import Link
+from onegov.org.layout import OccurrenceLayout, OccurrencesLayout
 from onegov.ticket import TicketCollection
 from onegov.town import _
 from onegov.town.app import TownApp
-from onegov.town.layout import OccurrenceLayout, OccurrencesLayout
 from sedate import as_datetime, replace_timezone
 from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import JSON

@@ -12,9 +12,9 @@ from onegov.form import (
     PendingFormSubmission,
     CompleteFormSubmission
 )
+from onegov.org.layout import FormSubmissionLayout
 from onegov.town import _
 from onegov.town.app import TownApp
-from onegov.town.layout import FormSubmissionLayout
 from onegov.town.mail import send_html_mail
 from purl import URL
 

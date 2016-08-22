@@ -5,10 +5,10 @@ import morepath
 from datetime import datetime
 from onegov.core.security import Public, Private
 from onegov.org.elements import Link
+from onegov.org.layout import PageLayout, NewsLayout
+from onegov.org.models import News, Topic
 from onegov.page import Page, PageCollection
 from onegov.town.app import TownApp
-from onegov.town.layout import PageLayout, NewsLayout
-from onegov.org.models import News, Topic
 from sedate import replace_timezone
 from webob import exc
 

@@ -1,6 +1,6 @@
 from onegov.core.security import Public
+from onegov.org.layout import DefaultLayout
 from onegov.town import _, TownApp
-from onegov.town.layout import DefaultLayout
 from webob.exc import HTTPForbidden, HTTPNotFound
 
 

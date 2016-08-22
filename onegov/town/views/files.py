@@ -7,9 +7,7 @@ from onegov.core.security import Private, Public
 from onegov.file import File, FileCollection
 from onegov.file.utils import IMAGE_MIME_TYPES
 from onegov.org.elements import Img, Link
-from onegov.town import _
-from onegov.town.app import TownApp
-from onegov.town.layout import DefaultLayout
+from onegov.org.layout import DefaultLayout
 from onegov.org.models import (
     GeneralFile,
     GeneralFileCollection,
@@ -19,6 +17,8 @@ from onegov.org.models import (
     LegacyFile,
     LegacyImage,
 )
+from onegov.town import _
+from onegov.town.app import TownApp
 from sedate import utcnow
 from webob import exc
 

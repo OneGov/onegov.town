@@ -4,10 +4,10 @@ import morepath
 
 from onegov.core.security import Public
 from onegov.org.elements import Link
+from onegov.org.forms import RequestPasswordResetForm, PasswordResetForm
+from onegov.org.layout import DefaultLayout
 from onegov.town import _, log
 from onegov.town.app import TownApp
-from onegov.org.forms import RequestPasswordResetForm, PasswordResetForm
-from onegov.town.layout import DefaultLayout
 from onegov.town.mail import send_html_mail
 from onegov.town.models import Town
 

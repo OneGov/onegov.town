@@ -5,7 +5,7 @@ from onegov.core.security import Public
 from onegov.org.elements import Link
 from onegov.town import _, log, TownApp
 from onegov.org.models import Search
-from onegov.town.layout import DefaultLayout
+from onegov.org.layout import DefaultLayout
 from webob import exc
 
 

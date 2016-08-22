@@ -2,10 +2,10 @@
 
 from onegov.core.security import Secret
 from onegov.org.elements import Link
+from onegov.org.layout import DefaultLayout
 from onegov.town import _
 from onegov.town.app import TownApp
 from onegov.town.forms import SettingsForm
-from onegov.town.layout import DefaultLayout
 from onegov.town.models import Town
 
 

@@ -1,5 +1,5 @@
 from onegov.core.templates import render_template
-from onegov.town.layout import DefaultMailLayout
+from onegov.org.layout import DefaultMailLayout
 
 
 def send_html_mail(request, template, content, **kwargs):

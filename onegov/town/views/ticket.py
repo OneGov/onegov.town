@@ -2,11 +2,11 @@ import morepath
 
 from onegov.core.security import Public, Private
 from onegov.org.elements import Link
+from onegov.org.layout import DefaultLayout, TicketLayout, TicketsLayout
 from onegov.ticket import Ticket, TicketCollection
 from onegov.ticket.errors import InvalidStateChange
 from onegov.town import _, TownApp
 from onegov.town.mail import send_html_mail
-from onegov.town.layout import DefaultLayout, TicketLayout, TicketsLayout
 from onegov.user import UserCollection
 
 
