@@ -1,7 +1,7 @@
 from onegov.core.utils import sanitize_html
 from onegov.form import Form
+from onegov.org.utils import annotate_html
 from onegov.town import _
-from onegov.town.utils import annotate_html
 from wtforms import StringField, TextAreaField, validators
 from wtforms.fields.html5 import URLField
 

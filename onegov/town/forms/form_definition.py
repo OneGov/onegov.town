@@ -1,8 +1,8 @@
 from onegov.core.utils import sanitize_html
 from onegov.form import Form
 from onegov.form.validators import ValidFormDefinition
+from onegov.org.utils import annotate_html
 from onegov.town import _
-from onegov.town.utils import annotate_html
 from wtforms import StringField, TextAreaField, validators
 
 

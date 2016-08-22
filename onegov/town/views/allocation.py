@@ -4,8 +4,9 @@ from libres.db.models import Allocation
 from libres.modules.errors import LibresError
 from onegov.core.security import Public, Private
 from onegov.libres import Resource, ResourceCollection
+from onegov.org import utils
 from onegov.org.elements import Link
-from onegov.town import TownApp, _, utils
+from onegov.town import TownApp, _
 from onegov.town.layout import ResourceLayout, AllocationEditFormLayout
 from onegov.town.forms import (
     DaypassAllocationForm,

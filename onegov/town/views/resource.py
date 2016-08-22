@@ -16,9 +16,9 @@ from onegov.form import FormSubmission
 from onegov.libres import ResourceCollection
 from onegov.libres.models import Resource
 from onegov.org.elements import Link
+from onegov.org import utils
 from onegov.ticket import Ticket
 from onegov.town import TownApp, _
-from onegov.town import utils
 from onegov.town.forms import (
     ResourceForm, ResourceCleanupForm, ResourceExportForm
 )
