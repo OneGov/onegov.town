@@ -151,11 +151,6 @@ def get_i18n_default_locale():
 
 
 @TownApp.webasset_path()
-def get_shared_assets_path():
-    return utils.module_path('onegov.shared', 'assets/js')
-
-
-@TownApp.webasset_path()
 def get_js_path():
     return 'assets/js'
 
