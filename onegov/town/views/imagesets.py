@@ -2,9 +2,9 @@ import morepath
 
 from onegov.core.security import Public, Private
 from onegov.file import File
+from onegov.org.elements import Link
 from onegov.town import _
 from onegov.town.app import TownApp
-from onegov.town.elements import Link
 from onegov.town.forms import ImageSetForm
 from onegov.town.layout import ImageSetLayout, ImageSetCollectionLayout
 from onegov.town.models import (

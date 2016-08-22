@@ -5,9 +5,9 @@ from onegov.core.templates import render_macro
 from onegov.event import EventCollection
 from onegov.form import FormSubmissionCollection
 from onegov.libres import Resource
+from onegov.org.elements import DeleteLink, Link, LinkGroup
 from onegov.ticket import Ticket, Handler, handlers
 from onegov.town import _
-from onegov.town.elements import DeleteLink, Link, LinkGroup
 from onegov.town.layout import DefaultLayout, EventLayout
 from onegov.town.utils import correct_time_range
 from purl import URL

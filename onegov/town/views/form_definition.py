@@ -3,8 +3,8 @@ import morepath
 from onegov.core.security import Private
 from onegov.core.utils import Bunch, normalize_for_url
 from onegov.form import FormCollection, FormDefinition
+from onegov.org.elements import Link
 from onegov.town import _, TownApp
-from onegov.town.elements import Link
 from onegov.town.forms import CustomDefinitionForm
 from onegov.town.layout import FormEditorLayout
 from onegov.town.models import CustomFormDefinition

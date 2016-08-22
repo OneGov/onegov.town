@@ -1,9 +1,9 @@
 """ The settings view, defining things like the logo or color of the town. """
 
 from onegov.core.security import Secret
+from onegov.org.elements import Link
 from onegov.town import _
 from onegov.town.app import TownApp
-from onegov.town.elements import Link
 from onegov.town.forms import SettingsForm
 from onegov.town.layout import DefaultLayout
 from onegov.town.models import Town

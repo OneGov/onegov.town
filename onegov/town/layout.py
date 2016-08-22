@@ -11,12 +11,12 @@ from onegov.core.utils import linkify
 from onegov.event import OccurrenceCollection
 from onegov.form import FormCollection, FormSubmissionFile, render_field
 from onegov.libres import ResourceCollection
+from onegov.org.elements import DeleteLink, Link, LinkGroup
 from onegov.page import Page, PageCollection
 from onegov.people import PersonCollection
 from onegov.ticket import TicketCollection
 from onegov.town import _
 from onegov.town import utils
-from onegov.town.elements import DeleteLink, Link, LinkGroup
 from onegov.town.models import (
     GeneralFileCollection,
     ImageFile,
@@ -108,7 +108,7 @@ class Layout(ChameleonLayout):
 
     @cached_property
     def top_navigation(self):
-        """ Returns a list of :class:`onegov.town.elements.Link` objects.
+        """ Returns a list of :class:`onegov.org.elements.Link` objects.
         Those links are used for the top navigation.
 
         If nothing is returned, no top navigation is displayed.
@@ -118,7 +118,7 @@ class Layout(ChameleonLayout):
 
     @cached_property
     def breadcrumbs(self):
-        """ Returns a list of :class:`onegov.town.elements.Link` objects.
+        """ Returns a list of :class:`onegov.org.elements.Link` objects.
         Those links are used for the breadcrumbs.
 
         If nothing is returned, no top breadcrumbs are displayed.
@@ -141,7 +141,7 @@ class Layout(ChameleonLayout):
 
     @cached_property
     def editbar_links(self):
-        """ A of :class:`onegov.town.elements.LinkGroup` classes. Each of them
+        """ A of :class:`onegov.org.elements.LinkGroup` classes. Each of them
         will be shown in the top editbar, with the group title being the
         dropdown title.
         """

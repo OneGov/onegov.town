@@ -1,9 +1,9 @@
 """ The authentication views. """
 
 from onegov.core.security import Public, Private
+from onegov.org.elements import Link
 from onegov.town import _
 from onegov.town.app import TownApp
-from onegov.town.elements import Link
 from onegov.town.layout import DefaultLayout
 from onegov.user import Auth
 from onegov.user.forms import LoginForm

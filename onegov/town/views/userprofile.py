@@ -3,9 +3,9 @@
 import morepath
 
 from onegov.core.security import Private, Public
+from onegov.org.elements import Link
 from onegov.town import _
 from onegov.town.app import TownApp
-from onegov.town.elements import Link
 from onegov.town.forms import UserProfileForm
 from onegov.town.layout import DefaultLayout
 from onegov.town.models import Town

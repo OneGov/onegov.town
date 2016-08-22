@@ -1,6 +1,6 @@
 from onegov.core.security import Public
+from onegov.org.elements import Link
 from onegov.town import _, TownApp
-from onegov.town.elements import Link
 from onegov.town.layout import DefaultLayout
 from onegov.town.models import AtoZ
 

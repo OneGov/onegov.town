@@ -6,9 +6,9 @@ from onegov.core.filestorage import view_filestorage_file
 from onegov.core.security import Private, Public
 from onegov.file import File, FileCollection
 from onegov.file.utils import IMAGE_MIME_TYPES
+from onegov.org.elements import Img, Link
 from onegov.town import _
 from onegov.town.app import TownApp
-from onegov.town.elements import Img, Link
 from onegov.town.layout import DefaultLayout
 from onegov.town.models import (
     GeneralFile,

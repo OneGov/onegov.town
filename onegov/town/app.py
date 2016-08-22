@@ -11,6 +11,7 @@ from collections import defaultdict
 from contextlib import contextmanager
 from onegov.core import utils
 from onegov.org import OrgApp
+from onegov.org.app import get_i18n_localedirs as get_org_i18n_localedirs
 from onegov.page import PageCollection
 from onegov.ticket import TicketCollection
 from onegov.town.models import Town, Topic
@@ -138,11 +139,8 @@ def get_theme():
 
 @TownApp.setting(section='i18n', name='localedirs')
 def get_i18n_localedirs():
-    return [
-        utils.module_path('onegov.town', 'locale'),
-        utils.module_path('onegov.form', 'locale'),
-        utils.module_path('onegov.user', 'locale')
-    ]
+    return [utils.module_path('onegov.town', 'locale')] \
+        + get_org_i18n_localedirs()
 
 
 @TownApp.setting(section='i18n', name='default_locale')

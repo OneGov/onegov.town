@@ -6,10 +6,10 @@ from onegov.core.security import Public
 from onegov.form import FormCollection
 from onegov.libres import ResourceCollection
 from onegov.newsletter import NewsletterCollection
+from onegov.org.elements import Link, LinkGroup
 from onegov.people import PersonCollection
 from onegov.town import _
 from onegov.town.app import TownApp
-from onegov.town.elements import Link, LinkGroup
 from onegov.town.layout import DefaultLayout, EventBaseLayout
 from onegov.town.models import AtoZPages, Town, ImageSetCollection
 

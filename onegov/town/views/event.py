@@ -4,10 +4,10 @@ import morepath
 from morepath.request import Response
 from onegov.core.security import Private, Public
 from onegov.event import Event, EventCollection, OccurrenceCollection
+from onegov.org.elements import Link
 from onegov.ticket import TicketCollection
 from onegov.town import _
 from onegov.town.app import TownApp
-from onegov.town.elements import Link
 from onegov.town.forms import EventForm
 from onegov.town.layout import EventLayout
 from onegov.town.mail import send_html_mail

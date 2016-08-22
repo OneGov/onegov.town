@@ -15,10 +15,10 @@ from onegov.core.utils import normalize_for_url
 from onegov.form import FormSubmission
 from onegov.libres import ResourceCollection
 from onegov.libres.models import Resource
+from onegov.org.elements import Link
 from onegov.ticket import Ticket
 from onegov.town import TownApp, _
 from onegov.town import utils
-from onegov.town.elements import Link
 from onegov.town.forms import (
     ResourceForm, ResourceCleanupForm, ResourceExportForm
 )

@@ -19,9 +19,6 @@ msgstr "${town} OneGov Cloud Status"
 msgid "Cancel"
 msgstr "Abbrechen"
 
-msgid "This site is hidden from the general public"
-msgstr "Diese Seite ist nicht öffentlich."
-
 msgid "Mo"
 msgstr "Mo"
 

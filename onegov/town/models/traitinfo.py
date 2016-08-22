@@ -1,5 +1,5 @@
+from onegov.org.elements import DeleteLink, Link, LinkGroup
 from onegov.town import _
-from onegov.town.elements import DeleteLink, Link, LinkGroup
 from onegov.town.models import Clipboard, Editor
 
 #: Contains the messages that differ for each trait (the handling of all traits

@@ -5,9 +5,9 @@ import more.transaction
 import more.webassets
 
 from datetime import datetime
+from onegov.org.elements import Link
 from onegov.page import Page
 from onegov.town import TownApp
-from onegov.town.elements import Link
 from onegov.town.layout import (
     EventBaseLayout,
     Layout,

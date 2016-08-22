@@ -7,9 +7,9 @@ from isodate import parse_date, parse_datetime
 from itertools import groupby
 from libres.modules import errors as libres_errors
 from lxml.html import fragments_fromstring, tostring
+from onegov.org.elements import DeleteLink, Link
 from onegov.ticket import TicketCollection
 from onegov.town import _
-from onegov.town.elements import DeleteLink, Link
 from operator import attrgetter
 from purl import URL
 

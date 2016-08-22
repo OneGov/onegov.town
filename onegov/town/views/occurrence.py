@@ -6,10 +6,10 @@ from morepath.request import Response
 from onegov.core.security import Public
 from onegov.core.utils import linkify
 from onegov.event import Event, Occurrence, OccurrenceCollection
+from onegov.org.elements import Link
 from onegov.ticket import TicketCollection
 from onegov.town import _
 from onegov.town.app import TownApp
-from onegov.town.elements import Link
 from onegov.town.layout import OccurrenceLayout, OccurrencesLayout
 from sedate import as_datetime, replace_timezone
 from sqlalchemy import func
