@@ -6,10 +6,10 @@ from onegov.event import EventCollection
 from onegov.form import FormSubmissionCollection
 from onegov.libres import Resource
 from onegov.org.elements import DeleteLink, Link, LinkGroup
+from onegov.org.utils import correct_time_range
 from onegov.ticket import Ticket, Handler, handlers
 from onegov.town import _
 from onegov.town.layout import DefaultLayout, EventLayout
-from onegov.town.utils import correct_time_range
 from purl import URL
 
 
