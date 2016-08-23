@@ -13,20 +13,6 @@ from onegov.town.theme.town_theme import user_options
 
 class Layout(BaseLayout):
 
-    @property
-    def town(self):
-        """ An alias for self.request.app.town. """
-        return self.request.app.town
-
-    @property
-    def primary_color(self):
-        return self.town.theme_options.get(
-            'primary-color', user_options['primary-color'])
-
-    @cached_property
-    def default_map_view(self):
-        return self.town.default_map_view or None
-
     @cached_property
     def font_awesome_path(self):
         static_file = StaticFile.from_application(
