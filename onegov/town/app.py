@@ -17,6 +17,11 @@ class TownApp(OrgApp):
     pass
 
 
+@TownApp.static_directory()
+def get_static_directory():
+    return 'static'
+
+
 @TownApp.template_directory()
 def get_template_directory():
     return 'templates'
