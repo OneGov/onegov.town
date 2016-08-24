@@ -1,27 +1,14 @@
 from cached_property import cached_property
-from onegov.core.static import StaticFile
 from onegov.org.elements import Link
 from onegov.org.layout import Layout as BaseLayout
-from onegov.org.layout import DefaultLayout as BaseDefaultLayout
 from onegov.town import _
 from onegov.org.models import (
     GeneralFileCollection,
     ImageFileCollection,
 )
-from onegov.town.theme.town_theme import user_options
 
 
-class Layout(BaseLayout):
-
-    @cached_property
-    def font_awesome_path(self):
-        static_file = StaticFile.from_application(
-            self.app, 'font-awesome/css/font-awesome.min.css')
-
-        return self.request.link(static_file)
-
-
-class DefaultLayout(BaseDefaultLayout):
+class DefaultLayout(BaseLayout):
 
     @cached_property
     def bottom_links(self):
