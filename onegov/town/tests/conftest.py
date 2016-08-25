@@ -7,10 +7,10 @@ import transaction
 import shutil
 
 from onegov.core.utils import Bunch, scan_morepath_modules
-from onegov.town.initial_content import (
+from onegov.org.initial_content import (
     add_initial_content, builtin_form_definitions
 )
-from onegov.town.models import Town
+from onegov.org.models import Organisation
 from onegov.user import User
 from uuid import uuid4
 
@@ -86,8 +86,8 @@ def new_town_app(postgres_dsn, filestorage, test_password, smtp,
 
     session = app.session()
 
-    town = session.query(Town).one()
-    town.meta['reply_to'] = 'mails@govikon.ch'
+    org = session.query(Organisation).one()
+    org.meta['reply_to'] = 'mails@govikon.ch'
 
     app.mail_host, app.mail_port = smtp.address
     app.mail_sender = 'mails@govikon.ch'

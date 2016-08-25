@@ -4,7 +4,7 @@ import onegov.town
 import re
 
 from base64 import b64decode, b64encode
-from onegov.core import utils
+from onegov.testing import utils
 from webtest import (
     TestApp as BaseApp,
     TestResponse as BaseResponse,

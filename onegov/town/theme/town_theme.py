@@ -35,7 +35,7 @@ class TownTheme(OrgTheme):
 
     @property
     def post_imports(self):
-        return [
+        return super().post_imports + [
             'town'
         ]
 
