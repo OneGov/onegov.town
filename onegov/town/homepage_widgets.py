@@ -48,7 +48,7 @@ class ServicesWidget(object):
                 text=_("SBB Daypass"),
                 url=layout.request.link(sbb_daypass),
                 subtitle=(
-                    layout.org.meta.get('sbb_daypass_label') or
+                    layout.org.meta.get('daypass_label') or
                     _("Generalabonnement for Towns")
                 )
             )
